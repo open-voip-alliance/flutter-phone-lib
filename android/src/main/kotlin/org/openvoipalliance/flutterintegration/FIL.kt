@@ -12,15 +12,22 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+
 import org.koin.android.BuildConfig
-import org.openvoipalliance.androidplatformintegration.Builder
 
 import org.openvoipalliance.androidplatformintegration.PIL
 import org.openvoipalliance.androidplatformintegration.configuration.ApplicationSetup
+import org.openvoipalliance.androidplatformintegration.configuration.Auth
+import org.openvoipalliance.androidplatformintegration.configuration.Preferences
+import org.openvoipalliance.androidplatformintegration.events.Event
+import org.openvoipalliance.androidplatformintegration.events.PILEventListener
 import org.openvoipalliance.androidplatformintegration.logging.LogLevel
 import org.openvoipalliance.androidplatformintegration.startAndroidPIL
+import org.openvoipalliance.flutterintegration.call.toMap
+import org.openvoipalliance.flutterintegration.configuration.authOf
+import org.openvoipalliance.flutterintegration.configuration.preferencesOf
 
-class FIL : FlutterPlugin, MethodCallHandler {
+class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
     private lateinit var channel: MethodChannel
 
     private lateinit var pil: PIL
@@ -32,7 +39,7 @@ class FIL : FlutterPlugin, MethodCallHandler {
 
     /**
      * The activity to show when the incoming call notification is pressed. Almost always the
-     * `MainActivity`.
+     * `MainActivity`. Must be set to use this plugin.
      */
     lateinit var activityClass: Class<out Activity>
 
@@ -53,21 +60,23 @@ class FIL : FlutterPlugin, MethodCallHandler {
         val type = if (hasType) call.method.split('.')[0] else null
         val method = if (hasType) call.method.split('.')[1] else call.method
 
+        fun assertPILInitialized() {
+            if (BuildConfig.DEBUG && !::pil.isInitialized) {
+                error("FIL not initialized. Create an instance using startFIL.")
+            }
+        }
+        
         when {
-            !hasType && method == "startFil" -> {
+            !hasType && method == "startFIL" -> {
                 val arguments = call.arguments<List<*>>()
-                val builder = (arguments[0]!! as Map<String, Any>).toObject<Builder>()
-                val applicationSetup = (arguments[1]!! as Map<String, Any>).toObject<ApplicationSetup>()
+                val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                val auth = authOf(arguments[1]!! as Map<String, Any>)
+                val userAgent = arguments[2]!! as String
 
-                Log.i(tag, arguments[0].toString())
-                Log.i(tag, builder.preferences.codecs.map { c -> c?.name ?: "null" }.toString())
-
-                startFil(builder, applicationSetup, result)
+                startFIL(preferences, auth, userAgent, result)
             }
             type == "FIL" -> {
-                if (BuildConfig.DEBUG && !::pil.isInitialized) {
-                    error("FIL not initialized. Create an instance using startFil.")
-                };
+                assertPILInitialized()
 
                 when (method) {
                     "call" -> {
@@ -77,25 +86,84 @@ class FIL : FlutterPlugin, MethodCallHandler {
 
                         result.success(null)
                     }
+                    "getCall" -> {
+                        result.success(pil.call?.toMap())
+                    }
                 }
+            }
+            type == "EventsManager" -> {
+                assertPILInitialized()
+                
+                when (method) {
+                    "listen" -> {
+                        pil.events.listen(this)
+
+                        result.success(null)
+                    }
+                    "stopListening" -> {
+                        pil.events.stopListening(this)
+
+                        result.success(null)
+                    }
+                }
+            }
+            type == "CallActions" -> {
+                assertPILInitialized()
+                
+                when (method) {
+                    "hold" -> {
+                        pil.actions.hold()
+                    }
+                    "unhold" -> {
+                        pil.actions.unhold()
+                    }
+                    "toggleHold" -> {
+                        pil.actions.toggleHold()
+                    }
+                    "sendDtmf" -> {
+                        pil.actions.sendDtmf(call.arguments())
+                    }
+                    "beginAttendedTransfer" -> {
+                        pil.actions.beginAttendedTransfer(call.arguments())
+                    }
+                    "completeAttendedTransfer" -> {
+                        pil.actions.completeAttendedTransfer()
+                    }
+                    "answer" -> {
+                        pil.actions.answer()
+                    }
+                    "decline" -> {
+                        pil.actions.decline()
+                    }
+                    "end" -> {
+                        pil.actions.end()
+                    }
+                }
+
+                result.success(null)
             }
             else -> result.notImplemented()
         }
     }
 
-    private fun startFil(builder: Builder, applicationSetup: ApplicationSetup, result: Result) {
-        Log.i(tag, "startFil")
+    private fun startFIL(
+            preferences: Preferences,
+            auth: Auth,
+            userAgent: String,
+            result: Result
+    ) {
+        Log.i(tag, "startFIL called")
 
         pil = startAndroidPIL {
-            auth = builder.auth
-            preferences = builder.preferences
+            this.preferences = preferences
+            this.auth = auth
 
             ApplicationSetup(
                     application = application,
                     activities = ApplicationSetup.Activities(activityClass, activityClass),
                     automaticallyStartCallActivity = false,
                     logger = ::onLogReceived,
-                    userAgent = applicationSetup.userAgent
+                    userAgent = userAgent
             )
         }
 
@@ -115,4 +183,6 @@ class FIL : FlutterPlugin, MethodCallHandler {
 
         private val tag = "FIL"
     }
+
+    override fun onEvent(event: Event) = channel.invokeMethod("onEvent", event.toString())
 }

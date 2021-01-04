@@ -4,8 +4,6 @@ import 'package:json_annotation/json_annotation.dart';
 import '../logging/logging.dart';
 import '../util/equatable.dart';
 
-part 'application_setup.g.dart';
-
 /// Note that the `application` and `activities` as seen in the PIL equivalent
 /// should be set in Kotlin/Java, in your `MainActivity` like so:
 /// ```kotlin
@@ -16,7 +14,6 @@ part 'application_setup.g.dart';
 ///     FIL.instance.activityClass = javaClass
 /// }
 /// ```
-@JsonSerializable()
 class ApplicationSetup extends Equatable {
   /// Provide a middleware if it is required to receive incoming calls
   /// in your infrastructure.
@@ -38,6 +35,4 @@ class ApplicationSetup extends Equatable {
   @override
   @JsonKey(ignore: true)
   List<Object> get props => [logger, userAgent];
-
-  Map<String, dynamic> toJson() => _$ApplicationSetupToJson(this);
 }

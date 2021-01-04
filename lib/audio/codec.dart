@@ -1,13 +1,11 @@
-/// We don't use an `enum` because the serialization of that is not easily
-/// customizable. We need to send values as uppercase.
-class Codec {
-  final String value;
+import '../util/upper_case_enum.dart';
 
-  const Codec._(this.value);
+class Codec extends UpperCaseEnum {
+  const Codec._(String value) : super(value);
 
   static const gsm = Codec._('GSM');
   static const g722 = Codec._('G722');
-  static const g729 = Codec._('g729');
+  static const g729 = Codec._('G729');
   static const ilbc = Codec._('ILBC');
   static const isac = Codec._('ISAC');
   static const l16 = Codec._('L16');
@@ -28,6 +26,4 @@ class Codec {
     pcma,
     speex,
   ];
-
-  String toJson() => value;
 }
