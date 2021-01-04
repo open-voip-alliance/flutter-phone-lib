@@ -58,6 +58,5 @@ dependencies {
     api platform('com.google.firebase:firebase-bom:26.1.0')
     api 'com.google.firebase:firebase-messaging'
 
-    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.2'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    api 'org.openvoipalliance:AndroidPlatformIntegration:0.0.2'
 }
