@@ -13,4 +13,8 @@ class CallDirection extends UpperCaseEnum {
 
   static CallDirection fromJson(String json) =>
       UpperCaseEnum.fromJson(values, json);
+
+  bool get isInbound => this == inbound;
+
+  bool get isOutbound => this == outbound;
 }

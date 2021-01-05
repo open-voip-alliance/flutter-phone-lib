@@ -10,3 +10,5 @@ export 'events/event.dart';
 export 'fil.dart';
 export 'logging/log_level.dart';
 export 'logging/logging.dart';
+export 'push/middleware.dart';
+export 'push/remote_message.dart';

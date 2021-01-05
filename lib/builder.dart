@@ -20,6 +20,7 @@ Future<Fil> startFil(
     [
       builder.preferences.toJson(),
       builder.auth.toJson(),
+      applicationSetup.middleware != null, // hasMiddleware
       applicationSetup.userAgent,
     ],
   );
