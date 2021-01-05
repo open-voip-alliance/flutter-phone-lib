@@ -7,6 +7,7 @@ import 'call/fil_call.dart';
 import 'configuration/application_setup.dart';
 import 'events/event.dart';
 import 'logging/log_level.dart';
+import 'push/remote_message.dart';
 
 class Fil {
   /// For internal use only.
@@ -71,12 +72,23 @@ class Fil {
         final arguments = call.arguments as List;
         _onLogReceived(
           arguments[0] as String,
-          LogLevel.values[arguments[1] as int],
+          LogLevel.fromJson(arguments[1] as String),
         );
         return;
       case 'onEvent':
-        final argument = call.arguments as String;
+        final argument = (call.arguments as Map).cast<String, dynamic>();
         _onEvent(Event.fromJson(argument));
+        return;
+      case 'Middleware.respond':
+        final arguments = call.arguments as List;
+        _app.middleware.respond(
+          RemoteMessage.fromMap(arguments[0] as Map),
+          arguments[1] as bool,
+        );
+        return;
+      case 'Middleware.tokenReceived':
+        final argument = call.arguments as String;
+        _app.middleware.tokenReceived(argument);
         return;
     }
   }

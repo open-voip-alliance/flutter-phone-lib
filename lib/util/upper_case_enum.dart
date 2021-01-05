@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:dartx/dartx.dart';
 
 /// We don't use an `enum` because the serialization of that is not easily
 /// customizable. We need to send and receive values as uppercase.
@@ -12,7 +11,7 @@ abstract class UpperCaseEnum {
   String toJson() => value;
 
   static T fromJson<T extends UpperCaseEnum>(List<T> values, String json) =>
-      values.firstOrNullWhere((e) => e.value == json);
+      values.firstWhere((e) => e.value == json);
 
   @override
   bool operator ==(Object other) =>

@@ -19,16 +19,16 @@ import org.openvoipalliance.androidplatformintegration.PIL
 import org.openvoipalliance.androidplatformintegration.configuration.ApplicationSetup
 import org.openvoipalliance.androidplatformintegration.configuration.Auth
 import org.openvoipalliance.androidplatformintegration.configuration.Preferences
-import org.openvoipalliance.androidplatformintegration.events.Event
-import org.openvoipalliance.androidplatformintegration.events.PILEventListener
 import org.openvoipalliance.androidplatformintegration.logging.LogLevel
 import org.openvoipalliance.androidplatformintegration.startAndroidPIL
 import org.openvoipalliance.flutterintegration.call.toMap
 import org.openvoipalliance.flutterintegration.configuration.authOf
 import org.openvoipalliance.flutterintegration.configuration.preferencesOf
+import org.openvoipalliance.flutterintegration.events.ProxyEventListener
+import org.openvoipalliance.flutterintegration.push.ProxyMiddleware
 
-class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
-    private lateinit var channel: MethodChannel
+class FIL : FlutterPlugin, MethodCallHandler {
+    internal lateinit var channel: MethodChannel
 
     private lateinit var pil: PIL
 
@@ -42,6 +42,8 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
      * `MainActivity`. Must be set to use this plugin.
      */
     lateinit var activityClass: Class<out Activity>
+
+    private val eventListener = ProxyEventListener(this)
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "voip_flutter_integration")
@@ -65,15 +67,16 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
                 error("FIL not initialized. Create an instance using startFIL.")
             }
         }
-        
+
         when {
             !hasType && method == "startFIL" -> {
                 val arguments = call.arguments<List<*>>()
                 val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                 val auth = authOf(arguments[1]!! as Map<String, Any>)
-                val userAgent = arguments[2]!! as String
+                val hasMiddleware = arguments[2]!! as Boolean
+                val userAgent = arguments[3]!! as String
 
-                startFIL(preferences, auth, userAgent, result)
+                startFIL(preferences, auth, hasMiddleware, userAgent, result)
             }
             type == "FIL" -> {
                 assertPILInitialized()
@@ -93,15 +96,15 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
             }
             type == "EventsManager" -> {
                 assertPILInitialized()
-                
+
                 when (method) {
                     "listen" -> {
-                        pil.events.listen(this)
+                        pil.events.listen(eventListener)
 
                         result.success(null)
                     }
                     "stopListening" -> {
-                        pil.events.stopListening(this)
+                        pil.events.stopListening(eventListener)
 
                         result.success(null)
                     }
@@ -109,7 +112,7 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
             }
             type == "CallActions" -> {
                 assertPILInitialized()
-                
+
                 when (method) {
                     "hold" -> {
                         pil.actions.hold()
@@ -149,6 +152,7 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
     private fun startFIL(
             preferences: Preferences,
             auth: Auth,
+            hasMiddleware: Boolean,
             userAgent: String,
             result: Result
     ) {
@@ -162,6 +166,7 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
                     application = application,
                     activities = ApplicationSetup.Activities(activityClass, activityClass),
                     automaticallyStartCallActivity = false,
+                    middleware = if (hasMiddleware) ProxyMiddleware(this@FIL) else null,
                     logger = ::onLogReceived,
                     userAgent = userAgent
             )
@@ -172,7 +177,7 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
 
     private fun onLogReceived(message: String, level: LogLevel) {
         Handler(Looper.getMainLooper()) {
-            channel.invokeMethod("onLogReceived", listOf(message, level.ordinal))
+            channel.invokeMethod("onLogReceived", listOf(message, level.toString()))
             true
         }
     }
@@ -181,8 +186,6 @@ class FIL : FlutterPlugin, MethodCallHandler, PILEventListener {
         lateinit var instance: FIL
             private set
 
-        private val tag = "FIL"
+        private const val tag = "FIL"
     }
-
-    override fun onEvent(event: Event) = channel.invokeMethod("onEvent", event.toString())
 }
