@@ -3,7 +3,7 @@
 # Run `pod lib lint vialer_voip_flutter.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'vialer_voip_flutter'
+  s.name             = 'voip_flutter_integration'
   s.version          = '0.0.1'
   s.summary          = 'Use VoIP in Flutter.'
   s.description      = <<-DESC
