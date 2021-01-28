@@ -36,8 +36,6 @@ flutter:
       android:
         package: org.openvoipalliance.flutterintegration
         pluginClass: FIL
-      ios:
-        pluginClass: FIL
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

@@ -1,6 +1,6 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint vialer_voip_flutter.podspec' to validate before publishing.
+# Run `pod lib lint voip_flutter_integration.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
   s.name             = 'voip_flutter_integration'
