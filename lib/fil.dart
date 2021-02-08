@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import 'call/call_actions.dart';
-import 'call/fil_call.dart';
+import 'call/calls.dart';
 import 'configuration/application_setup.dart';
 import 'events/event.dart';
 import 'logging/log_level.dart';
@@ -22,6 +22,8 @@ class Fil {
 
   final CallActions actions = CallActions();
 
+  final Calls calls = Calls();
+
   // True if we added a listener to the EventsManager on the Kotlin side. We
   // only need one listener there, and propagate the events to all listeners
   // here.
@@ -33,13 +35,6 @@ class Fil {
   // use Streams in Dart, and no future functionality in that class
   // is expected, this is a Stream on the Dart side.
   Stream<Event> get events => _eventsController.stream;
-
-  // Is `call` in the PIL. Can't be named that here, because Dart does not
-  // support having 2 identifiers with the same name if they're different
-  // (method vs getter), unlike Kotlin.
-  Future<FilCall> get currentCall => channel.invokeMethod('FIL.getCall').then(
-        (map) => FilCall.fromJson((map as Map)?.cast<String, dynamic>()),
-      );
 
   Fil(this._app) {
     if (instance == null) {
