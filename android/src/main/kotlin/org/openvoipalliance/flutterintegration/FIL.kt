@@ -89,8 +89,14 @@ class FIL : FlutterPlugin, MethodCallHandler {
 
                         result.success(null)
                     }
-                    "getCall" -> {
-                        result.success(pil.call?.toMap())
+                }
+            }
+            type == "Calls" -> {
+                assertPILInitialized()
+
+                when (method) {
+                    "active" -> {
+                        result.success(pil.calls.active?.toMap())
                     }
                 }
             }

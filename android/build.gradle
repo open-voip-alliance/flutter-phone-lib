@@ -21,9 +21,6 @@ rootProject.allprojects {
         maven {
             url 'http://download.flutter.io'
         }
-        flatDir {
-            dirs project(':').file('lib')
-        }
     }
 }
 
@@ -36,9 +33,11 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
     defaultConfig {
         minSdkVersion 26
     }
+
     lintOptions {
         disable 'InvalidPackage'
     }
@@ -48,7 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "com.google.firebase:firebase-messaging:21.0.1"
 
-    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.4'
+    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.15'
 
     // Uncomment this while working on the FIL, but comment it again when building the app.
     // This is necessary purely so IntelliJ can resolve the symbols on the Kotlin side.
