@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'audio/audio_manager.dart';
 import 'call/call_actions.dart';
 import 'call/calls.dart';
 import 'configuration/application_setup.dart';
@@ -23,6 +24,8 @@ class Fil {
   final CallActions actions = CallActions();
 
   final Calls calls = Calls();
+
+  final AudioManager audio = AudioManager();
 
   // True if we added a listener to the EventsManager on the Kotlin side. We
   // only need one listener there, and propagate the events to all listeners

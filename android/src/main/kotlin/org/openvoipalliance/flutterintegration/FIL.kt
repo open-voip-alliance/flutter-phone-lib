@@ -16,11 +16,13 @@ import io.flutter.plugin.common.MethodChannel.Result
 import org.koin.android.BuildConfig
 
 import org.openvoipalliance.androidplatformintegration.PIL
+import org.openvoipalliance.androidplatformintegration.audio.AudioRoute
 import org.openvoipalliance.androidplatformintegration.configuration.ApplicationSetup
 import org.openvoipalliance.androidplatformintegration.configuration.Auth
 import org.openvoipalliance.androidplatformintegration.configuration.Preferences
 import org.openvoipalliance.androidplatformintegration.logging.LogLevel
 import org.openvoipalliance.androidplatformintegration.startAndroidPIL
+import org.openvoipalliance.flutterintegration.audio.toMap
 import org.openvoipalliance.flutterintegration.call.toMap
 import org.openvoipalliance.flutterintegration.configuration.authOf
 import org.openvoipalliance.flutterintegration.configuration.preferencesOf
@@ -150,6 +152,35 @@ class FIL : FlutterPlugin, MethodCallHandler {
                 }
 
                 result.success(null)
+            }
+            type == "AudioManager" -> {
+                assertPILInitialized()
+
+                when (method) {
+                    "isMicrophoneMuted" -> {
+                        result.success(pil.audio.isMicrophoneMuted)
+                    }
+                    "state" -> {
+                        result.success(pil.audio.state.toMap())
+                    }
+                    "routeAudio" -> {
+                        val route = AudioRoute.valueOf(call.arguments())
+                        pil.audio.routeAudio(route)
+                        result.success(null)
+                    }
+                    "mute" -> {
+                        pil.audio.mute()
+                        result.success(null)
+                    }
+                    "unmute" -> {
+                        pil.audio.unmute()
+                        result.success(null)
+                    }
+                    "toggleMute" -> {
+                        pil.audio.toggleMute()
+                        result.success(null)
+                    }
+                }
             }
             else -> result.notImplemented()
         }
