@@ -1,4 +1,3 @@
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
@@ -8,7 +7,6 @@ import '../util/equatable.dart';
 part 'preferences.g.dart';
 
 @JsonSerializable()
-
 class Preferences extends Equatable {
   final List<Codec> codecs;
   final bool useApplicationProvidedRingtone;
