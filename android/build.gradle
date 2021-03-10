@@ -47,7 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "com.google.firebase:firebase-messaging:21.0.1"
 
-    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.17'
+    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.19'
 
     // Uncomment this while working on the FIL, but comment it again when building the app.
     // This is necessary purely so IntelliJ can resolve the symbols on the Kotlin side.
