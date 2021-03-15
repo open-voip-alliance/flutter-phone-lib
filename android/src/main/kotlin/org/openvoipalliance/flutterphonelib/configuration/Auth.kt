@@ -1,6 +1,6 @@
-package org.openvoipalliance.flutterintegration.configuration
+package org.openvoipalliance.flutterphonelib.configuration
 
-import org.openvoipalliance.androidplatformintegration.configuration.Auth
+import org.openvoipalliance.androidphoneintegration.configuration.Auth
 
 
 fun authOf(map: Map<String, Any?>) = object {

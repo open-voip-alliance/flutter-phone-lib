@@ -1,8 +1,9 @@
-import '../fil.dart';
-import 'fil_call.dart';
+import '../phone_lib.dart';
+import 'call.dart';
 
 class Calls {
-  Future<FilCall> get active => Fil.channel.invokeMethod('Calls.active').then(
-        (map) => FilCall.fromJson((map as Map)?.cast<String, dynamic>()),
-      );
+  Future<Call> get active =>
+      PhoneLib.channel.invokeMethod('Calls.active').then(
+            (map) => Call.fromJson((map as Map)?.cast<String, dynamic>()),
+          );
 }

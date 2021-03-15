@@ -1,35 +1,34 @@
-package org.openvoipalliance.flutterintegration
+package org.openvoipalliance.flutterphonelib
 
 import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.NonNull
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 import org.koin.android.BuildConfig
 
-import org.openvoipalliance.androidplatformintegration.PIL
-import org.openvoipalliance.androidplatformintegration.audio.AudioRoute
-import org.openvoipalliance.androidplatformintegration.configuration.ApplicationSetup
-import org.openvoipalliance.androidplatformintegration.configuration.Auth
-import org.openvoipalliance.androidplatformintegration.configuration.Preferences
-import org.openvoipalliance.androidplatformintegration.logging.LogLevel
-import org.openvoipalliance.androidplatformintegration.startAndroidPIL
-import org.openvoipalliance.flutterintegration.audio.toMap
-import org.openvoipalliance.flutterintegration.call.toMap
-import org.openvoipalliance.flutterintegration.configuration.authOf
-import org.openvoipalliance.flutterintegration.configuration.preferencesOf
-import org.openvoipalliance.flutterintegration.events.ProxyEventListener
-import org.openvoipalliance.flutterintegration.push.ProxyMiddleware
+import org.openvoipalliance.androidphoneintegration.PIL
+import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
+import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup
+import org.openvoipalliance.androidphoneintegration.configuration.Auth
+import org.openvoipalliance.androidphoneintegration.configuration.Preferences
+import org.openvoipalliance.androidphoneintegration.logging.LogLevel
+import org.openvoipalliance.androidphoneintegration.startAndroidPIL
 
-class FIL : FlutterPlugin, MethodCallHandler {
+import org.openvoipalliance.flutterphonelib.audio.toMap
+import org.openvoipalliance.flutterphonelib.call.toMap
+import org.openvoipalliance.flutterphonelib.configuration.authOf
+import org.openvoipalliance.flutterphonelib.configuration.preferencesOf
+import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
+import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
+
+class PhoneLib : FlutterPlugin, MethodCallHandler {
     internal lateinit var channel: MethodChannel
 
     private lateinit var pil: PIL
@@ -48,7 +47,7 @@ class FIL : FlutterPlugin, MethodCallHandler {
     private val eventListener = ProxyEventListener(this)
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "voip_flutter_integration")
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_phone_lib")
         channel.setMethodCallHandler(this)
 
         instance = this
@@ -59,28 +58,28 @@ class FIL : FlutterPlugin, MethodCallHandler {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
         val hasType = call.method.contains('.')
         val type = if (hasType) call.method.split('.')[0] else null
         val method = if (hasType) call.method.split('.')[1] else call.method
 
         fun assertPILInitialized() {
             if (BuildConfig.DEBUG && !::pil.isInitialized) {
-                error("FIL not initialized. Create an instance using startFIL.")
+                error("PhoneLib not initialized. Create an instance using startPhoneLib.")
             }
         }
 
         when {
-            !hasType && method == "startFIL" -> {
+            !hasType && method == "startPhoneLib" -> {
                 val arguments = call.arguments<List<*>>()
                 val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                 val auth = authOf(arguments[1]!! as Map<String, Any>)
                 val hasMiddleware = arguments[2]!! as Boolean
                 val userAgent = arguments[3]!! as String
 
-                startFIL(preferences, auth, hasMiddleware, userAgent, result)
+                startPhoneLib(preferences, auth, hasMiddleware, userAgent, result)
             }
-            type == "FIL" -> {
+            type == "PhoneLib" -> {
                 assertPILInitialized()
 
                 when (method) {
@@ -186,15 +185,13 @@ class FIL : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun startFIL(
+    private fun startPhoneLib(
             preferences: Preferences,
             auth: Auth,
             hasMiddleware: Boolean,
             userAgent: String,
-            result: Result
+            result: MethodChannel.Result
     ) {
-        Log.i(tag, "startFIL called")
-
         pil = startAndroidPIL {
             this.preferences = preferences
             this.auth = auth
@@ -203,7 +200,7 @@ class FIL : FlutterPlugin, MethodCallHandler {
                     application = application,
                     activities = ApplicationSetup.Activities(activityClass, activityClass),
                     automaticallyStartCallActivity = false,
-                    middleware = if (hasMiddleware) ProxyMiddleware(this@FIL) else null,
+                    middleware = if (hasMiddleware) ProxyMiddleware(this@PhoneLib) else null,
                     logger = ::onLogReceived,
                     userAgent = userAgent
             )
@@ -220,7 +217,7 @@ class FIL : FlutterPlugin, MethodCallHandler {
     }
 
     companion object {
-        lateinit var instance: FIL
+        lateinit var instance: PhoneLib
             private set
 
         private const val tag = "FIL"

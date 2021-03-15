@@ -11,7 +11,7 @@ buildscript {
     }
 }
 
-group 'nl.vialer.voip.flutter'
+group 'org.openvoipalliance.flutterphonelib'
 version '1.0-SNAPSHOT'
 
 rootProject.allprojects {
@@ -47,10 +47,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "com.google.firebase:firebase-messaging:21.0.1"
 
-    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.19'
+    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.21'
 
-    // Uncomment this while working on the FIL, but comment it again when building the app.
+    // Uncomment this while working on the PhoneLib, but comment it again when building the app.
     // This is necessary purely so IntelliJ can resolve the symbols on the Kotlin side.
     // See the issue here: https://github.com/flutter/flutter/issues/19830
-    //debugImplementation "io.flutter:flutter_embedding_debug:1.0.0-ee76268252c22f5c11e82a7b87423ca3982e51a7"
+    debugImplementation "io.flutter:flutter_embedding_debug:1.0.0-ee76268252c22f5c11e82a7b87423ca3982e51a7"
 }
