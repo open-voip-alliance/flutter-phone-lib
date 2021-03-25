@@ -18,9 +18,8 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
-        maven {
-            url 'http://download.flutter.io'
-        }
+        maven { url 'https://jitpack.io' }
+        maven { url 'http://download.flutter.io' }
     }
 }
 
@@ -47,7 +46,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "com.google.firebase:firebase-messaging:21.0.1"
 
-    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.21'
+    implementation 'org.openvoipalliance:AndroidPlatformIntegration:0.0.30'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     // Uncomment this while working on the PhoneLib, but comment it again when building the app.
     // This is necessary purely so IntelliJ can resolve the symbols on the Kotlin side.

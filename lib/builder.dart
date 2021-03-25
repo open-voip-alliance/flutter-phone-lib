@@ -1,8 +1,9 @@
+import 'callback_dispatcher.dart';
 import 'configuration/application_setup.dart';
-
 import 'configuration/auth.dart';
 import 'configuration/preferences.dart';
 import 'phone_lib.dart';
+import 'util/callback.dart';
 
 class Builder {
   Preferences preferences;
@@ -20,10 +21,14 @@ Future<PhoneLib> startPhoneLib(
     [
       builder.preferences.toJson(),
       builder.auth.toJson(),
-      applicationSetup.middleware != null, // hasMiddleware
+      callbackDispatcher.toCallbackHandle(),
+      applicationSetup.initialize?.toCallbackHandle(),
+      applicationSetup.logger?.toCallbackHandle(),
+      applicationSetup.middleware?.respond?.toCallbackHandle(),
+      applicationSetup?.middleware?.tokenReceived?.toCallbackHandle(),
       applicationSetup.userAgent,
     ],
   );
 
-  return PhoneLib(applicationSetup);
+  return PhoneLib();
 }
