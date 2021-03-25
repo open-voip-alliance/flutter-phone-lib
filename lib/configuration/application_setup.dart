@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../logging/logging.dart';
+import '../logging/log_level.dart';
 import '../push/middleware.dart';
 import '../util/equatable.dart';
 
@@ -15,24 +15,40 @@ import '../util/equatable.dart';
 /// }
 /// ```
 class ApplicationSetup extends Equatable {
+  /// Guaranteed to be called before any background callbacks
+  /// (middleware and logging) are called. Used to initialize dependencies o
+  /// other resources necessary to run these callbacks.
+  ///
+  /// Must be a static or top level function.
+  final Future<void> Function() initialize;
+
   /// Provide a middleware if it is required to receive incoming calls
   /// in your infrastructure.
   final Middleware middleware;
 
   /// Receive logs from the PhoneLib.
-  @JsonKey(ignore: true)
-  final Logger logger;
+  ///
+  /// Must be a static or top level function.
+  final void Function(LogLevel, String) logger;
 
   /// The user-agent that will be used when making SIP calls.
   final String userAgent;
 
   const ApplicationSetup({
+    this.initialize,
     this.middleware,
     this.logger,
     this.userAgent = 'Flutter Phone Lib',
-  });
+  }) : assert(
+          (middleware == null && logger == null) || initialize != null,
+        );
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [middleware, logger, userAgent];
+  List<Object> get props => [
+        middleware,
+        initialize,
+        logger,
+        userAgent,
+      ];
 }

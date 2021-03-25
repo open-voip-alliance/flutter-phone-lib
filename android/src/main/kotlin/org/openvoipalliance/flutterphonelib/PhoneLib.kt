@@ -2,16 +2,23 @@ package org.openvoipalliance.flutterphonelib
 
 import android.app.Activity
 import android.app.Application
-import android.os.Handler
-import android.os.Looper
+import android.content.Context
+import android.util.Log
 import androidx.annotation.NonNull
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
+import com.google.gson.Gson
+import io.flutter.BuildConfig
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-
-import org.koin.android.BuildConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.openvoipalliance.androidphoneintegration.CallScreenLifecycleObserver
 
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
@@ -19,7 +26,10 @@ import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSet
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel
+import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
+import org.openvoipalliance.androidphoneintegration.logging.Logger
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
+import org.openvoipalliance.flutterphonelib.PhoneLib.Companion
 
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
@@ -27,30 +37,23 @@ import org.openvoipalliance.flutterphonelib.configuration.authOf
 import org.openvoipalliance.flutterphonelib.configuration.preferencesOf
 import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
     internal lateinit var channel: MethodChannel
 
-    private lateinit var pil: PIL
-
-    /**
-     * Must be set to use this plugin.
-     */
-    lateinit var application: Application
-
-    /**
-     * The activity to show when the incoming call notification is pressed. Almost always the
-     * `MainActivity`. Must be set to use this plugin.
-     */
-    lateinit var activityClass: Class<out Activity>
+    private lateinit var context: Context
 
     private val eventListener = ProxyEventListener(this)
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_phone_lib")
+        channel = MethodChannel(
+                flutterPluginBinding.binaryMessenger,
+                "org.openvoipalliance.flutterphonelib/foreground"
+        )
         channel.setMethodCallHandler(this)
 
-        instance = this
+        context = flutterPluginBinding.applicationContext
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -64,7 +67,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         val method = if (hasType) call.method.split('.')[1] else call.method
 
         fun assertPILInitialized() {
-            if (BuildConfig.DEBUG && !::pil.isInitialized) {
+            if (BuildConfig.DEBUG && !isPILInitialized) {
                 error("PhoneLib not initialized. Create an instance using startPhoneLib.")
             }
         }
@@ -74,10 +77,34 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 val arguments = call.arguments<List<*>>()
                 val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                 val auth = authOf(arguments[1]!! as Map<String, Any>)
-                val hasMiddleware = arguments[2]!! as Boolean
-                val userAgent = arguments[3]!! as String
+                val callbackDispatcherHandle = arguments[2].asLong()
+                val initializeResourcesHandle = arguments[3].asLong()
+                val loggerHandle = arguments[4].asLong()
+                val middlewareRespondHandle = arguments[5].asLong()
+                val middlewareTokenReceivedHandle = arguments[6].asLong()
+                val userAgent = arguments[7]!! as String
 
-                startPhoneLib(preferences, auth, hasMiddleware, userAgent, result)
+                context.sharedPreferences.edit()
+                        .putString(Keys.PREFERENCES, Gson().toJson(preferences))
+                        .putString(Keys.AUTH, Gson().toJson(auth))
+                        .putString(Keys.USER_AGENT, userAgent)
+                        .apply()
+
+                context.registerFlutterCallback(Keys.CALLBACK_DISPATCHER, callbackDispatcherHandle)
+                context.registerFlutterCallback(
+                        Keys.INITIALIZE,
+                        initializeResourcesHandle
+                )
+                context.registerFlutterCallback(Keys.LOGGER, loggerHandle)
+                context.registerFlutterCallback(Keys.MIDDLEWARE_RESPOND, middlewareRespondHandle)
+                context.registerFlutterCallback(
+                        Keys.MIDDLEWARE_TOKEN_RECEIVED,
+                        middlewareTokenReceivedHandle
+                )
+
+                app!!.startPhoneLib(activityClass!!)
+
+                result.success(null)
             }
             type == "PhoneLib" -> {
                 assertPILInitialized()
@@ -185,41 +212,139 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun startPhoneLib(
-            preferences: Preferences,
-            auth: Auth,
-            hasMiddleware: Boolean,
-            userAgent: String,
-            result: MethodChannel.Result
-    ) {
-        pil = startAndroidPIL {
-            this.preferences = preferences
-            this.auth = auth
-
-            ApplicationSetup(
-                    application = application,
-                    activities = ApplicationSetup.Activities(activityClass, activityClass),
-                    automaticallyStartCallActivity = false,
-                    middleware = if (hasMiddleware) ProxyMiddleware(this@PhoneLib) else null,
-                    logger = ::onLogReceived,
-                    userAgent = userAgent
-            )
+    private fun Any?.asLong(): Long {
+        if (this is Int) {
+            return toLong()
         }
 
-        result.success(null)
-    }
-
-    private fun onLogReceived(message: String, level: LogLevel) {
-        Handler(Looper.getMainLooper()) {
-            channel.invokeMethod("onLogReceived", listOf(message, level.toString()))
-            true
-        }
+        return this as Long
     }
 
     companion object {
-        lateinit var instance: PhoneLib
-            private set
+        internal var app: Application? = null
+        internal var activityClass: Class<out Activity>? = null
 
-        private const val tag = "FIL"
+        // Can't access isInitialized outside of the companion object, so we have to define this
+        // getter.
+        internal val isPILInitialized: Boolean
+            get() = ::pil.isInitialized
+
+        internal lateinit var pil: PIL
+
+        internal const val LOG_TAG = "FlutterPhoneLib"
+    }
+
+    internal object Keys {
+        const val SHARED_PREFERENCES = "FlutterPhoneLib"
+        const val AUTH = "auth"
+        const val PREFERENCES = "preferences"
+        const val CALLBACK_DISPATCHER = "callbackDispatcher"
+        const val INITIALIZE = "initialize"
+        const val LOGGER = "onLogReceived"
+        const val MIDDLEWARE_RESPOND = "Middleware.respond"
+        const val MIDDLEWARE_TOKEN_RECEIVED = "Middleware.tokenReceived"
+        const val USER_AGENT = "userAgent"
     }
 }
+
+fun Application.startPhoneLib(
+        /**
+         * The activity to show when the incoming call notification is pressed. Almost always the
+         * `MainActivity`.
+         */
+        activityClass: Class<out Activity>
+) {
+    if (PhoneLib.isPILInitialized) {
+        Log.d(PhoneLib.LOG_TAG, "FlutterPhoneLib is already initialized")
+        return
+    }
+
+    if (PhoneLib.app == null) {
+        PhoneLib.app = this
+    }
+
+    if (PhoneLib.activityClass == null) {
+        PhoneLib.activityClass = activityClass
+    }
+
+    val prefs = sharedPreferences
+    val preferences = Gson().fromJson(
+            prefs.getString(PhoneLib.Keys.PREFERENCES, null),
+            Preferences::class.java
+    )
+    val auth = Gson().fromJson(
+            prefs.getString(PhoneLib.Keys.AUTH, null),
+            Auth::class.java
+    )
+
+    val userAgent = prefs.getString(PhoneLib.Keys.USER_AGENT, null)
+
+    if (preferences == null || auth == null || userAgent == null) {
+        Log.d(PhoneLib.LOG_TAG, "Not starting yet, arguments are uninitialized")
+        return
+    }
+
+    Log.d(PhoneLib.LOG_TAG, "Starting..")
+
+    PhoneLib.pil = startAndroidPIL {
+        this.preferences = preferences
+        this.auth = auth
+
+        ApplicationSetup(
+                application = this@startPhoneLib,
+                activities = ApplicationSetup.Activities(
+                        activityClass,
+                        activityClass,
+                ),
+                automaticallyStartCallActivity = false,
+                middleware = ProxyMiddleware(this@startPhoneLib),
+                logger = GroupedLogger(this@startPhoneLib),
+                userAgent = userAgent
+        )
+    }
+
+    Log.d(PhoneLib.LOG_TAG, "Started!")
+}
+
+fun <A> A.addPhoneLibCallScreenObserver() where A : Activity, A : LifecycleOwner {
+    if (!PhoneLib.isPILInitialized) {
+        Log.d(PhoneLib.LOG_TAG, "FlutterPhoneLib is not initialized, not adding observer")
+        return
+    }
+
+    lifecycle.addObserver(CallScreenLifecycleObserver(this))
+}
+
+// Logs are sent out in groups to prevent overworking the thread, which had the result of
+// making calls not work.
+private class GroupedLogger(private val context: Context) : Logger {
+    private val logs = ConcurrentLinkedQueue<Pair<LogLevel, String>>()
+
+    override fun onLogReceived(message: String, level: LogLevel) {
+        logs.add(level to message)
+        Log.println(
+                when (level) {
+                    DEBUG -> Log.DEBUG
+                    INFO -> Log.INFO
+                    WARNING -> Log.WARN
+                    ERROR -> Log.ERROR
+                },
+                PhoneLib.LOG_TAG,
+                message
+        )
+
+        if (logs.size == 200) {
+            GlobalScope.launch(Dispatchers.Main) {
+                context.invokeMethodThroughCallback(
+                        PhoneLib.Keys.LOGGER,
+                        logs.map { listOf(it.first.toString(), it.second) }
+                )
+            }
+            logs.clear()
+        }
+    }
+
+}
+
+internal val Context.sharedPreferences
+    get() = getSharedPreferences(PhoneLib.Keys.SHARED_PREFERENCES, Context.MODE_PRIVATE)
