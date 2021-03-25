@@ -10,14 +10,13 @@ import 'events/event.dart';
 import 'logging/log_level.dart';
 import 'push/remote_message.dart';
 
-class Fil {
+class PhoneLib {
   /// For internal use only.
-  static const MethodChannel channel =
-      MethodChannel('voip_flutter_integration');
+  static const MethodChannel channel = MethodChannel('flutter_phone_lib');
 
-  static Fil _instance;
+  static PhoneLib _instance;
 
-  static Fil get instance => _instance;
+  static PhoneLib get instance => _instance;
 
   final ApplicationSetup _app;
 
@@ -39,11 +38,11 @@ class Fil {
   // is expected, this is a Stream on the Dart side.
   Stream<Event> get events => _eventsController.stream;
 
-  Fil(this._app) {
+  PhoneLib(this._app) {
     if (instance == null) {
       _instance = this;
     } else {
-      throw StateError('Only one instance of the Fil is supported.');
+      throw StateError('Only one instance of the PhoneLib is supported.');
     }
 
     channel.setMethodCallHandler(_onMethodCall);
@@ -91,7 +90,8 @@ class Fil {
     }
   }
 
-  Future<void> call(String number) => channel.invokeMethod('FIL.call', number);
+  Future<void> call(String number) =>
+      channel.invokeMethod('PhoneLib.call', number);
 
   void _onLogReceived(String message, LogLevel level) =>
       _app.logger?.call(message, level);

@@ -1,6 +1,6 @@
-package org.openvoipalliance.flutterintegration.audio
+package org.openvoipalliance.flutterphonelib.audio
 
-import org.openvoipalliance.androidplatformintegration.audio.AudioState
+import org.openvoipalliance.androidphoneintegration.audio.AudioState
 
 fun AudioState.toMap() = mapOf(
         "currentRoute" to currentRoute.name,

@@ -1,14 +1,14 @@
 export 'audio/codec.dart';
 export 'builder.dart';
+export 'call/call.dart';
 export 'call/call_direction.dart';
 export 'call/call_state.dart';
-export 'call/fil_call.dart';
 export 'configuration/application_setup.dart';
 export 'configuration/auth.dart';
 export 'configuration/preferences.dart';
 export 'events/event.dart';
-export 'fil.dart';
 export 'logging/log_level.dart';
 export 'logging/logging.dart';
+export 'phone_lib.dart';
 export 'push/middleware.dart';
 export 'push/remote_message.dart';

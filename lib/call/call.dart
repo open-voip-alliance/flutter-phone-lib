@@ -6,10 +6,10 @@ import '../util/equatable.dart';
 import 'call_direction.dart';
 import 'call_state.dart';
 
-part 'fil_call.g.dart';
+part 'call.g.dart';
 
 @JsonSerializable(createFactory: true)
-class FilCall extends Equatable {
+class Call extends Equatable {
   final String remoteNumber;
   final String displayName;
 
@@ -27,7 +27,7 @@ class FilCall extends Equatable {
   final String remotePartySubheading;
   final String prettyDuration;
 
-  const FilCall({
+  const Call({
     @required this.remoteNumber,
     @required this.displayName,
     @required this.state,
@@ -59,8 +59,8 @@ class FilCall extends Equatable {
         prettyDuration,
       ];
 
-  static FilCall fromJson(Map<String, dynamic> json) =>
-      json != null ? _$FilCallFromJson(json) : null;
+  static Call fromJson(Map<String, dynamic> json) =>
+      json != null ? _$CallFromJson(json) : null;
 
-  Map<String, dynamic> toJson() => _$FilCallToJson(this);
+  Map<String, dynamic> toJson() => _$CallToJson(this);
 }

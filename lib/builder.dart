@@ -2,21 +2,21 @@ import 'configuration/application_setup.dart';
 
 import 'configuration/auth.dart';
 import 'configuration/preferences.dart';
-import 'fil.dart';
+import 'phone_lib.dart';
 
 class Builder {
   Preferences preferences;
   Auth auth;
 }
 
-Future<Fil> startFil(
+Future<PhoneLib> startPhoneLib(
   ApplicationSetup Function(Builder builder) build,
 ) async {
   final builder = Builder();
   final applicationSetup = build(builder);
 
-  await Fil.channel.invokeMethod(
-    'startFIL',
+  await PhoneLib.channel.invokeMethod(
+    'startPhoneLib',
     [
       builder.preferences.toJson(),
       builder.auth.toJson(),
@@ -25,5 +25,5 @@ Future<Fil> startFil(
     ],
   );
 
-  return Fil(applicationSetup);
+  return PhoneLib(applicationSetup);
 }

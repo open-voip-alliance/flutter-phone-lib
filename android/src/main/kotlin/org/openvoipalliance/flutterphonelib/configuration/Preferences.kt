@@ -1,7 +1,7 @@
-package org.openvoipalliance.flutterintegration.configuration
+package org.openvoipalliance.flutterphonelib.configuration
 
-import org.openvoipalliance.androidplatformintegration.configuration.Preferences
-import org.openvoipalliance.phonelib.model.Codec
+import org.openvoipalliance.androidphoneintegration.configuration.Preferences
+import org.openvoipalliance.voiplib.model.Codec
 
 fun preferencesOf(map: Map<String, Any?>) = object {
     val codecs: List<*> by map

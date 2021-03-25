@@ -1,4 +1,4 @@
-package org.openvoipalliance.flutterintegration.push
+package org.openvoipalliance.flutterphonelib.push
 
 import com.google.firebase.messaging.RemoteMessage
 

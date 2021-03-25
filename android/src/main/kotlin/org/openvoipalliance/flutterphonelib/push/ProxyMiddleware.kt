@@ -1,21 +1,20 @@
-package org.openvoipalliance.flutterintegration.push
+package org.openvoipalliance.flutterphonelib.push
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.google.firebase.messaging.RemoteMessage
-import org.openvoipalliance.androidplatformintegration.push.Middleware
-import org.openvoipalliance.flutterintegration.FIL
+import org.openvoipalliance.androidphoneintegration.push.Middleware
+import org.openvoipalliance.flutterphonelib.PhoneLib
 
 /**
  * Middleware for passing through to the Dart side.
  */
-internal class ProxyMiddleware(private val fil: FIL) : Middleware {
+internal class ProxyMiddleware(private val phoneLib: PhoneLib) : Middleware {
     private val handler = Handler(Looper.getMainLooper());
 
     override fun respond(remoteMessage: RemoteMessage, available: Boolean) {
         handler.post {
-            fil.channel.invokeMethod(
+            phoneLib.channel.invokeMethod(
                     "Middleware.respond",
                     listOf(remoteMessage.toMap(), available)
             )
@@ -24,7 +23,7 @@ internal class ProxyMiddleware(private val fil: FIL) : Middleware {
 
     override fun tokenReceived(token: String) {
         handler.post {
-            fil.channel.invokeMethod("Middleware.tokenReceived", token)
+            phoneLib.channel.invokeMethod("Middleware.tokenReceived", token)
         }
     }
 

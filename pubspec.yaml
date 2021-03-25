@@ -1,4 +1,4 @@
-name: voip_flutter_integration
+name: flutter_phone_lib
 description: Use VoIP in Flutter.
 version: 0.0.1
 
@@ -34,8 +34,8 @@ flutter:
   plugin:
     platforms:
       android:
-        package: org.openvoipalliance.flutterintegration
-        pluginClass: FIL
+        package: org.openvoipalliance.flutterphonelib
+        pluginClass: PhoneLib
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
