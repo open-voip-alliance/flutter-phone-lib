@@ -5,7 +5,6 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import com.google.gson.Gson
 import io.flutter.BuildConfig
@@ -17,19 +16,18 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.openvoipalliance.androidphoneintegration.CallScreenLifecycleObserver
 
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup
+import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup.AutomaticallyLaunchCallActivity.*
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
 import org.openvoipalliance.androidphoneintegration.logging.Logger
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
-import org.openvoipalliance.flutterphonelib.PhoneLib.Companion
 
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
@@ -296,7 +294,7 @@ fun Application.startPhoneLib(
                         activityClass,
                         activityClass,
                 ),
-                automaticallyStartCallActivity = false,
+                automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
                 middleware = ProxyMiddleware(this@startPhoneLib),
                 logger = GroupedLogger(this@startPhoneLib),
                 userAgent = userAgent
