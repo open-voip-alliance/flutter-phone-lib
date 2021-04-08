@@ -296,7 +296,7 @@ fun Application.startPhoneLib(
                 ),
                 automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
                 middleware = ProxyMiddleware(this@startPhoneLib),
-                logger = GroupedLogger(this@startPhoneLib),
+                logger = AggregatedLogger(this@startPhoneLib),
                 userAgent = userAgent
         )
     }
@@ -315,7 +315,7 @@ fun <A> A.addPhoneLibCallScreenObserver() where A : Activity, A : LifecycleOwner
 
 // Logs are sent out in groups to prevent overworking the thread, which had the result of
 // making calls not work.
-private class GroupedLogger(private val context: Context) : Logger {
+private class AggregatedLogger(private val context: Context) : Logger {
     private val logs = ConcurrentLinkedQueue<Pair<LogLevel, String>>()
 
     override fun onLogReceived(message: String, level: LogLevel) {
