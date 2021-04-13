@@ -16,7 +16,7 @@ import '../util/equatable.dart';
 /// ```
 class ApplicationSetup extends Equatable {
   /// Guaranteed to be called before any background callbacks
-  /// (middleware and logging) are called. Used to initialize dependencies o
+  /// (middleware and logging) are called. Used to initialize dependencies of
   /// other resources necessary to run these callbacks.
   ///
   /// Must be a static or top level function.
@@ -40,7 +40,8 @@ class ApplicationSetup extends Equatable {
     this.logger,
     this.userAgent = 'Flutter Phone Lib',
   }) : assert(
-          (middleware == null && logger == null) || initialize != null,
+          userAgent.length > 0 &&
+              ((middleware == null && logger == null) || initialize != null),
         );
 
   @override
