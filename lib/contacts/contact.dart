@@ -14,9 +14,18 @@ class Contact extends Equatable {
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [];
+  List<Object> get props => [name, imageUri];
 
-  static Contact fromJson(Map<String, dynamic> json) => _$ContactFromJson(json);
+  static Contact fromJson(Map<String, dynamic> json) {
+    // Invalid image URIs are set to null.
+    final jsonImageUri = json['imageUri'];
+    if (jsonImageUri != null &&
+        (jsonImageUri is! String || (jsonImageUri as String).isEmpty)) {
+      json['imageUri'] = null;
+    }
+
+    return _$ContactFromJson(json);
+  }
 
   Map<String, dynamic> toJson() => _$ContactToJson(this);
 }
