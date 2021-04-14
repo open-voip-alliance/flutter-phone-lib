@@ -9,9 +9,8 @@ import 'events/event.dart';
 
 class PhoneLib {
   /// For internal use only.
-  static const MethodChannel channel = MethodChannel(
-      'org.openvoipalliance.flutterphonelib/foreground'
-  );
+  static const MethodChannel channel =
+      MethodChannel('org.openvoipalliance.flutterphonelib/foreground');
 
   /// For internal use only.
   static const MethodChannel backgroundChannel =

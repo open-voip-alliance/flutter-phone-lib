@@ -146,33 +146,18 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 assertPILInitialized()
 
                 when (method) {
-                    "hold" -> {
-                        pil.actions.hold()
-                    }
-                    "unhold" -> {
-                        pil.actions.unhold()
-                    }
-                    "toggleHold" -> {
-                        pil.actions.toggleHold()
-                    }
-                    "sendDtmf" -> {
-                        pil.actions.sendDtmf(call.arguments())
-                    }
-                    "beginAttendedTransfer" -> {
-                        pil.actions.beginAttendedTransfer(call.arguments())
-                    }
-                    "completeAttendedTransfer" -> {
-                        pil.actions.completeAttendedTransfer()
-                    }
-                    "answer" -> {
-                        pil.actions.answer()
-                    }
-                    "decline" -> {
-                        pil.actions.decline()
-                    }
-                    "end" -> {
-                        pil.actions.end()
-                    }
+                    "hold" -> pil.actions.hold()
+                    "unhold" -> pil.actions.unhold()
+                    "toggleHold" -> pil.actions.toggleHold()
+                    "sendDtmf" -> pil.actions.sendDtmf(
+                            call.arguments<String>().toCharArray().first(),
+                            playToneLocally = true
+                    )
+                    "beginAttendedTransfer" -> pil.actions.beginAttendedTransfer(call.arguments())
+                    "completeAttendedTransfer" -> pil.actions.completeAttendedTransfer()
+                    "answer" -> pil.actions.answer()
+                    "decline" -> pil.actions.decline()
+                    "end" -> pil.actions.end()
                 }
 
                 result.success(null)
