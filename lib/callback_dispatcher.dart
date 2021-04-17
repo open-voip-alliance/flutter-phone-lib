@@ -59,8 +59,8 @@ void callbackDispatcher() async {
   });
   print(
     'FlutterPhoneLib: '
-        'Notifying that the callback dispatcher is ready'
-        'to receive method calls',
+    'Notifying that the callback dispatcher is ready'
+    'to receive method calls',
   );
   PhoneLib.backgroundChannel.invokeMethod('callbackDispatcherIsInitialized');
   await stayAliveCompleter.future;
