@@ -44,7 +44,7 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api "com.google.firebase:firebase-messaging:21.1.0"
+    api "com.google.firebase:firebase-messaging:21.0.1"
 
     implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.12'
     implementation 'com.google.code.gson:gson:2.8.6'
