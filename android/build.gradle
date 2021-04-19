@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.20'
+    ext.kotlin_version = '1.4.32'
     repositories {
         google()
         jcenter()
@@ -44,9 +44,9 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api "com.google.firebase:firebase-messaging:21.0.1"
+    api "com.google.firebase:firebase-messaging:21.1.0"
 
-    implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.11'
+    implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.12'
     implementation 'com.google.code.gson:gson:2.8.6'
 
     // Uncomment this while working on the PhoneLib, but comment it again when building the app.

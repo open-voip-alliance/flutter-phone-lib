@@ -3,9 +3,10 @@ package org.openvoipalliance.flutterphonelib
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import android.view.WindowManager
 import androidx.annotation.NonNull
-import androidx.lifecycle.LifecycleOwner
 import com.google.gson.Gson
 import io.flutter.BuildConfig
 
@@ -16,7 +17,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.openvoipalliance.androidphoneintegration.CallScreenLifecycleObserver
 
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
@@ -289,13 +289,22 @@ fun Application.startPhoneLib(
     Log.d(PhoneLib.LOG_TAG, "Started!")
 }
 
-fun <A> A.addPhoneLibCallScreenObserver() where A : Activity, A : LifecycleOwner {
-    if (!PhoneLib.isPILInitialized) {
-        Log.d(PhoneLib.LOG_TAG, "FlutterPhoneLib is not initialized, not adding observer")
-        return
+/**
+ * Configure the FlutterActivity to show when on the lockscreen,
+ * this should be called at the end of the configureFlutterEngine
+ * method when extending FlutterActivity.
+ */
+fun <A : Activity> A.showOnLockScreen() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
+    } else {
+        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
     }
-
-    lifecycle.addObserver(CallScreenLifecycleObserver(this))
 }
 
 // Logs are sent out in groups to prevent overworking the thread, which had the result of
