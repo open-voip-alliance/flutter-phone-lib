@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 
 import '../contacts/contact.dart';
 import '../util/equatable.dart';
@@ -22,29 +21,29 @@ class Call extends Equatable {
   final bool isOnHold;
   final String uuid;
   final double mos;
-  final Contact contact;
+  final Contact? contact;
   final String remotePartyHeading;
   final String remotePartySubheading;
   final String prettyDuration;
 
   const Call({
-    @required this.remoteNumber,
-    @required this.displayName,
-    @required this.state,
-    @required this.direction,
-    @required this.duration,
-    @required this.isOnHold,
-    @required this.uuid,
-    @required this.mos,
-    @required this.contact,
-    @required this.remotePartyHeading,
-    @required this.remotePartySubheading,
-    @required this.prettyDuration,
+    required this.remoteNumber,
+    required this.displayName,
+    required this.state,
+    required this.direction,
+    required this.duration,
+    required this.isOnHold,
+    required this.uuid,
+    required this.mos,
+    this.contact,
+    required this.remotePartyHeading,
+    required this.remotePartySubheading,
+    required this.prettyDuration,
   });
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [
+  List<Object?> get props => [
         remoteNumber,
         displayName,
         state,
@@ -59,8 +58,7 @@ class Call extends Equatable {
         prettyDuration,
       ];
 
-  static Call fromJson(Map<String, dynamic> json) =>
-      json != null ? _$CallFromJson(json) : null;
+  static Call fromJson(Map<String, dynamic> json) => _$CallFromJson(json);
 
   Map<String, dynamic> toJson() => _$CallToJson(this);
 }

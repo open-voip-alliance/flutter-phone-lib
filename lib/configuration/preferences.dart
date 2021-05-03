@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 
 import '../audio/codec.dart';
 import '../util/equatable.dart';
@@ -12,8 +11,8 @@ class Preferences extends Equatable {
   final bool useApplicationProvidedRingtone;
 
   const Preferences({
-    @required this.codecs,
-    @required this.useApplicationProvidedRingtone,
+    required this.codecs,
+    required this.useApplicationProvidedRingtone,
   });
 
   /// Equivalent to `Preferences.DEFAULT` in the PIL.
@@ -24,7 +23,7 @@ class Preferences extends Equatable {
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [codecs, useApplicationProvidedRingtone];
+  List<Object?> get props => [codecs, useApplicationProvidedRingtone];
 
   Map<String, dynamic> toJson() => _$PreferencesToJson(this);
 }

@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 import '../util/equatable.dart';
 import 'audio_route.dart';
 
@@ -12,24 +11,24 @@ class AudioState extends Equatable {
 
   @JsonKey(fromJson: _audioRoutesFromJson)
   final Iterable<AudioRoute> availableRoutes;
-  final String bluetoothDeviceName;
+  final String? bluetoothDeviceName;
 
   const AudioState({
-    @required this.currentRoute,
-    @required this.availableRoutes,
+    required this.currentRoute,
+    required this.availableRoutes,
     this.bluetoothDeviceName,
   });
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [
+  List<Object?> get props => [
         currentRoute,
         availableRoutes,
         bluetoothDeviceName,
       ];
 
   static AudioState fromJson(Map<String, dynamic> json) =>
-      json != null ? _$AudioStateFromJson(json) : null;
+      _$AudioStateFromJson(json);
 }
 
 List<AudioRoute> _audioRoutesFromJson(List<dynamic> values) => values

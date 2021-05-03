@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
-
 import 'remote_message.dart';
 
 class Middleware {
   const Middleware({
-    @required this.respond,
-    @required this.tokenReceived,
+    required this.respond,
+    required this.tokenReceived,
   });
 
   /// Must be a static or top level function.
