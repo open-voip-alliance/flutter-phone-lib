@@ -7,7 +7,7 @@ abstract class Equatable extends equatable.Equatable {
 
   @override
   @JsonKey(ignore: true)
-  bool get stringify => super.stringify;
+  bool? get stringify => super.stringify;
 
   @override
   @JsonKey(ignore: true)

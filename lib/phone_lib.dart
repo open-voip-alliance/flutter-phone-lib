@@ -16,9 +16,9 @@ class PhoneLib {
   static const MethodChannel backgroundChannel =
       MethodChannel('org.openvoipalliance.flutterphonelib/background');
 
-  static PhoneLib _instance;
+  static PhoneLib? _instance;
 
-  static PhoneLib get instance => _instance;
+  static PhoneLib get instance => _instance!;
 
   final CallActions actions = CallActions();
 
@@ -31,7 +31,7 @@ class PhoneLib {
   // here.
   bool _addedListenerToPil = false;
 
-  StreamController<Event> _eventsController;
+  late StreamController<Event> _eventsController;
 
   // This is a type of `EventManager` in the PIL. Since it's nicer to
   // use Streams in Dart, and no future functionality in that class
@@ -39,7 +39,7 @@ class PhoneLib {
   Stream<Event> get events => _eventsController.stream;
 
   PhoneLib() {
-    if (instance == null) {
+    if (_instance == null) {
       _instance = this;
     } else {
       throw StateError('Only one instance of the PhoneLib is supported.');
@@ -79,7 +79,7 @@ class PhoneLib {
 }
 
 extension _CastRecursive on Map {
-  Map<String, dynamic> castRecursively([List<Map> cache]) {
+  Map<String, dynamic> castRecursively([List<Map>? cache]) {
     // The cache is used to keep track of references to maps that have
     // already been cast. This is to prevent stack overflows.
     cache ??= [];

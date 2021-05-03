@@ -6,8 +6,9 @@ import 'codec.dart';
 class AudioManager {
   Future<Iterable<Codec>> get availableCodecs => throw UnimplementedError();
 
-  Future<bool> get isMicrophoneMuted =>
-      PhoneLib.channel.invokeMethod('AudioManager.isMicrophoneMuted');
+  Future<bool> get isMicrophoneMuted async =>
+      await PhoneLib.channel.invokeMethod('AudioManager.isMicrophoneMuted')
+          as bool;
 
   Future<AudioState> get state async => AudioState.fromJson(
         await PhoneLib.channel

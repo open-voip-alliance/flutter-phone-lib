@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 import '../util/equatable.dart';
 
 part 'auth.g.dart';
@@ -13,16 +12,16 @@ class Auth extends Equatable {
   final bool secure;
 
   const Auth({
-    @required this.username,
-    @required this.password,
-    @required this.domain,
-    @required this.port,
-    @required this.secure,
+    required this.username,
+    required this.password,
+    required this.domain,
+    required this.port,
+    required this.secure,
   });
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [username, password, domain, port, secure];
+  List<Object?> get props => [username, password, domain, port, secure];
 
   Map<String, dynamic> toJson() => _$AuthToJson(this);
 }

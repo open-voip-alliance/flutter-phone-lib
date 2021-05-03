@@ -20,16 +20,16 @@ class ApplicationSetup extends Equatable {
   /// other resources necessary to run these callbacks.
   ///
   /// Must be a static or top level function.
-  final Future<void> Function() initialize;
+  final Future<void> Function()? initialize;
 
   /// Provide a middleware if it is required to receive incoming calls
   /// in your infrastructure.
-  final Middleware middleware;
+  final Middleware? middleware;
 
   /// Receive logs from the PhoneLib.
   ///
   /// Must be a static or top level function.
-  final void Function(LogLevel, String) logger;
+  final void Function(LogLevel, String)? logger;
 
   /// The user-agent that will be used when making SIP calls.
   final String userAgent;
@@ -46,7 +46,7 @@ class ApplicationSetup extends Equatable {
 
   @override
   @JsonKey(ignore: true)
-  List<Object> get props => [
+  List<Object?> get props => [
         middleware,
         initialize,
         logger,

@@ -32,34 +32,34 @@ class Event extends Equatable {
   // @JsonKey(ignore: true) is not needed because we don't serialize
   // this class, only deserialize.
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class CallEvent extends Event {
-  final Call call;
+  final Call? call;
 
   const CallEvent._(this.call) : super._();
 
   @override
-  List<Object> get props => [...super.props, call];
+  List<Object?> get props => [...super.props, call];
 }
 
 class OutgoingCallStarted extends CallEvent {
-  const OutgoingCallStarted._(Call call) : super._(call);
+  const OutgoingCallStarted._(Call? call) : super._(call);
 }
 
 class IncomingCallReceived extends CallEvent {
-  const IncomingCallReceived._(Call call) : super._(call);
+  const IncomingCallReceived._(Call? call) : super._(call);
 }
 
 class CallEnded extends CallEvent {
-  const CallEnded._(Call call) : super._(call);
+  const CallEnded._(Call? call) : super._(call);
 }
 
 class CallUpdated extends CallEvent {
-  const CallUpdated._(Call call) : super._(call);
+  const CallUpdated._(Call? call) : super._(call);
 }
 
 class CallConnected extends CallEvent {
-  const CallConnected._(Call call) : super._(call);
+  const CallConnected._(Call? call) : super._(call);
 }
