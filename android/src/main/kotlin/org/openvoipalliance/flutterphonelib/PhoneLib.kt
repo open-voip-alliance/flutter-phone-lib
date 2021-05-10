@@ -115,6 +115,9 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                         result.success(null)
                     }
+                    "sessionState" -> {
+                        result.success(pil.sessionState.toMap())
+                    }
                 }
             }
             type == "Calls" -> {

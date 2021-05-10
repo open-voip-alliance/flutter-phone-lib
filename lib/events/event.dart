@@ -1,3 +1,5 @@
+import 'package:flutter_phone_lib/call_session_state.dart';
+
 import '../call/call.dart';
 import '../util/equatable.dart';
 
@@ -6,22 +8,32 @@ class Event extends Equatable {
 
   static Event fromJson(Map<String, dynamic> json) {
     if (json.containsKey('type')) {
-      if (json.containsKey('call')) {
-        final call = json['call'] != null
-            ? Call.fromJson((json['call'] as Map).cast())
-            : null;
+      if (json.containsKey('state')) {
+        final state = CallSessionState.fromJson((json['state'] as Map).cast());
         final type = json['type'];
 
         if (type == (OutgoingCallStarted).toString()) {
-          return OutgoingCallStarted._(call);
+          return OutgoingCallStarted._(state);
         } else if (type == (IncomingCallReceived).toString()) {
-          return IncomingCallReceived._(call);
+          return IncomingCallReceived._(state);
         } else if (type == (CallEnded).toString()) {
-          return CallEnded._(call);
-        } else if (type == (CallUpdated).toString()) {
-          return CallUpdated._(call);
+          return CallEnded._(state);
         } else if (type == (CallConnected).toString()) {
-          return CallConnected._(call);
+          return CallConnected._(state);
+        } else if (type == (CallDurationUpdated).toString()) {
+          return CallDurationUpdated._(state);
+        } else if (type == (AudioStateUpdated).toString()) {
+          return AudioStateUpdated._(state);
+        } else if (type == (CallStateUpdated).toString()) {
+          return CallStateUpdated._(state);
+        } else if (type == (AttendedTransferConnected).toString()) {
+          return AttendedTransferConnected._(state);
+        } else if (type == (AttendedTransferAborted).toString()) {
+          return AttendedTransferAborted._(state);
+        } else if (type == (AttendedTransferStarted).toString()) {
+          return AttendedTransferStarted._(state);
+        } else if (type == (AttendedTransferEnded).toString()) {
+          return AttendedTransferEnded._(state);
         }
       }
     }
@@ -35,31 +47,59 @@ class Event extends Equatable {
   List<Object?> get props => [];
 }
 
-class CallEvent extends Event {
-  final Call? call;
+class CallSessionEvent extends Event {
+  final CallSessionState? state;
 
-  const CallEvent._(this.call) : super._();
+  const CallSessionEvent._(this.state) : super._();
 
   @override
-  List<Object?> get props => [...super.props, call];
+  List<Object?> get props => [...super.props, state];
 }
 
-class OutgoingCallStarted extends CallEvent {
-  const OutgoingCallStarted._(Call? call) : super._(call);
+abstract class AttendedTransferEvent extends CallSessionEvent {
+  const AttendedTransferEvent._(CallSessionState state) : super._(state);
 }
 
-class IncomingCallReceived extends CallEvent {
-  const IncomingCallReceived._(Call? call) : super._(call);
+class OutgoingCallStarted extends CallSessionEvent {
+  const OutgoingCallStarted._(CallSessionState state) : super._(state);
 }
 
-class CallEnded extends CallEvent {
-  const CallEnded._(Call? call) : super._(call);
+class IncomingCallReceived extends CallSessionEvent {
+  const IncomingCallReceived._(CallSessionState state) : super._(state);
 }
 
-class CallUpdated extends CallEvent {
-  const CallUpdated._(Call? call) : super._(call);
+class CallEnded extends CallSessionEvent {
+  const CallEnded._(CallSessionState state) : super._(state);
 }
 
-class CallConnected extends CallEvent {
-  const CallConnected._(Call? call) : super._(call);
+class CallDurationUpdated extends CallSessionEvent {
+  const CallDurationUpdated._(CallSessionState state) : super._(state);
+}
+
+class CallConnected extends CallSessionEvent {
+  const CallConnected._(CallSessionState state) : super._(state);
+}
+
+class AudioStateUpdated extends CallSessionEvent {
+  const AudioStateUpdated._(CallSessionState state) : super._(state);
+}
+
+class CallStateUpdated extends CallSessionEvent {
+  const CallStateUpdated._(CallSessionState state) : super._(state);
+}
+
+class AttendedTransferStarted extends AttendedTransferEvent {
+  const AttendedTransferStarted._(CallSessionState state) : super._(state);
+}
+
+class AttendedTransferConnected extends AttendedTransferEvent {
+  const AttendedTransferConnected._(CallSessionState state) : super._(state);
+}
+
+class AttendedTransferAborted extends AttendedTransferEvent {
+  const AttendedTransferAborted._(CallSessionState state) : super._(state);
+}
+
+class AttendedTransferEnded extends AttendedTransferEvent {
+  const AttendedTransferEnded._(CallSessionState state) : super._(state);
 }
