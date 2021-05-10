@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_phone_lib/call_session_state.dart';
 
 import 'audio/audio_manager.dart';
 import 'call/call_actions.dart';
@@ -74,6 +75,12 @@ class PhoneLib {
 
   Future<void> call(String number) =>
       channel.invokeMethod('PhoneLib.call', number);
+
+  Future<CallSessionState> get sessionState async => CallSessionState.fromJson(
+        await channel
+            .invokeMethod('PhoneLib.sessionState')
+            .then((v) => (v as Map).cast()),
+      );
 
   void _onEvent(Event event) => _eventsController.add(event);
 }

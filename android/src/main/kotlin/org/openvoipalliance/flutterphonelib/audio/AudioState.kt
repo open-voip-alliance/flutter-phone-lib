@@ -6,4 +6,5 @@ fun AudioState.toMap() = mapOf(
         "currentRoute" to currentRoute.name,
         "availableRoutes" to availableRoutes.map { it.name },
         "bluetoothDeviceName" to bluetoothDeviceName,
+        "isMicrophoneMuted" to isMicrophoneMuted,
 )

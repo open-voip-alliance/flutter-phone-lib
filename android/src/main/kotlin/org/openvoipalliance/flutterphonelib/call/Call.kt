@@ -1,9 +1,9 @@
 package org.openvoipalliance.flutterphonelib.call
 
-import org.openvoipalliance.androidphoneintegration.call.PILCall
+import org.openvoipalliance.androidphoneintegration.call.Call
 import org.openvoipalliance.flutterphonelib.contacts.toMap
 
-fun PILCall.toMap() = mapOf(
+fun Call.toMap() = mapOf(
         "remoteNumber" to remoteNumber,
         "displayName" to displayName,
         "state" to state.toString(),

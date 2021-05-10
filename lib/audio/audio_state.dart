@@ -4,7 +4,7 @@ import 'audio_route.dart';
 
 part 'audio_state.g.dart';
 
-@JsonSerializable(createToJson: false, createFactory: true)
+@JsonSerializable(createFactory: true)
 class AudioState extends Equatable {
   @JsonKey(fromJson: AudioRoute.fromJson)
   final AudioRoute currentRoute;
@@ -12,11 +12,13 @@ class AudioState extends Equatable {
   @JsonKey(fromJson: _audioRoutesFromJson)
   final Iterable<AudioRoute> availableRoutes;
   final String? bluetoothDeviceName;
+  final bool isMicrophoneMuted;
 
   const AudioState({
     required this.currentRoute,
     required this.availableRoutes,
     this.bluetoothDeviceName,
+    required this.isMicrophoneMuted,
   });
 
   @override
@@ -25,10 +27,13 @@ class AudioState extends Equatable {
         currentRoute,
         availableRoutes,
         bluetoothDeviceName,
+        isMicrophoneMuted,
       ];
 
   static AudioState fromJson(Map<String, dynamic> json) =>
       _$AudioStateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AudioStateToJson(this);
 }
 
 List<AudioRoute> _audioRoutesFromJson(List<dynamic> values) => values
