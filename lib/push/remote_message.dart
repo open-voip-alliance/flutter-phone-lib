@@ -2,10 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'remote_message.g.dart';
 
-// NOTE: This is not a class from the PIL, but from Firebase.
 @JsonSerializable(createToJson: false, createFactory: true)
 class RemoteMessage {
-  final Map<String, String> data;
+  final Map<String, dynamic> data;
 
   const RemoteMessage(this.data);
 
