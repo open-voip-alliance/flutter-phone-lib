@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
+import org.openvoipalliance.androidphoneintegration.audio.BluetoothAudioRoute
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup.AutomaticallyLaunchCallActivity.*
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
@@ -176,8 +177,20 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                         result.success(pil.audio.state.toMap())
                     }
                     "routeAudio" -> {
-                        val route = AudioRoute.valueOf(call.arguments())
-                        pil.audio.routeAudio(route)
+                        val isStandardAudioRoute = (call.arguments() as? String != null)
+
+                        if (isStandardAudioRoute) {
+                            pil.audio.routeAudio(
+                                    AudioRoute.valueOf(call.arguments())
+                            )
+                        } else {
+                            val arguments = call.arguments<Map<String, String>>()
+                            pil.audio.routeAudio(BluetoothAudioRoute(
+                                    arguments["displayName"]!!,
+                                    arguments["identifier"]!!,
+                            ))
+                        }
+
                         result.success(null)
                     }
                     "mute" -> {
