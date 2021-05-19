@@ -1,3 +1,5 @@
+import 'package:flutter_phone_lib/audio/bluetooth_audio_route.dart';
+
 import '../phone_lib.dart';
 import 'audio_route.dart';
 import 'audio_state.dart';
@@ -17,6 +19,9 @@ class AudioManager {
       );
 
   Future<void> routeAudio(AudioRoute route) =>
+      PhoneLib.channel.invokeMethod('AudioManager.routeAudio', route.toJson());
+
+  Future<void> routeAudioToBluetoothDevice(BluetoothAudioRoute route) =>
       PhoneLib.channel.invokeMethod('AudioManager.routeAudio', route.toJson());
 
   Future<void> mute() => PhoneLib.channel.invokeMethod('AudioManager.mute');

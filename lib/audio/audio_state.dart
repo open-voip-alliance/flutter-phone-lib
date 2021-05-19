@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import '../util/equatable.dart';
 import 'audio_route.dart';
+import 'bluetooth_audio_route.dart';
 
 part 'audio_state.g.dart';
 
@@ -14,11 +16,15 @@ class AudioState extends Equatable {
   final String? bluetoothDeviceName;
   final bool isMicrophoneMuted;
 
+  @JsonKey(fromJson: _bluetoothAudioRoutesFromJson)
+  final Iterable<BluetoothAudioRoute> bluetoothRoutes;
+
   const AudioState({
     required this.currentRoute,
     required this.availableRoutes,
     this.bluetoothDeviceName,
     required this.isMicrophoneMuted,
+    required this.bluetoothRoutes,
   });
 
   @override
@@ -28,6 +34,7 @@ class AudioState extends Equatable {
         availableRoutes,
         bluetoothDeviceName,
         isMicrophoneMuted,
+        bluetoothRoutes,
       ];
 
   static AudioState fromJson(Map<String, dynamic> json) =>
@@ -36,6 +43,14 @@ class AudioState extends Equatable {
   Map<String, dynamic> toJson() => _$AudioStateToJson(this);
 }
 
-List<AudioRoute> _audioRoutesFromJson(List<dynamic> values) => values
-    .map((v) => AudioRoute.fromJson(v as String))
-    .toList(); // Generated code casts to List.
+List<AudioRoute> _audioRoutesFromJson(List<dynamic> values) =>
+    values.map((v) => AudioRoute.fromJson(v as String)).toList();
+
+List<BluetoothAudioRoute> _bluetoothAudioRoutesFromJson(List<dynamic> values) =>
+    values
+        .map(
+          (v) => BluetoothAudioRoute.fromJson(
+            (v as Map).cast<String, dynamic>(),
+          ),
+        )
+        .toList();
