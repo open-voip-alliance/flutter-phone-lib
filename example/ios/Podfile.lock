@@ -52,7 +52,7 @@ CHECKOUT OPTIONS:
     :commit: 73f806fedeaa1df54397325bd47b0f319285a7a7
     :git: https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-lib.git
   PIL:
-    :commit: 778d679bda23b7c651cb893bc657fa5b60bf8618
+    :commit: 884ea10d3dd9d3d3de169c5690ebe9715dce6161
     :git: https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-integration-lib.git
 
 SPEC CHECKSUMS:
