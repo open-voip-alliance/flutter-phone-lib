@@ -20,7 +20,6 @@ void callbackDispatcher() async {
       final initializeResources = PluginUtilities.getCallbackFromHandle(
         CallbackHandle.fromRawHandle(arguments[0] as int),
       ) as Future<void> Function();
-
       await initializeResources();
       initialized = true;
     }
@@ -59,7 +58,7 @@ void callbackDispatcher() async {
   });
   print(
     'FlutterPhoneLib: '
-    'Notifying that the callback dispatcher is ready'
+    'Notifying that the callback dispatcher is ready '
     'to receive method calls',
   );
   PhoneLib.backgroundChannel.invokeMethod('callbackDispatcherIsInitialized');

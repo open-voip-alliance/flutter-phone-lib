@@ -36,6 +36,8 @@ flutter:
       android:
         package: org.openvoipalliance.flutterphonelib
         pluginClass: PhoneLib
+      ios:
+        pluginClass: PhoneLib
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
