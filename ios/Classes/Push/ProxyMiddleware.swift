@@ -24,5 +24,7 @@ internal class ProxyMiddleware : Middleware {
         )
     }
     
-    func handleNonVoIPPush(payload: PKPushPayload, type: PKPushType) {}
+    func inspect(payload: PKPushPayload, type: PKPushType) -> Bool {
+        return true
+    }
 }
