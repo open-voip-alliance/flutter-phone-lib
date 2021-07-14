@@ -80,7 +80,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                 case "unhold": pil.actions.unhold()
                 case "toggleHold": pil.actions.toggleHold()
                 case "sendDtmf": pil.actions.sendDtmf(
-                    dtmf: String((call.arguments as! String).first!),
+                    String((call.arguments as! String).first!),
                     playToneLocally: true
                 )
                 case "beginAttendedTransfer": pil.actions.beginAttendedTransfer(number: call.arguments as! String)
@@ -104,22 +104,21 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                     let isStandardAudioRoute = (call.arguments as? String != nil)
 
                     if (isStandardAudioRoute) {
-                        pil.audio.routeAudio(route: audioRouteOf(call.arguments as! String))
-                    } else {
-                        let arguments = call.arguments as! Dictionary<String, String>
-                        
-                        // TODO: Route Bluetooth
+                        pil.audio.routeAudio(audioRouteOf(call.arguments as! String))
                     }
 
                     result(nil)
+                case "launchAudioRoutePicker":
+                    pil.audio.launchAudioRoutePicker()
+                    result(nil)
                 case "mute":
-                    pil.actions.mute()
+                    pil.audio.mute()
                     result(nil)
                 case "unmute":
-                    pil.actions.unmute()
+                    pil.audio.unmute()
                     result(nil)
                 case "toggleMute":
-                    pil.actions.toggleMute()
+                    pil.audio.toggleMute()
                     result(nil)
                 default: result(FlutterMethodNotImplemented)
             }
@@ -184,8 +183,7 @@ extension UIApplicationDelegate {
                 logDelegate: Logger()
             ),
             auth: auth,
-            preferences: preferences,
-            autoStart: true
+            preferences: preferences
         )
     }
 }

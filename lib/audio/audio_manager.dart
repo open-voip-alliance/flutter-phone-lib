@@ -21,6 +21,9 @@ class AudioManager {
   Future<void> routeAudio(AudioRoute route) =>
       PhoneLib.channel.invokeMethod('AudioManager.routeAudio', route.toJson());
 
+  Future<void> launchAudioRoutePicker() =>
+      PhoneLib.channel.invokeMethod('AudioManager.launchAudioRoutePicker');
+
   Future<void> routeAudioToBluetoothDevice(BluetoothAudioRoute route) =>
       PhoneLib.channel.invokeMethod('AudioManager.routeAudio', route.toJson());
 

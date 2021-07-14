@@ -193,6 +193,9 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                         result.success(null)
                     }
+                    "launchAudioRoutePicker" -> {
+                        result.notImplemented()
+                    }
                     "mute" -> {
                         pil.audio.mute()
                         result.success(null)
