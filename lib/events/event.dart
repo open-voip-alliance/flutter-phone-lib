@@ -1,6 +1,4 @@
-import 'package:flutter_phone_lib/call_session_state.dart';
-
-import '../call/call.dart';
+import '../call_session_state.dart';
 import '../util/equatable.dart';
 
 class Event extends Equatable {

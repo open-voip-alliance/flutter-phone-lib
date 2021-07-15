@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_phone_lib/call_session_state.dart';
+import 'package:flutter/widgets.dart';
 
 import 'audio/audio_manager.dart';
 import 'call/call_actions.dart';
 import 'call/calls.dart';
+import 'call_session_state.dart';
 import 'events/event.dart';
 
-class PhoneLib {
+// ignore: prefer_mixin
+class PhoneLib with WidgetsBindingObserver {
   /// For internal use only.
   static const MethodChannel channel =
       MethodChannel('org.openvoipalliance.flutterphonelib/foreground');
@@ -27,6 +29,8 @@ class PhoneLib {
 
   final AudioManager audio = AudioManager();
 
+  final void Function()? _onMissedCallNotificationPressed;
+
   // True if we added a listener to the EventsManager on the Kotlin side. We
   // only need one listener there, and propagate the events to all listeners
   // here.
@@ -39,12 +43,14 @@ class PhoneLib {
   // is expected, this is a Stream on the Dart side.
   Stream<Event> get events => _eventsController.stream;
 
-  PhoneLib() {
+  PhoneLib(this._onMissedCallNotificationPressed) {
     if (_instance == null) {
       _instance = this;
     } else {
       throw StateError('Only one instance of the PhoneLib is supported.');
     }
+
+    WidgetsBinding.instance?.addObserver(this);
 
     channel.setMethodCallHandler(_onMethodCall);
 
@@ -62,6 +68,13 @@ class PhoneLib {
         }
       },
     );
+
+    // This doesn't work for now.
+    _wasMissedCallNotificationPressed.then((wasPressed) {
+      if (wasPressed) {
+        _onMissedCallNotificationPressed?.call();
+      }
+    });
   }
 
   Future<dynamic> _onMethodCall(MethodCall call) async {
@@ -69,6 +82,9 @@ class PhoneLib {
       case 'onEvent':
         final argument = (call.arguments as Map).castRecursively();
         _onEvent(Event.fromJson(argument));
+        return;
+      case 'onMissedCallNotificationPressed':
+        _onMissedCallNotificationPressed?.call();
         return;
     }
   }
@@ -82,7 +98,27 @@ class PhoneLib {
             .then((v) => (v as Map).cast()),
       );
 
+  /// Whether the missed call notification was pressed.
+  ///
+  /// **Note that calling this will _consume_ the value**, meaning if this
+  /// returns true, the next call will return false, unless the missed call
+  /// notification was pressed again.
+  Future<bool> get _wasMissedCallNotificationPressed => channel
+      .invokeMethod('PhoneLib.wasMissedCallNotificationPressed')
+      .then((v) => v as bool);
+
   void _onEvent(Event event) => _eventsController.add(event);
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      if (await _wasMissedCallNotificationPressed) {
+        _onMissedCallNotificationPressed?.call();
+      }
+    }
+  }
 }
 
 extension _CastRecursive on Map {
