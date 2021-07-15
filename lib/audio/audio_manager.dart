@@ -1,8 +1,7 @@
-import 'package:flutter_phone_lib/audio/bluetooth_audio_route.dart';
-
 import '../phone_lib.dart';
 import 'audio_route.dart';
 import 'audio_state.dart';
+import 'bluetooth_audio_route.dart';
 import 'codec.dart';
 
 class AudioManager {

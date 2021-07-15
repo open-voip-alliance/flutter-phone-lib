@@ -19,6 +19,8 @@ class ApplicationSetup extends Equatable {
   /// (middleware and logging) are called. Used to initialize dependencies of
   /// other resources necessary to run these callbacks.
   ///
+  /// Runs in a separate isolate.
+  ///
   /// Must be a static or top level function.
   final Future<void> Function()? initialize;
 
@@ -28,8 +30,20 @@ class ApplicationSetup extends Equatable {
 
   /// Receive logs from the PhoneLib.
   ///
+  /// Runs in a separate isolate, the same isolate as [initialize].
+  ///
   /// Must be a static or top level function.
   final void Function(LogLevel, String)? logger;
+
+  /// Invoked when a missed call notification is pressed.
+  ///
+  /// When the app is in the foreground, this is called the instant the user
+  /// presses the notification. When the app is in the background, the app is
+  /// brought back to the foreground and `onMissedCallNotificationPressed`
+  /// is called as soon as the app is in the foreground.
+  ///
+  /// Unlike the other callbacks, does not run in a separate isolate.
+  final void Function()? onMissedCallNotificationPressed;
 
   /// The user-agent that will be used when making SIP calls.
   final String userAgent;
@@ -38,6 +52,7 @@ class ApplicationSetup extends Equatable {
     this.initialize,
     this.middleware,
     this.logger,
+    this.onMissedCallNotificationPressed,
     this.userAgent = 'Flutter Phone Lib',
   }) : assert(
           userAgent.length > 0 &&
@@ -50,6 +65,7 @@ class ApplicationSetup extends Equatable {
         middleware,
         initialize,
         logger,
+        onMissedCallNotificationPressed,
         userAgent,
       ];
 }

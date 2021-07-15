@@ -33,5 +33,5 @@ Future<PhoneLib> startPhoneLib(
     ],
   );
 
-  return PhoneLib();
+  return PhoneLib(applicationSetup.onMissedCallNotificationPressed);
 }

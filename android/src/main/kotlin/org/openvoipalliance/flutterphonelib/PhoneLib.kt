@@ -3,7 +3,10 @@ package org.openvoipalliance.flutterphonelib
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.NonNull
@@ -39,18 +42,19 @@ import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
-    internal lateinit var channel: MethodChannel
-
     private lateinit var context: Context
 
-    private val eventListener = ProxyEventListener(this)
+    private val eventListener = ProxyEventListener()
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(
+        // For some reason onAttachedEngine is called twice, so this check is needed.
+        if (!isChannelInitialized) {
+            channel = MethodChannel(
                 flutterPluginBinding.binaryMessenger,
                 "org.openvoipalliance.flutterphonelib/foreground"
-        )
-        channel.setMethodCallHandler(this)
+            )
+            channel.setMethodCallHandler(this)
+        }
 
         context = flutterPluginBinding.applicationContext
     }
@@ -84,21 +88,21 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 val userAgent = arguments[7]!! as String
 
                 context.sharedPreferences.edit()
-                        .putString(Keys.PREFERENCES, Gson().toJson(preferences))
-                        .putString(Keys.AUTH, Gson().toJson(auth))
-                        .putString(Keys.USER_AGENT, userAgent)
-                        .apply()
+                    .putString(Keys.PREFERENCES, Gson().toJson(preferences))
+                    .putString(Keys.AUTH, Gson().toJson(auth))
+                    .putString(Keys.USER_AGENT, userAgent)
+                    .apply()
 
                 context.registerFlutterCallback(Keys.CALLBACK_DISPATCHER, callbackDispatcherHandle)
                 context.registerFlutterCallback(
-                        Keys.INITIALIZE,
-                        initializeResourcesHandle
+                    Keys.INITIALIZE,
+                    initializeResourcesHandle
                 )
                 context.registerFlutterCallback(Keys.LOGGER, loggerHandle)
                 context.registerFlutterCallback(Keys.MIDDLEWARE_RESPOND, middlewareRespondHandle)
                 context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_TOKEN_RECEIVED,
-                        middlewareTokenReceivedHandle
+                    Keys.MIDDLEWARE_TOKEN_RECEIVED,
+                    middlewareTokenReceivedHandle
                 )
 
                 app!!.startPhoneLib(activityClass!!)
@@ -118,6 +122,11 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     }
                     "sessionState" -> {
                         result.success(pil.sessionState.toMap())
+                    }
+                    "wasMissedCallNotificationPressed" -> {
+                        result.success(wasMissedCallNotificationPressed)
+                        // Value is 'consumed', reverts back to false to prevent false positives.
+                        wasMissedCallNotificationPressed = false
                     }
                 }
             }
@@ -154,8 +163,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     "unhold" -> pil.actions.unhold()
                     "toggleHold" -> pil.actions.toggleHold()
                     "sendDtmf" -> pil.actions.sendDtmf(
-                            call.arguments<String>().toCharArray().first(),
-                            playToneLocally = true
+                        call.arguments<String>().toCharArray().first(),
+                        playToneLocally = true
                     )
                     "beginAttendedTransfer" -> pil.actions.beginAttendedTransfer(call.arguments())
                     "completeAttendedTransfer" -> pil.actions.completeAttendedTransfer()
@@ -181,14 +190,16 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                         if (isStandardAudioRoute) {
                             pil.audio.routeAudio(
-                                    AudioRoute.valueOf(call.arguments())
+                                AudioRoute.valueOf(call.arguments())
                             )
                         } else {
                             val arguments = call.arguments<Map<String, String>>()
-                            pil.audio.routeAudio(BluetoothAudioRoute(
+                            pil.audio.routeAudio(
+                                BluetoothAudioRoute(
                                     arguments["displayName"]!!,
                                     arguments["identifier"]!!,
-                            ))
+                                )
+                            )
                         }
 
                         result.success(null)
@@ -223,6 +234,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
     }
 
     companion object {
+        internal lateinit var channel: MethodChannel
+
         internal var app: Application? = null
         internal var activityClass: Class<out Activity>? = null
 
@@ -231,7 +244,12 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         internal val isPILInitialized: Boolean
             get() = ::pil.isInitialized
 
+        internal val isChannelInitialized: Boolean
+            get() = ::channel.isInitialized
+
         internal lateinit var pil: PIL
+
+        internal var wasMissedCallNotificationPressed = false
 
         internal const val LOG_TAG = "FlutterPhoneLib"
     }
@@ -250,11 +268,11 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 }
 
 fun Application.startPhoneLib(
-        /**
-         * The activity to show when the incoming call notification is pressed. Almost always the
-         * `MainActivity`.
-         */
-        activityClass: Class<out Activity>
+    /**
+     * The activity to show when the incoming call notification is pressed. Almost always the
+     * `MainActivity`.
+     */
+    activityClass: Class<out Activity>
 ) {
     if (PhoneLib.isPILInitialized) {
         Log.d(PhoneLib.LOG_TAG, "FlutterPhoneLib is already initialized")
@@ -271,12 +289,12 @@ fun Application.startPhoneLib(
 
     val prefs = sharedPreferences
     val preferences = Gson().fromJson(
-            prefs.getString(PhoneLib.Keys.PREFERENCES, null),
-            Preferences::class.java
+        prefs.getString(PhoneLib.Keys.PREFERENCES, null),
+        Preferences::class.java
     )
     val auth = Gson().fromJson(
-            prefs.getString(PhoneLib.Keys.AUTH, null),
-            Auth::class.java
+        prefs.getString(PhoneLib.Keys.AUTH, null),
+        Auth::class.java
     )
 
     val userAgent = prefs.getString(PhoneLib.Keys.USER_AGENT, null)
@@ -288,20 +306,35 @@ fun Application.startPhoneLib(
 
     Log.d(PhoneLib.LOG_TAG, "Starting..")
 
+    val activityTracker = ActivityForegroundTracker()
+
     PhoneLib.pil = startAndroidPIL {
         this.preferences = preferences
         this.auth = auth
 
         ApplicationSetup(
-                application = this@startPhoneLib,
-                activities = ApplicationSetup.Activities(
-                        activityClass,
-                        activityClass,
-                ),
-                automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
-                middleware = ProxyMiddleware(this@startPhoneLib),
-                logger = AggregatedLogger(this@startPhoneLib),
-                userAgent = userAgent
+            application = this@startPhoneLib,
+            activities = ApplicationSetup.Activities(
+                activityClass,
+                activityClass,
+            ),
+            automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
+            middleware = ProxyMiddleware(this@startPhoneLib),
+            logger = AggregatedLogger(this@startPhoneLib),
+            onMissedCallNotificationPressed = {
+                if (!activityTracker.isAnyActivityVisible) {
+                    PhoneLib.wasMissedCallNotificationPressed = true
+
+                    startActivity(
+                        Intent(this@startPhoneLib, activityClass).apply {
+                            flags = FLAG_ACTIVITY_NEW_TASK
+                        }
+                    )
+                } else {
+                    PhoneLib.channel.invokeMethod("onMissedCallNotificationPressed", null)
+                }
+            },
+            userAgent = userAgent
         )
     }
 
@@ -318,12 +351,36 @@ fun <A : Activity> A.showOnLockScreen() {
         setShowWhenLocked(true)
         setTurnScreenOn(true)
     } else {
-        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                    or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+        )
     }
+}
+
+private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks {
+    private var activitiesVisible = 0;
+
+    val isAnyActivityVisible
+        get() = activitiesVisible > 0
+
+    override fun onActivityResumed(activity: Activity) { activitiesVisible++ }
+
+    override fun onActivityPaused(activity: Activity) { activitiesVisible-- }
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+
+    override fun onActivityStarted(activity: Activity) {}
+
+    override fun onActivityStopped(activity: Activity) {}
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+    override fun onActivityDestroyed(activity: Activity) {}
+
 }
 
 // Logs are sent out in groups to prevent overworking the thread, which had the result of
@@ -334,21 +391,21 @@ private class AggregatedLogger(private val context: Context) : Logger {
     override fun onLogReceived(message: String, level: LogLevel) {
         logs.add(level to message)
         Log.println(
-                when (level) {
-                    DEBUG -> Log.DEBUG
-                    INFO -> Log.INFO
-                    WARNING -> Log.WARN
-                    ERROR -> Log.ERROR
-                },
-                PhoneLib.LOG_TAG,
-                message
+            when (level) {
+                DEBUG -> Log.DEBUG
+                INFO -> Log.INFO
+                WARNING -> Log.WARN
+                ERROR -> Log.ERROR
+            },
+            PhoneLib.LOG_TAG,
+            message
         )
 
         if (logs.size == 200) {
             GlobalScope.launch(Dispatchers.Main) {
                 context.invokeMethodThroughCallback(
-                        PhoneLib.Keys.LOGGER,
-                        logs.map { listOf(it.first.toString(), it.second) }
+                    PhoneLib.Keys.LOGGER,
+                    logs.map { listOf(it.first.toString(), it.second) }
                 )
             }
             logs.clear()
