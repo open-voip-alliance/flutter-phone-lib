@@ -76,7 +76,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         }
 
         when {
-            !hasType && method == "startPhoneLib" -> {
+            !hasType && method == "initializePhoneLib" -> {
                 val arguments = call.arguments<List<*>>()
                 val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                 val auth = authOf(arguments[1]!! as Map<String, Any>)
@@ -113,6 +113,23 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 assertPILInitialized()
 
                 when (method) {
+                    "start" -> {
+                        val arguments = call.arguments<List<*>>()
+
+                        pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                        pil.auth = authOf(arguments[1]!! as Map<String, Any>)
+                        pil.start(true, true)
+                        result.success(null)
+                    }
+                    "stop" -> {
+                        pil.stop()
+                        result.success(null)
+                    }
+                    "updatePreferences" -> {
+                        val arguments = call.arguments<List<*>>()
+                        pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                        result.success(true);
+                    }
                     "call" -> {
                         val number = call.arguments<String>()
 

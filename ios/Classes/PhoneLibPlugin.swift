@@ -24,7 +24,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
         let type = hasType ? String(call.method.split(separator: ".")[0]) : nil
         let method = hasType ? String(call.method.split(separator: ".")[1]) : call.method
 
-        if (!hasType && method == "startPhoneLib") {
+        if (!hasType && method == "initializePhoneLib") {
             let arguments = call.arguments as! Array<Any>
             
             let preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
@@ -59,8 +59,21 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                 pil.call(number: call.arguments as! String)
 
                 result(nil)
+            } else if (method == "start") {
+                let arguments = call.arguments as! Array<Any>
+                 pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
+                 pil.auth = authOf(arguments[1] as! Dictionary<String, Any?>)
+                 pil.start(true, true)
+                 result(nil)
+            } else if (method == "stop") {
+                pil.stop()
+                result(nil)
             } else if (method == "sessionState") {
                 //result(pil.)
+            } else if (method == "updatePreferences") {
+                let arguments = call.arguments as! Array<Any>
+                pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
+                result(nil)
             }
         } else if (type == "Calls") {
             if (method == "active") {
