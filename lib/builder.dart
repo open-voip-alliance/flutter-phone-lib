@@ -10,7 +10,7 @@ class Builder {
   Auth? auth;
 }
 
-Future<PhoneLib> startPhoneLib(
+Future<PhoneLib> initializePhoneLib(
   ApplicationSetup Function(Builder builder) build,
 ) async {
   final builder = Builder();
@@ -20,7 +20,7 @@ Future<PhoneLib> startPhoneLib(
   assert(builder.auth != null);
 
   await PhoneLib.channel.invokeMethod(
-    'startPhoneLib',
+    'initializePhoneLib',
     [
       builder.preferences!.toJson(),
       builder.auth!.toJson(),

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_phone_lib/configuration/auth.dart';
+import 'package:flutter_phone_lib/configuration/preferences.dart';
 
 import 'audio/audio_manager.dart';
 import 'call/call_actions.dart';
@@ -88,6 +90,19 @@ class PhoneLib with WidgetsBindingObserver {
         return;
     }
   }
+
+  Future<void> start(Preferences preferences, Auth auth) =>
+      channel.invokeMethod('PhoneLib.start', [
+          preferences.toJson(),
+        auth.toJson(),
+      ]);
+
+  Future<void> stop() => channel.invokeMethod('PhoneLib.stop');
+
+  Future<void> updatePreferences(Preferences preferences)
+  => channel.invokeMethod('PhoneLib.updatePreferences', [
+    preferences.toJson(),
+  ]);
 
   Future<void> call(String number) =>
       channel.invokeMethod('PhoneLib.call', number);
