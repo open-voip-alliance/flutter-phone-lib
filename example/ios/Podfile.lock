@@ -28,8 +28,8 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_phone_lib (from `.symlinks/plugins/flutter_phone_lib/ios`)
-  - iOSVoIPLib (from `https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-lib.git`)
-  - PIL (from `https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-integration-lib.git`)
+  - iOSVoIPLib (from `https://github.com/open-voip-alliance/iOS-VoIP-Lib.git`)
+  - PIL (from `https://github.com/open-voip-alliance/iOS-Phone-Integration-Lib.git`)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -43,17 +43,17 @@ EXTERNAL SOURCES:
   flutter_phone_lib:
     :path: ".symlinks/plugins/flutter_phone_lib/ios"
   iOSVoIPLib:
-    :git: https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-lib.git
+    :git: https://github.com/open-voip-alliance/iOS-VoIP-Lib.git
   PIL:
-    :git: https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-integration-lib.git
+    :git: https://github.com/open-voip-alliance/iOS-Phone-Integration-Lib.git
 
 CHECKOUT OPTIONS:
   iOSVoIPLib:
     :commit: 73f806fedeaa1df54397325bd47b0f319285a7a7
-    :git: https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-lib.git
+    :git: https://github.com/open-voip-alliance/iOS-VoIP-Lib.git
   PIL:
-    :commit: 884ea10d3dd9d3d3de169c5690ebe9715dce6161
-    :git: https://gitlab.wearespindle.com/vialer/mobile/voip/ios-phone-integration-lib.git
+    :commit: 630ef30ae19d5556dea224c916971192d21f7a52
+    :git: https://github.com/open-voip-alliance/iOS-Phone-Integration-Lib.git
 
 SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
@@ -63,6 +63,6 @@ SPEC CHECKSUMS:
   PIL: 660930395909c8c4b572b049a61ab4b48c8dccb9
   Swinject: ddf78b8486dd9b71a667b852cad919ab4484478e
 
-PODFILE CHECKSUM: cb923e9b13236cfe6e2af4d28dc6174554ae9d8d
+PODFILE CHECKSUM: fff47e60102b8fb403af7bbec3e376fec5567545
 
 COCOAPODS: 1.10.1
