@@ -63,7 +63,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                 let arguments = call.arguments as! Array<Any>
                  pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
                  pil.auth = authOf(arguments[1] as! Dictionary<String, Any?>)
-                 pil.start(true, true)
+                 pil.start(forceInitialize: true, forceRegister: true)
                  result(nil)
             } else if (method == "stop") {
                 pil.stop()
