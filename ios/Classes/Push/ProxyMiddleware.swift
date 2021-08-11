@@ -24,7 +24,10 @@ internal class ProxyMiddleware : Middleware {
         )
     }
     
-    func inspect(payload: PKPushPayload, type: PKPushType) -> Bool {
-        return true
+    func inspect(payload: PKPushPayload, type: PKPushType) {
+        FlutterCallback.invokeMethodThroughCallback(
+            method: "Middleware.inspect",
+            arguments: payload.toDictionary()
+        )
     }
 }

@@ -85,7 +85,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 val loggerHandle = arguments[4].asLong()
                 val middlewareRespondHandle = arguments[5].asLong()
                 val middlewareTokenReceivedHandle = arguments[6].asLong()
-                val userAgent = arguments[7]!! as String
+                val middlewareInspectHandle = arguments[7].asLong()
+                val userAgent = arguments[8]!! as String
 
                 context.sharedPreferences.edit()
                     .putString(Keys.PREFERENCES, Gson().toJson(preferences))
@@ -104,6 +105,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     Keys.MIDDLEWARE_TOKEN_RECEIVED,
                     middlewareTokenReceivedHandle
                 )
+                context.registerFlutterCallback(Keys.MIDDLEWARE_INSPECT, middlewareInspectHandle)
 
                 app!!.startPhoneLib(activityClass!!)
 
@@ -280,6 +282,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         const val LOGGER = "onLogReceived"
         const val MIDDLEWARE_RESPOND = "Middleware.respond"
         const val MIDDLEWARE_TOKEN_RECEIVED = "Middleware.tokenReceived"
+        const val MIDDLEWARE_INSPECT = "Middleware.inspect"
         const val USER_AGENT = "userAgent"
     }
 }

@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_phone_lib/configuration/auth.dart';
-import 'package:flutter_phone_lib/configuration/preferences.dart';
 
 import 'audio/audio_manager.dart';
 import 'call/call_actions.dart';
 import 'call/calls.dart';
 import 'call_session_state.dart';
+import 'configuration/auth.dart';
+import 'configuration/preferences.dart';
 import 'events/event.dart';
 
 // ignore: prefer_mixin
