@@ -11,17 +11,23 @@ void callbackDispatcher() async {
   await WidgetsFlutterBinding.ensureInitialized();
   final stayAliveCompleter = Completer();
 
-  var initialized = false;
+  var initializing = false;
+  final initializeCompleter = Completer();
 
   PhoneLib.backgroundChannel.setMethodCallHandler((call) async {
     final arguments = call.arguments as List;
 
-    if (!initialized) {
+    if (!initializing && !initializeCompleter.isCompleted) {
+      initializing = true;
+
       final initializeResources = PluginUtilities.getCallbackFromHandle(
         CallbackHandle.fromRawHandle(arguments[0] as int),
       ) as Future<void> Function();
       await initializeResources();
-      initialized = true;
+      initializing = false;
+      initializeCompleter.complete();
+    } else if (initializing) {
+      await initializeCompleter.future;
     }
 
     final callback = PluginUtilities.getCallbackFromHandle(
@@ -54,6 +60,11 @@ void callbackDispatcher() async {
 
         tokenReceived(token);
         return;
+      case 'Middleware.inspect':
+        final inspect = callback as void Function(RemoteMessage);
+        final remoteMessage = RemoteMessage.fromMap(arguments[2] as Map);
+
+        return inspect(remoteMessage);
     }
   });
   print(

@@ -29,6 +29,7 @@ Future<PhoneLib> initializePhoneLib(
       applicationSetup.logger?.toCallbackHandle(),
       applicationSetup.middleware?.respond.toCallbackHandle(),
       applicationSetup.middleware?.tokenReceived.toCallbackHandle(),
+      applicationSetup.middleware?.inspect.toCallbackHandle(),
       applicationSetup.userAgent,
     ],
   );

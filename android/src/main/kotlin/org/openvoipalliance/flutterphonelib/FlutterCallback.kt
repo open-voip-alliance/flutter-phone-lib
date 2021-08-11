@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-
 private object FlutterCallback {
     private lateinit var flutterEngine: FlutterEngine
     private lateinit var methodChannel: MethodChannel
@@ -47,7 +46,7 @@ private object FlutterCallback {
     /**
      * Invokes a method through the callback dispatcher.
      */
-    fun invokeMethodThroughCallback(context: Context, method: String, vararg arguments: Any?) {
+    fun invokeMethodThroughCallback(context: Context, method: String, vararg arguments: Any?, result: MethodChannel.Result? = null) {
         if (!::flutterEngine.isInitialized) {
             FlutterMain.startInitialization(context)
             FlutterMain.ensureInitializationComplete(context, null)
@@ -116,7 +115,8 @@ private object FlutterCallback {
                         )
                         methodChannel.invokeMethod(
                             method,
-                            listOf(initialize, methodCallbackHandle, *arguments)
+                            listOf(initialize, methodCallbackHandle, *arguments),
+                            result
                         )
                     }
                 }
@@ -128,11 +128,12 @@ private object FlutterCallback {
 fun Context.registerFlutterCallback(key: String, handle: Long) =
     FlutterCallback.register(this, key, handle)
 
-fun Context.invokeMethodThroughCallback(method: String, vararg arguments: Any?) =
+fun Context.invokeMethodThroughCallback(method: String, vararg arguments: Any?, result: MethodChannel.Result? = null) =
     FlutterCallback.invokeMethodThroughCallback(
         this@invokeMethodThroughCallback,
         method,
-        *arguments
+        *arguments,
+        result = result,
     )
 
 private class QueuedJobExecutor {

@@ -34,7 +34,8 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             let loggerHandle = arguments[4] as! NSNumber
             let middlewareRespondHandle = arguments[5] as! NSNumber
             let middlewareTokenReceivedHandle = arguments[6] as! NSNumber
-            let userAgent = arguments[7] as! String
+            let middlewareInspectHandle = arguments[7] as! NSNumber
+            let userAgent = arguments[8] as! String
             
             let defaults = UserDefaults.standard
             defaults.set(preferences.serialize(), forKey: Keys.PREFERENCES)
@@ -49,6 +50,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                 key: Keys.MIDDLEWARE_TOKEN_RECEIVED,
                 handle: middlewareTokenReceivedHandle.int64Value
             )
+            FlutterCallback.register(key: Keys.MIDDLEWARE_INSPECT, handle: middlewareInspectHandle.int64Value)
             
             PhoneLibPlugin.appDelegate!.startPhoneLib()
             
@@ -158,6 +160,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
         static let LOGGER = "onLogReceived"
         static let MIDDLEWARE_RESPOND = "Middleware.respond"
         static let MIDDLEWARE_TOKEN_RECEIVED = "Middleware.tokenReceived"
+        static let MIDDLEWARE_INSPECT = "Middleware.inspect"
         static let USER_AGENT = "userAgent"
     }
 }
