@@ -79,7 +79,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             }
         } else if (type == "Calls") {
             if (method == "active") {
-                result(PhoneLibPlugin.pil!.calls.active?.toDictionary())
+                result(PhoneLibPlugin.pil!.calls.activeCall?.toDictionary())
             }
         } else if (type == "EventsManager") {
             if (method == "listen") {
