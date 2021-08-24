@@ -7,6 +7,7 @@ class ProxyEventListener : PILEventDelegate {
           switch event {
             case .incomingCallReceived(let state),
                  .outgoingCallStarted(let state),
+                 .callStateUpdated(let state),
                  .callDurationUpdated(let state),
                  .callConnected(let state),
                  .attendedTransferAborted(let state),
@@ -19,7 +20,7 @@ class ProxyEventListener : PILEventDelegate {
                     "onEvent",
                     arguments: event.toDictionary(state: state)
                 )
-            default: fatalError("Unknown event - Add event type to ProxyEventListener")
+            default: fatalError("Unknown event: \(event) - Add event type to ProxyEventListener")
         }
     }
     
