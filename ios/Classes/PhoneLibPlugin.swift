@@ -26,7 +26,6 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
 
         if (!hasType && method == "initializePhoneLib") {
             let arguments = call.arguments as! Array<Any>
-            
             let preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
             let auth = authOf(arguments[1] as! Dictionary<String, Any?>)
             let callbackDispatcherHandle = arguments[2] as! NSNumber
@@ -166,7 +165,12 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
 }
 
 extension UIApplicationDelegate {
-    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil) {       
+    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil) {
+        if (PIL.isInitialized) {
+            log("FlutterPhoneLib is already initialized")
+            return
+        }
+
         if (PhoneLibPlugin.appDelegate == nil) {
             PhoneLibPlugin.appDelegate = self
         }
@@ -186,21 +190,25 @@ extension UIApplicationDelegate {
         }
         
         log("Starting..")
-        
-        PhoneLibPlugin.pil = startIOSPIL(
-            applicationSetup: ApplicationSetup(
-                middleware: ProxyMiddleware(),
-                requestCallUi: {
-                    if let nav = self.window??.rootViewController as? UITabBarController {
-                        nav.performSegue(withIdentifier: "LaunchCallSegue", sender: nav)
-                    }
-                },
-                userAgent: userAgent!,
-                logDelegate: Logger()
-            ),
-            auth: auth,
-            preferences: preferences
-        )
+
+        do {
+            PhoneLibPlugin.pil = try startIOSPIL(
+                applicationSetup: ApplicationSetup(
+                    middleware: ProxyMiddleware(),
+                    requestCallUi: {
+                        if let nav = self.window??.rootViewController as? UITabBarController {
+                            nav.performSegue(withIdentifier: "LaunchCallSegue", sender: nav)
+                        }
+                    },
+                    userAgent: userAgent!,
+                    logDelegate: Logger()
+                ),
+                auth: auth,
+                preferences: preferences
+            )
+        } catch {
+            log("Not launching PIL \(error)")
+        }
     }
 }
 
