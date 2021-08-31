@@ -12,11 +12,21 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
+    internal static var instance: PhoneLibPlugin? = nil
+
     internal let channel: FlutterMethodChannel
     private lazy var eventListener = ProxyEventListener(self)
     
     init(_ channel: FlutterMethodChannel) {
         self.channel = channel
+
+        super.init()
+
+        if (PhoneLibPlugin.instance == nil) {
+            PhoneLibPlugin.instance = self
+        } else {
+            log("ERROR: PhoneLibPlugin instance already exists")
+        }
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -56,7 +66,6 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             result(nil)
         } else if (type == "PhoneLib") {
             if (method == "call") {
-                log("CALL")
                 pil.call(number: call.arguments as! String)
 
                 result(nil)
@@ -207,7 +216,21 @@ extension UIApplicationDelegate {
                 preferences: preferences
             )
         } catch {
-            log("Not launching PIL \(error)")
+            log("Not launching PIL: \(error)")
+        }
+    }
+
+    public func addOnMissedCallNotificationPressedDelegate() {
+        UNUserNotificationCenter.current().delegate = missedCallNotificationDelegate
+    }
+}
+
+private let missedCallNotificationDelegate = OnMissedCallNotificationPressedDelegate()
+
+class OnMissedCallNotificationPressedDelegate : NSObject, UNUserNotificationCenterDelegate  {
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if (response.notification.request.identifier == NotificationRequestIdentifiers.missedCalls.rawValue) {
+            PhoneLibPlugin.instance!.channel.invokeMethod("onMissedCallNotificationPressed", arguments: nil)
         }
     }
 }
