@@ -39,7 +39,6 @@ import org.openvoipalliance.flutterphonelib.configuration.authOf
 import org.openvoipalliance.flutterphonelib.configuration.preferencesOf
 import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
-import java.util.concurrent.ConcurrentLinkedQueue
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
@@ -406,10 +405,8 @@ private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks
 // Logs are sent out in groups to prevent overworking the thread, which had the result of
 // making calls not work.
 private class AggregatedLogger(private val context: Context) : Logger {
-    private val logs = ConcurrentLinkedQueue<Pair<LogLevel, String>>()
 
     override fun onLogReceived(message: String, level: LogLevel) {
-        logs.add(level to message)
         Log.println(
             when (level) {
                 DEBUG -> Log.DEBUG
@@ -421,14 +418,11 @@ private class AggregatedLogger(private val context: Context) : Logger {
             message
         )
 
-        if (logs.size == 200) {
-            GlobalScope.launch(Dispatchers.Main) {
-                context.invokeMethodThroughCallback(
-                    PhoneLib.Keys.LOGGER,
-                    logs.map { listOf(it.first.toString(), it.second) }
-                )
-            }
-            logs.clear()
+        GlobalScope.launch(Dispatchers.Main) {
+            context.invokeMethodThroughCallback(
+                PhoneLib.Keys.LOGGER,
+                listOf(listOf(level.toString(), message))
+            )
         }
     }
 
