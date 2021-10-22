@@ -26,7 +26,6 @@ Future<PhoneLib> initializePhoneLib(
       builder.auth!.toJson(),
       callbackDispatcher.toCallbackHandle(),
       applicationSetup.initialize?.toCallbackHandle(),
-      applicationSetup.logger?.toCallbackHandle(),
       applicationSetup.middleware?.respond.toCallbackHandle(),
       applicationSetup.middleware?.tokenReceived.toCallbackHandle(),
       applicationSetup.middleware?.inspect.toCallbackHandle(),

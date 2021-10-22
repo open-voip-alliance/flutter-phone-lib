@@ -9,8 +9,6 @@ export 'configuration/application_setup.dart';
 export 'configuration/auth.dart';
 export 'configuration/preferences.dart';
 export 'events/event.dart';
-export 'logging/log_level.dart';
-export 'logging/logging.dart';
 export 'phone_lib.dart';
 export 'push/middleware.dart';
 export 'push/remote_message.dart';

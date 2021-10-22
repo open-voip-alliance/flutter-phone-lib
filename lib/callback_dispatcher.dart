@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
 
-import 'logging/log_level.dart';
 import 'phone_lib.dart';
 import 'push/remote_message.dart';
 
@@ -35,18 +34,6 @@ void callbackDispatcher() async {
     );
 
     switch (call.method) {
-      case 'onLogReceived':
-        final onLogReceived = callback as void Function(LogLevel, String);
-        final logs = arguments[2] as List;
-
-        for (var log in logs) {
-          final level = LogLevel.fromJson(log[0] as String);
-          final message = log[1] as String;
-
-          onLogReceived(level, message);
-        }
-
-        return;
       case 'Middleware.respond':
         final respond = callback as void Function(RemoteMessage, bool);
         final remoteMessage = RemoteMessage.fromMap(arguments[2] as Map);

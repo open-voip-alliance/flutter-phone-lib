@@ -2,6 +2,8 @@ import Flutter
 import UIKit
 import PIL
 
+public typealias OnLogReceivedCallback = (String, LogLevel) -> Void
+
 public class PhoneLibPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
@@ -40,11 +42,10 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             let auth = authOf(arguments[1] as! Dictionary<String, Any?>)
             let callbackDispatcherHandle = arguments[2] as! NSNumber
             let initializeResourcesHandle = arguments[3] as! NSNumber
-            let loggerHandle = arguments[4] as! NSNumber
-            let middlewareRespondHandle = arguments[5] as! NSNumber
-            let middlewareTokenReceivedHandle = arguments[6] as! NSNumber
-            let middlewareInspectHandle = arguments[7] as! NSNumber
-            let userAgent = arguments[8] as! String
+            let middlewareRespondHandle = arguments[4] as! NSNumber
+            let middlewareTokenReceivedHandle = arguments[5] as! NSNumber
+            let middlewareInspectHandle = arguments[6] as! NSNumber
+            let userAgent = arguments[7] as! String
             
             let defaults = UserDefaults.standard
             defaults.set(preferences.serialize(), forKey: Keys.PREFERENCES)
@@ -53,7 +54,6 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             
             FlutterCallback.register(key: Keys.CALLBACK_DISPATCHER, handle: callbackDispatcherHandle.int64Value)
             FlutterCallback.register(key: Keys.INITIALIZE, handle: initializeResourcesHandle.int64Value)
-            FlutterCallback.register(key: Keys.LOGGER, handle: loggerHandle.int64Value)
             FlutterCallback.register(key: Keys.MIDDLEWARE_RESPOND, handle: middlewareRespondHandle.int64Value)
             FlutterCallback.register(
                 key: Keys.MIDDLEWARE_TOKEN_RECEIVED,
@@ -78,8 +78,6 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             } else if (method == "stop") {
                 pil.stop()
                 result(nil)
-            } else if (method == "sessionState") {
-                //result(pil.)
             } else if (method == "updatePreferences") {
                 let arguments = call.arguments as! Array<Any>
                 pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
@@ -157,6 +155,8 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
     
     internal static var pil: PIL?
     internal static var appDelegate: UIApplicationDelegate?
+    internal static var onLogReceived: OnLogReceivedCallback?
+    internal static var logDelegate = OnLogReceivedWrapper()
     internal static var registerPlugins: ((FlutterPluginRegistry) -> Void)?
     
     internal class Keys {
@@ -165,16 +165,22 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
         static let PREFERENCES = "preferences"
         static let CALLBACK_DISPATCHER = "callbackDispatcher"
         static let INITIALIZE = "initialize"
-        static let LOGGER = "onLogReceived"
         static let MIDDLEWARE_RESPOND = "Middleware.respond"
         static let MIDDLEWARE_TOKEN_RECEIVED = "Middleware.tokenReceived"
         static let MIDDLEWARE_INSPECT = "Middleware.inspect"
         static let USER_AGENT = "userAgent"
     }
+
+    class OnLogReceivedWrapper: LogDelegate {
+        func onLogReceived(message: String, level: LogLevel) {
+            PhoneLibPlugin.onLogReceived?(message, level)
+        }
+    }
 }
 
 extension UIApplicationDelegate {
-    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil) {
+
+    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, onLogReceived: OnLogReceivedCallback? = nil) {
         if (PIL.isInitialized) {
             log("FlutterPhoneLib is already initialized")
             return
@@ -186,6 +192,10 @@ extension UIApplicationDelegate {
         
         if (PhoneLibPlugin.registerPlugins == nil) {
             PhoneLibPlugin.registerPlugins = registerPlugins
+        }
+
+        if (PhoneLibPlugin.onLogReceived == nil) {
+            PhoneLibPlugin.onLogReceived = onLogReceived
         }
         
         let defaults = UserDefaults.standard
@@ -210,7 +220,7 @@ extension UIApplicationDelegate {
                         }
                     },
                     userAgent: userAgent!,
-                    logDelegate: Logger()
+                    logDelegate: PhoneLibPlugin.logDelegate
                 ),
                 auth: auth,
                 preferences: preferences
@@ -232,16 +242,5 @@ class OnMissedCallNotificationPressedDelegate : NSObject, UNUserNotificationCent
         if (response.notification.request.identifier == NotificationRequestIdentifiers.missedCalls.rawValue) {
             PhoneLibPlugin.instance!.channel.invokeMethod("onMissedCallNotificationPressed", arguments: nil)
         }
-    }
-}
-
-private class Logger : LogDelegate {
-    func onLogReceived(message: String, level: LogLevel) {
-        log(message)
-
-        FlutterCallback.invokeMethodThroughCallback(
-            method: PhoneLibPlugin.Keys.LOGGER,
-            arguments: [[describeAsUpperSnakeCase(level), message]]
-        )
     }
 }
