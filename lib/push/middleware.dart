@@ -10,15 +10,13 @@ class Middleware {
   });
 
   /// Runs in a separate isolate, the same isolate as
-  /// [ApplicationSetup.initialize], [ApplicationSetup.logger]
-  /// and [tokenReceived].
+  /// [ApplicationSetup.initialize] and [tokenReceived].
   ///
   /// Must be a static or top level function.
   final void Function(RemoteMessage, bool available) respond;
 
   /// Runs in a separate isolate, the same isolate as
-  /// [ApplicationSetup.initialize], [ApplicationSetup.logger]
-  /// and [respond].
+  /// [ApplicationSetup.initialize] and [respond].
   ///
   /// Must be a static or top level function.
   final void Function(String token) tokenReceived;
@@ -32,8 +30,7 @@ class Middleware {
   /// On iOS the return value is ignored.
   ///
   /// Runs in a separate isolate, the same isolate as
-  /// [ApplicationSetup.initialize], [ApplicationSetup.logger],
-  /// [respond] and [tokenReceived].
+  /// [ApplicationSetup.initialize], [respond] and [tokenReceived].
   ///
   /// Must be a static or top level function.
   final bool Function(RemoteMessage) inspect;

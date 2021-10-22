@@ -12,15 +12,10 @@ import android.view.WindowManager
 import androidx.annotation.NonNull
 import com.google.gson.Gson
 import io.flutter.BuildConfig
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
 import org.openvoipalliance.androidphoneintegration.audio.BluetoothAudioRoute
@@ -30,15 +25,15 @@ import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
-import org.openvoipalliance.androidphoneintegration.logging.Logger
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
-
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
 import org.openvoipalliance.flutterphonelib.configuration.authOf
 import org.openvoipalliance.flutterphonelib.configuration.preferencesOf
 import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
+
+typealias OnLogReceivedCallback = (message: String, level: LogLevel) -> Unit
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
@@ -81,11 +76,10 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 val auth = authOf(arguments[1]!! as Map<String, Any>)
                 val callbackDispatcherHandle = arguments[2].asLong()
                 val initializeResourcesHandle = arguments[3].asLong()
-                val loggerHandle = arguments[4].asLong()
-                val middlewareRespondHandle = arguments[5].asLong()
-                val middlewareTokenReceivedHandle = arguments[6].asLong()
-                val middlewareInspectHandle = arguments[7].asLong()
-                val userAgent = arguments[8]!! as String
+                val middlewareRespondHandle = arguments[4].asLong()
+                val middlewareTokenReceivedHandle = arguments[5].asLong()
+                val middlewareInspectHandle = arguments[6].asLong()
+                val userAgent = arguments[7]!! as String
 
                 context.sharedPreferences.edit()
                     .putString(Keys.PREFERENCES, Gson().toJson(preferences))
@@ -98,7 +92,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     Keys.INITIALIZE,
                     initializeResourcesHandle
                 )
-                context.registerFlutterCallback(Keys.LOGGER, loggerHandle)
                 context.registerFlutterCallback(Keys.MIDDLEWARE_RESPOND, middlewareRespondHandle)
                 context.registerFlutterCallback(
                     Keys.MIDDLEWARE_TOKEN_RECEIVED,
@@ -106,7 +99,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 )
                 context.registerFlutterCallback(Keys.MIDDLEWARE_INSPECT, middlewareInspectHandle)
 
-                app!!.startPhoneLib(activityClass!!)
+                app!!.startPhoneLib(activityClass!!, onLogReceived)
 
                 result.success(null)
             }
@@ -256,6 +249,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
         internal var app: Application? = null
         internal var activityClass: Class<out Activity>? = null
+        internal var onLogReceived: OnLogReceivedCallback? = null
 
         // Can't access isInitialized outside of the companion object, so we have to define this
         // getter.
@@ -278,7 +272,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         const val PREFERENCES = "preferences"
         const val CALLBACK_DISPATCHER = "callbackDispatcher"
         const val INITIALIZE = "initialize"
-        const val LOGGER = "onLogReceived"
         const val MIDDLEWARE_RESPOND = "Middleware.respond"
         const val MIDDLEWARE_TOKEN_RECEIVED = "Middleware.tokenReceived"
         const val MIDDLEWARE_INSPECT = "Middleware.inspect"
@@ -291,7 +284,8 @@ fun Application.startPhoneLib(
      * The activity to show when the incoming call notification is pressed. Almost always the
      * `MainActivity`.
      */
-    activityClass: Class<out Activity>
+    activityClass: Class<out Activity>,
+    onLogReceived: OnLogReceivedCallback? = null,
 ) {
     if (PhoneLib.isPILInitialized) {
         Log.d(PhoneLib.LOG_TAG, "FlutterPhoneLib is already initialized")
@@ -304,6 +298,10 @@ fun Application.startPhoneLib(
 
     if (PhoneLib.activityClass == null) {
         PhoneLib.activityClass = activityClass
+    }
+
+    if (PhoneLib.onLogReceived == null) {
+        PhoneLib.onLogReceived = onLogReceived
     }
 
     val prefs = sharedPreferences
@@ -339,7 +337,7 @@ fun Application.startPhoneLib(
             ),
             automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
             middleware = ProxyMiddleware(this@startPhoneLib),
-            logger = AggregatedLogger(this@startPhoneLib),
+            logger = { message, level -> onLogReceived?.invoke(message, level) },
             onMissedCallNotificationPressed = {
                 if (!activityTracker.isAnyActivityVisible) {
                     PhoneLib.wasMissedCallNotificationPressed = true
@@ -399,32 +397,6 @@ private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
     override fun onActivityDestroyed(activity: Activity) {}
-
-}
-
-// Logs are sent out in groups to prevent overworking the thread, which had the result of
-// making calls not work.
-private class AggregatedLogger(private val context: Context) : Logger {
-
-    override fun onLogReceived(message: String, level: LogLevel) {
-        Log.println(
-            when (level) {
-                DEBUG -> Log.DEBUG
-                INFO -> Log.INFO
-                WARNING -> Log.WARN
-                ERROR -> Log.ERROR
-            },
-            PhoneLib.LOG_TAG,
-            message
-        )
-
-        GlobalScope.launch(Dispatchers.Main) {
-            context.invokeMethodThroughCallback(
-                PhoneLib.Keys.LOGGER,
-                listOf(listOf(level.toString(), message))
-            )
-        }
-    }
 
 }
 

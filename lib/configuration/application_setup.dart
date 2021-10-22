@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../logging/log_level.dart';
 import '../push/middleware.dart';
 import '../util/equatable.dart';
 
@@ -28,13 +27,6 @@ class ApplicationSetup extends Equatable {
   /// in your infrastructure.
   final Middleware? middleware;
 
-  /// Receive logs from the PhoneLib.
-  ///
-  /// Runs in a separate isolate, the same isolate as [initialize].
-  ///
-  /// Must be a static or top level function.
-  final void Function(LogLevel, String)? logger;
-
   /// Invoked when a missed call notification is pressed.
   ///
   /// When the app is in the foreground, this is called the instant the user
@@ -51,12 +43,11 @@ class ApplicationSetup extends Equatable {
   const ApplicationSetup({
     this.initialize,
     this.middleware,
-    this.logger,
     this.onMissedCallNotificationPressed,
     this.userAgent = 'Flutter Phone Lib',
   }) : assert(
           userAgent.length > 0 &&
-              ((middleware == null && logger == null) || initialize != null),
+              (middleware == null || initialize != null),
         );
 
   @override
@@ -64,7 +55,6 @@ class ApplicationSetup extends Equatable {
   List<Object?> get props => [
         middleware,
         initialize,
-        logger,
         onMissedCallNotificationPressed,
         userAgent,
       ];
