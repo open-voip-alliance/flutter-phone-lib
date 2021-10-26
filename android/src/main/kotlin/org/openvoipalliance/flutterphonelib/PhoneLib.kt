@@ -33,7 +33,7 @@ import org.openvoipalliance.flutterphonelib.configuration.preferencesOf
 import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
 
-typealias OnLogReceivedCallback = (message: String, level: LogLevel) -> Unit
+typealias OnLogReceivedCallback = (message: String, level: PhoneLibLogLevel) -> Unit
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
@@ -112,7 +112,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                         pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                         pil.auth = authOf(arguments[1]!! as Map<String, Any>)
-                        pil.start(true, true)
+                        pil.start(false, true)
                         result.success(null)
                     }
                     "stop" -> {
@@ -337,7 +337,12 @@ fun Application.startPhoneLib(
             ),
             automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
             middleware = ProxyMiddleware(this@startPhoneLib),
-            logger = { message, level -> onLogReceived?.invoke(message, level) },
+            logger = { message, level -> onLogReceived?.invoke(message, when(level) {
+                DEBUG -> PhoneLibLogLevel.DEBUG
+                INFO -> PhoneLibLogLevel.INFO
+                WARNING -> PhoneLibLogLevel.WARNING
+                ERROR -> PhoneLibLogLevel.ERROR
+            }) },
             onMissedCallNotificationPressed = {
                 if (!activityTracker.isAnyActivityVisible) {
                     PhoneLib.wasMissedCallNotificationPressed = true
@@ -402,3 +407,7 @@ private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks
 
 internal val Context.sharedPreferences
     get() = getSharedPreferences(PhoneLib.Keys.SHARED_PREFERENCES, Context.MODE_PRIVATE)
+
+enum class PhoneLibLogLevel  {
+    DEBUG, INFO, WARNING, ERROR
+}
