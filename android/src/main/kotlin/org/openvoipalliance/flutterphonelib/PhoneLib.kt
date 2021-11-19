@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.NonNull
+import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import io.flutter.BuildConfig
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -25,6 +26,7 @@ import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
+import org.openvoipalliance.androidphoneintegration.push.Middleware
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
@@ -99,7 +101,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 )
                 context.registerFlutterCallback(Keys.MIDDLEWARE_INSPECT, middlewareInspectHandle)
 
-                app!!.startPhoneLib(activityClass!!, onLogReceived)
+                app!!.startPhoneLib(activityClass!!, null, onLogReceived)
 
                 result.success(null)
             }
@@ -250,6 +252,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         internal var app: Application? = null
         internal var activityClass: Class<out Activity>? = null
         internal var onLogReceived: OnLogReceivedCallback? = null
+        internal var middleware: Middleware? = null
 
         // Can't access isInitialized outside of the companion object, so we have to define this
         // getter.
@@ -285,6 +288,7 @@ fun Application.startPhoneLib(
      * `MainActivity`.
      */
     activityClass: Class<out Activity>,
+    middleware: NativeMiddleware? = null,
     onLogReceived: OnLogReceivedCallback? = null,
 ) {
     if (PhoneLib.isPILInitialized) {
@@ -302,6 +306,20 @@ fun Application.startPhoneLib(
 
     if (PhoneLib.onLogReceived == null) {
         PhoneLib.onLogReceived = onLogReceived
+    }
+
+    if (PhoneLib.middleware == null) {
+        middleware?.let { nativeMiddleware ->
+            PhoneLib.middleware = object : Middleware {
+                override fun respond(remoteMessage: RemoteMessage, available: Boolean)
+                        = nativeMiddleware.respond(remoteMessage, available)
+
+                override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
+
+                override suspend fun inspect(remoteMessage: RemoteMessage)
+                = nativeMiddleware.inspect(remoteMessage)
+            }
+        }
     }
 
     val prefs = sharedPreferences
@@ -336,7 +354,7 @@ fun Application.startPhoneLib(
                 activityClass,
             ),
             automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
-            middleware = ProxyMiddleware(this@startPhoneLib),
+            middleware = PhoneLib.middleware ?: ProxyMiddleware(this@startPhoneLib),
             logger = { message, level -> onLogReceived?.invoke(message, when(level) {
                 DEBUG -> PhoneLibLogLevel.DEBUG
                 INFO -> PhoneLibLogLevel.INFO
@@ -361,26 +379,6 @@ fun Application.startPhoneLib(
     }
 
     Log.d(PhoneLib.LOG_TAG, "Started!")
-}
-
-/**
- * Configure the FlutterActivity to show when on the lockscreen,
- * this should be called at the end of the configureFlutterEngine
- * method when extending FlutterActivity.
- */
-fun <A : Activity> A.showOnLockScreen() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-        setShowWhenLocked(true)
-        setTurnScreenOn(true)
-    } else {
-        window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                    or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
-        )
-    }
 }
 
 private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks {
@@ -410,4 +408,23 @@ internal val Context.sharedPreferences
 
 enum class PhoneLibLogLevel  {
     DEBUG, INFO, WARNING, ERROR
+}
+
+/**
+ * An interface to allow a native middleware to be provided rather than via Dart.
+ *
+ */
+interface NativeMiddleware {
+    fun respond(remoteMessage: RemoteMessage, available: Boolean)
+
+    fun tokenReceived(token: String)
+
+    /**
+     * Inspect the contents of the push notification to determine whether the
+     * contents is a push message.
+     *
+     * @return If TRUE Is returned, processing of the push message will continue as if it
+     * is a call. If FALSE is returned, nothing further will be done with this notification.
+     */
+    suspend fun inspect(remoteMessage: RemoteMessage): Boolean = true
 }
