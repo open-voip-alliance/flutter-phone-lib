@@ -5,10 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import androidx.annotation.NonNull
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
@@ -24,7 +22,6 @@ import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSet
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup.AutomaticallyLaunchCallActivity.*
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
-import org.openvoipalliance.androidphoneintegration.logging.LogLevel
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
 import org.openvoipalliance.androidphoneintegration.push.Middleware
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
@@ -101,7 +98,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 )
                 context.registerFlutterCallback(Keys.MIDDLEWARE_INSPECT, middlewareInspectHandle)
 
-                app!!.startPhoneLib(activityClass!!, null, onLogReceived)
+                app!!.startPhoneLib(activityClass!!, nativeMiddleware, onLogReceived)
 
                 result.success(null)
             }
@@ -252,7 +249,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         internal var app: Application? = null
         internal var activityClass: Class<out Activity>? = null
         internal var onLogReceived: OnLogReceivedCallback? = null
-        internal var middleware: Middleware? = null
+        internal var nativeMiddleware: NativeMiddleware? = null
 
         // Can't access isInitialized outside of the companion object, so we have to define this
         // getter.
@@ -288,7 +285,7 @@ fun Application.startPhoneLib(
      * `MainActivity`.
      */
     activityClass: Class<out Activity>,
-    middleware: NativeMiddleware? = null,
+    nativeMiddleware: NativeMiddleware? = null,
     onLogReceived: OnLogReceivedCallback? = null,
 ) {
     if (PhoneLib.isPILInitialized) {
@@ -308,18 +305,8 @@ fun Application.startPhoneLib(
         PhoneLib.onLogReceived = onLogReceived
     }
 
-    if (PhoneLib.middleware == null) {
-        middleware?.let { nativeMiddleware ->
-            PhoneLib.middleware = object : Middleware {
-                override fun respond(remoteMessage: RemoteMessage, available: Boolean)
-                        = nativeMiddleware.respond(remoteMessage, available)
-
-                override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
-
-                override suspend fun inspect(remoteMessage: RemoteMessage)
-                        = nativeMiddleware.inspect(remoteMessage)
-            }
-        }
+    if (PhoneLib.nativeMiddleware == null) {
+        PhoneLib.nativeMiddleware = nativeMiddleware
     }
 
     val prefs = sharedPreferences
@@ -354,7 +341,7 @@ fun Application.startPhoneLib(
                 activityClass,
             ),
             automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
-            middleware = PhoneLib.middleware ?: ProxyMiddleware(this@startPhoneLib),
+            middleware = nativeMiddleware?.toMiddleware() ?: ProxyMiddleware(this@startPhoneLib),
             logger = { message, level -> onLogReceived?.invoke(message, when(level) {
                 DEBUG -> PhoneLibLogLevel.DEBUG
                 INFO -> PhoneLibLogLevel.INFO
@@ -427,4 +414,18 @@ interface NativeMiddleware {
      * is a call. If FALSE is returned, nothing further will be done with this notification.
      */
     suspend fun inspect(remoteMessage: RemoteMessage): Boolean = true
+}
+
+fun NativeMiddleware.toMiddleware(): Middleware {
+    val nativeMiddleware = this
+
+    return object : Middleware {
+        override fun respond(remoteMessage: RemoteMessage, available: Boolean)
+                = nativeMiddleware.respond(remoteMessage, available)
+
+        override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
+
+        override suspend fun inspect(remoteMessage: RemoteMessage)
+                = nativeMiddleware.inspect(remoteMessage)
+    }
 }
