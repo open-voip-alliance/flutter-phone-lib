@@ -317,7 +317,7 @@ fun Application.startPhoneLib(
                 override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
 
                 override suspend fun inspect(remoteMessage: RemoteMessage)
-                = nativeMiddleware.inspect(remoteMessage)
+                        = nativeMiddleware.inspect(remoteMessage)
             }
         }
     }
