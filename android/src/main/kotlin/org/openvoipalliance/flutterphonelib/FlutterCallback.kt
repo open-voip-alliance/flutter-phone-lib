@@ -47,80 +47,82 @@ private object FlutterCallback {
      * Invokes a method through the callback dispatcher.
      */
     fun invokeMethodThroughCallback(context: Context, method: String, vararg arguments: Any?, result: MethodChannel.Result? = null) {
-        if (!::flutterEngine.isInitialized) {
-            FlutterMain.startInitialization(context)
-            FlutterMain.ensureInitializationComplete(context, null)
+        GlobalScope.launch(Dispatchers.Main) {
+            if (!::flutterEngine.isInitialized) {
+                FlutterMain.startInitialization(context)
+                FlutterMain.ensureInitializationComplete(context, null)
 
-            flutterEngine = FlutterEngine(context)
-            methodChannel = MethodChannel(
-                flutterEngine.dartExecutor.binaryMessenger,
-                "org.openvoipalliance.flutterphonelib/background"
-            )
-        }
-
-        GlobalScope.launch {
-            if (!jobExecutor.isRunning) {
-                jobExecutor.start()
+                flutterEngine = FlutterEngine(context)
+                methodChannel = MethodChannel(
+                    flutterEngine.dartExecutor.binaryMessenger,
+                    "org.openvoipalliance.flutterphonelib/background"
+                )
             }
 
-            jobExecutor.add(
-                // Job has to be lazy, since it should be started by the executor and
-                // not immediately.
-                GlobalScope.launch(start = CoroutineStart.LAZY) {
-                    if (!flutterEngine.dartExecutor.isExecutingDart) {
-                        // We wait until the callback dispatcher isolate is initialized on the Dart side
-                        // and we can send methods.
-                        suspendCoroutine<Unit> { continuation ->
-                            // This needs to happen on the main thread.
-                            launch(Dispatchers.Main) {
-                                val callbackHandle =
-                                    handleOf(context, PhoneLib.Keys.CALLBACK_DISPATCHER)
-                                val callbackInfo = FlutterCallbackInformation
-                                    .lookupCallbackInformation(callbackHandle)
+            launch {
+                if (!jobExecutor.isRunning) {
+                    jobExecutor.start()
+                }
 
-                                val callback = DartExecutor.DartCallback(
-                                    context.assets,
-                                    FlutterMain.findAppBundlePath(),
-                                    callbackInfo
-                                )
+                jobExecutor.add(
+                    // Job has to be lazy, since it should be started by the executor and
+                    // not immediately.
+                    GlobalScope.launch(start = CoroutineStart.LAZY) {
+                        if (!flutterEngine.dartExecutor.isExecutingDart) {
+                            // We wait until the callback dispatcher isolate is initialized on the Dart side
+                            // and we can send methods.
+                            suspendCoroutine<Unit> { continuation ->
+                                // This needs to happen on the main thread.
+                                launch(Dispatchers.Main) {
+                                    val callbackHandle =
+                                        handleOf(context, PhoneLib.Keys.CALLBACK_DISPATCHER)
+                                    val callbackInfo = FlutterCallbackInformation
+                                        .lookupCallbackInformation(callbackHandle)
 
-                                methodChannel.setMethodCallHandler { call, result ->
-                                    if (call.method == "callbackDispatcherIsInitialized") {
-                                        Log.d(
-                                            PhoneLib.LOG_TAG,
-                                            "Callback dispatcher is ready to receive methods"
-                                        )
-                                        continuation.resume(Unit)
-                                        result.success(null)
+                                    val callback = DartExecutor.DartCallback(
+                                        context.assets,
+                                        FlutterMain.findAppBundlePath(),
+                                        callbackInfo
+                                    )
+
+                                    methodChannel.setMethodCallHandler { call, result ->
+                                        if (call.method == "callbackDispatcherIsInitialized") {
+                                            Log.d(
+                                                PhoneLib.LOG_TAG,
+                                                "Callback dispatcher is ready to receive methods"
+                                            )
+                                            continuation.resume(Unit)
+                                            result.success(null)
+                                        }
                                     }
-                                }
 
-                                Log.d(PhoneLib.LOG_TAG, "Executing callback dispatcher")
-                                flutterEngine.dartExecutor.executeDartCallback(callback)
-                                Log.d(
-                                    PhoneLib.LOG_TAG,
-                                    "Waiting until callback dispatcher is ready to receive method calls"
-                                )
+                                    Log.d(PhoneLib.LOG_TAG, "Executing callback dispatcher")
+                                    flutterEngine.dartExecutor.executeDartCallback(callback)
+                                    Log.d(
+                                        PhoneLib.LOG_TAG,
+                                        "Waiting until callback dispatcher is ready to receive method calls"
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    val initialize = handleOf(context, PhoneLib.Keys.INITIALIZE)
-                    val methodCallbackHandle = handleOf(context, method)
+                        val initialize = handleOf(context, PhoneLib.Keys.INITIALIZE)
+                        val methodCallbackHandle = handleOf(context, method)
 
-                    Handler(Looper.getMainLooper()).post {
-                        Log.d(
-                            PhoneLib.LOG_TAG,
-                            "Invoking method through callback dispatcher: $method"
-                        )
-                        methodChannel.invokeMethod(
-                            method,
-                            listOf(initialize, methodCallbackHandle, *arguments),
-                            result
-                        )
+                        Handler(Looper.getMainLooper()).post {
+                            Log.d(
+                                PhoneLib.LOG_TAG,
+                                "Invoking method through callback dispatcher: $method"
+                            )
+                            methodChannel.invokeMethod(
+                                method,
+                                listOf(initialize, methodCallbackHandle, *arguments),
+                                result
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
