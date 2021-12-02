@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'audio/audio_state.dart';
 import 'call/call.dart';
+import 'util/cast_recursive.dart';
 import 'util/equatable.dart';
 
 part 'call_session_state.g.dart';
@@ -30,12 +31,12 @@ class CallSessionState extends Equatable {
       CallSessionState(
         activeCall: json['activeCall'] == null
             ? null
-            : Call.fromJson(json['activeCall'] as Map<String, dynamic>),
+            : Call.fromJson((json['activeCall'] as Map).castRecursively()),
         inactiveCall: json['inactiveCall'] == null
             ? null
-            : Call.fromJson(json['inactiveCall'] as Map<String, dynamic>),
+            : Call.fromJson((json['inactiveCall'] as Map).castRecursively()),
         audioState: AudioState.fromJson(
-          (json['audioState'] as Map).cast<String, dynamic>(),
+          (json['audioState'] as Map).castRecursively(),
         ),
       );
 
