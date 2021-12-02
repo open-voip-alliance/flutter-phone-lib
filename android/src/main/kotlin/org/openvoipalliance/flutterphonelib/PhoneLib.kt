@@ -98,7 +98,12 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 )
                 context.registerFlutterCallback(Keys.MIDDLEWARE_INSPECT, middlewareInspectHandle)
 
-                app!!.startPhoneLib(activityClass!!, nativeMiddleware, onLogReceived)
+                app!!.startPhoneLib(
+                    activityClass!!,
+                    incomingCallActivityClass,
+                    nativeMiddleware,
+                    onLogReceived
+                )
 
                 result.success(null)
             }
@@ -248,6 +253,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
         internal var app: Application? = null
         internal var activityClass: Class<out Activity>? = null
+        internal var incomingCallActivityClass: Class<out Activity>? = null
         internal var onLogReceived: OnLogReceivedCallback? = null
         internal var nativeMiddleware: NativeMiddleware? = null
 
@@ -285,6 +291,7 @@ fun Application.startPhoneLib(
      * `MainActivity`.
      */
     activityClass: Class<out Activity>,
+    incomingCallActivityClass: Class<out Activity>? = null,
     nativeMiddleware: NativeMiddleware? = null,
     onLogReceived: OnLogReceivedCallback? = null,
 ) {
@@ -299,6 +306,10 @@ fun Application.startPhoneLib(
 
     if (PhoneLib.activityClass == null) {
         PhoneLib.activityClass = activityClass
+    }
+
+    if (PhoneLib.incomingCallActivityClass == null) {
+        PhoneLib.incomingCallActivityClass = incomingCallActivityClass
     }
 
     if (PhoneLib.onLogReceived == null) {
@@ -338,16 +349,19 @@ fun Application.startPhoneLib(
             application = this@startPhoneLib,
             activities = ApplicationSetup.Activities(
                 activityClass,
-                activityClass,
+                incomingCall = incomingCallActivityClass ?: activityClass
             ),
-            automaticallyLaunchCallActivity = ONLY_FROM_BACKGROUND,
             middleware = nativeMiddleware?.toMiddleware() ?: ProxyMiddleware(this@startPhoneLib),
-            logger = { message, level -> onLogReceived?.invoke(message, when(level) {
-                DEBUG -> PhoneLibLogLevel.DEBUG
-                INFO -> PhoneLibLogLevel.INFO
-                WARNING -> PhoneLibLogLevel.WARNING
-                ERROR -> PhoneLibLogLevel.ERROR
-            }) },
+            logger = { message, level ->
+                onLogReceived?.invoke(
+                    message, when (level) {
+                        DEBUG -> PhoneLibLogLevel.DEBUG
+                        INFO -> PhoneLibLogLevel.INFO
+                        WARNING -> PhoneLibLogLevel.WARNING
+                        ERROR -> PhoneLibLogLevel.ERROR
+                    }
+                )
+            },
             onMissedCallNotificationPressed = {
                 if (!activityTracker.isAnyActivityVisible) {
                     PhoneLib.wasMissedCallNotificationPressed = true
@@ -374,9 +388,13 @@ private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks
     val isAnyActivityVisible
         get() = activitiesVisible > 0
 
-    override fun onActivityResumed(activity: Activity) { activitiesVisible++ }
+    override fun onActivityResumed(activity: Activity) {
+        activitiesVisible++
+    }
 
-    override fun onActivityPaused(activity: Activity) { activitiesVisible-- }
+    override fun onActivityPaused(activity: Activity) {
+        activitiesVisible--
+    }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
@@ -393,7 +411,7 @@ private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks
 internal val Context.sharedPreferences
     get() = getSharedPreferences(PhoneLib.Keys.SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
-enum class PhoneLibLogLevel  {
+enum class PhoneLibLogLevel {
     DEBUG, INFO, WARNING, ERROR
 }
 
@@ -420,12 +438,12 @@ fun NativeMiddleware.toMiddleware(): Middleware {
     val nativeMiddleware = this
 
     return object : Middleware {
-        override fun respond(remoteMessage: RemoteMessage, available: Boolean)
-                = nativeMiddleware.respond(remoteMessage, available)
+        override fun respond(remoteMessage: RemoteMessage, available: Boolean) =
+            nativeMiddleware.respond(remoteMessage, available)
 
         override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
 
-        override suspend fun inspect(remoteMessage: RemoteMessage)
-                = nativeMiddleware.inspect(remoteMessage)
+        override suspend fun inspect(remoteMessage: RemoteMessage) =
+            nativeMiddleware.inspect(remoteMessage)
     }
 }
