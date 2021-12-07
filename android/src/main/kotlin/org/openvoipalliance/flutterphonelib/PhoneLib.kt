@@ -80,12 +80,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 val middlewareInspectHandle = arguments[6].asLong()
                 val userAgent = arguments[7]!! as String
 
-                context.sharedPreferences.edit()
-                    .putString(Keys.PREFERENCES, Gson().toJson(preferences))
-                    .putString(Keys.AUTH, Gson().toJson(auth))
-                    .putString(Keys.USER_AGENT, userAgent)
-                    .apply()
-
+                persist(auth, preferences, userAgent)
                 context.registerFlutterCallback(Keys.CALLBACK_DISPATCHER, callbackDispatcherHandle)
                 context.registerFlutterCallback(
                     Keys.INITIALIZE,
@@ -116,10 +111,15 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                         pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                         pil.auth = authOf(arguments[1]!! as Map<String, Any>)
-                        pil.start(false, true)
+                        persist(auth = pil.auth, preferences = pil.preferences)
+                        pil.start(
+                            forceInitialize = false,
+                            forceReregister = true,
+                        )
                         result.success(null)
                     }
                     "stop" -> {
+                        context.sharedPreferences.edit().clear().apply()
                         pil.stop()
                         result.success(null)
                     }
@@ -238,6 +238,21 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
             }
             else -> result.notImplemented()
         }
+    }
+
+    /**
+     * Persists the data in shared preferences so that we can boot the PIL natively, without
+     * having to receive the details via Flutter.
+     */
+    private fun persist(
+        auth: Auth? = null,
+        preferences: Preferences? = null,
+        userAgent: String? = null
+    ) = context.sharedPreferences.edit().apply {
+        auth?.let { putString(Keys.AUTH, Gson().toJson(it)) }
+        preferences?.let { putString(Keys.PREFERENCES,  Gson().toJson(it)) }
+        userAgent?.let { putString(Keys.USER_AGENT, it) }
+        apply()
     }
 
     private fun Any?.asLong(): Long {
