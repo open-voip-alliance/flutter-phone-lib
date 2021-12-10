@@ -100,6 +100,17 @@ class PhoneLib with WidgetsBindingObserver {
 
   Future<void> stop() => channel.invokeMethod('PhoneLib.stop');
 
+  /// Closes this [PhoneLib] instance for good. As opposed to [stop], [start]
+  /// should not be called again, instead you should create a new instance.
+  ///
+  /// You don't need to call [stop] before closing, it's handled here.
+  Future<void> close() async {
+    await stop();
+    WidgetsBinding.instance?.removeObserver(this);
+    channel.setMethodCallHandler(null);
+    _instance = null;
+  }
+
   Future<void> updatePreferences(Preferences preferences)
   => channel.invokeMethod('PhoneLib.updatePreferences', [
     preferences.toJson(),
