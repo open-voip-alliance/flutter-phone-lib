@@ -25,6 +25,8 @@ class Call extends Equatable {
   final String remotePartyHeading;
   final String remotePartySubheading;
   final String prettyDuration;
+  final String callId;
+  final String reason;
 
   const Call({
     required this.remoteNumber,
@@ -39,6 +41,8 @@ class Call extends Equatable {
     required this.remotePartyHeading,
     required this.remotePartySubheading,
     required this.prettyDuration,
+    required this.callId,
+    required this.reason,
   });
 
   @override
@@ -56,6 +60,8 @@ class Call extends Equatable {
         remotePartyHeading,
         remotePartySubheading,
         prettyDuration,
+        callId,
+        reason,
       ];
 
   static Call fromJson(Map<String, dynamic> json) => _$CallFromJson(json);

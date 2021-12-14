@@ -16,4 +16,6 @@ fun Call.toMap() = mapOf(
         "remotePartyHeading" to remotePartyHeading,
         "remotePartySubheading" to remotePartySubheading,
         "prettyDuration" to prettyDuration,
+        "callId" to callId,
+        "reason" to reason,
 )

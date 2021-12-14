@@ -22,6 +22,8 @@ import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSet
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup.AutomaticallyLaunchCallActivity.*
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
+import org.openvoipalliance.androidphoneintegration.events.Event
+import org.openvoipalliance.androidphoneintegration.events.PILEventListener
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
 import org.openvoipalliance.androidphoneintegration.push.Middleware
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
@@ -33,6 +35,7 @@ import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
 
 typealias OnLogReceivedCallback = (message: String, level: PhoneLibLogLevel) -> Unit
+typealias OnCallEndedCallback = (reason: String) -> Unit
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
@@ -97,7 +100,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     activityClass!!,
                     incomingCallActivityClass,
                     nativeMiddleware,
-                    onLogReceived
+                    onCallEnded,
+                    onLogReceived,
                 )
 
                 result.success(null)
@@ -271,6 +275,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         internal var incomingCallActivityClass: Class<out Activity>? = null
         internal var onLogReceived: OnLogReceivedCallback? = null
         internal var nativeMiddleware: NativeMiddleware? = null
+        internal var onCallEnded: OnCallEndedCallback? = null
+        internal var callListener: PILEventListener? = null
 
         // Can't access isInitialized outside of the companion object, so we have to define this
         // getter.
@@ -308,6 +314,7 @@ fun Application.startPhoneLib(
     activityClass: Class<out Activity>,
     incomingCallActivityClass: Class<out Activity>? = null,
     nativeMiddleware: NativeMiddleware? = null,
+    onCallEnded: OnCallEndedCallback? = null,
     onLogReceived: OnLogReceivedCallback? = null,
 ) {
     if (PhoneLib.isPILInitialized) {
@@ -333,6 +340,10 @@ fun Application.startPhoneLib(
 
     if (PhoneLib.nativeMiddleware == null) {
         PhoneLib.nativeMiddleware = nativeMiddleware
+    }
+
+    if (PhoneLib.onCallEnded == null) {
+        PhoneLib.onCallEnded = onCallEnded
     }
 
     val prefs = sharedPreferences
@@ -394,6 +405,18 @@ fun Application.startPhoneLib(
         )
     }
 
+    PhoneLib.callListener = object : PILEventListener {
+        override fun onEvent(event: Event) {
+            when (event) {
+                is Event.CallSessionEvent.CallEnded -> onCallEnded
+                    ?.invoke(event.state.activeCall?.reason ?: "")
+                else -> {}
+            }
+        }
+    }.also {
+        PhoneLib.pil.events.listen(it)
+    }
+
     Log.d(PhoneLib.LOG_TAG, "Started!")
 }
 
@@ -446,7 +469,7 @@ interface NativeMiddleware {
      * @return If TRUE Is returned, processing of the push message will continue as if it
      * is a call. If FALSE is returned, nothing further will be done with this notification.
      */
-    suspend fun inspect(remoteMessage: RemoteMessage): Boolean = true
+    fun inspect(remoteMessage: RemoteMessage): Boolean = true
 }
 
 fun NativeMiddleware.toMiddleware(): Middleware {
@@ -458,7 +481,7 @@ fun NativeMiddleware.toMiddleware(): Middleware {
 
         override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
 
-        override suspend fun inspect(remoteMessage: RemoteMessage) =
+        override fun inspect(remoteMessage: RemoteMessage) =
             nativeMiddleware.inspect(remoteMessage)
     }
 }
