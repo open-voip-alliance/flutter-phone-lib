@@ -31,22 +31,5 @@ internal class ProxyMiddleware(
         context.invokeMethodThroughCallback(PhoneLib.Keys.MIDDLEWARE_TOKEN_RECEIVED, token)
     }
 
-    override suspend fun inspect(remoteMessage: RemoteMessage): Boolean =
-        suspendCoroutine { continuation ->
-            context.invokeMethodThroughCallback(
-                PhoneLib.Keys.MIDDLEWARE_INSPECT,
-                remoteMessage.toMap(),
-                result = object : MethodChannel.Result {
-                    override fun success(result: Any?) = continuation.resume(result as Boolean)
-
-                    override fun error(
-                        errorCode: String?,
-                        errorMessage: String?,
-                        errorDetails: Any?
-                    ) = continuation.resume(false)
-
-                    override fun notImplemented() = continuation.resume(false)
-                }
-            )
-        }
+    override fun inspect(remoteMessage: RemoteMessage) = true
 }
