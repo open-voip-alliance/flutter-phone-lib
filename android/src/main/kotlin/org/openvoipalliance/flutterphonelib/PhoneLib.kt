@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
 import org.openvoipalliance.androidphoneintegration.audio.BluetoothAudioRoute
+import org.openvoipalliance.androidphoneintegration.call.Call
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup.AutomaticallyLaunchCallActivity.*
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
@@ -35,7 +36,7 @@ import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
 
 typealias OnLogReceivedCallback = (message: String, level: PhoneLibLogLevel) -> Unit
-typealias OnCallEndedCallback = (reason: String) -> Unit
+typealias OnCallEndedCallback = (call: NativeCall) -> Unit
 
 class PhoneLib : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
@@ -409,7 +410,7 @@ fun Application.startPhoneLib(
         override fun onEvent(event: Event) {
             when (event) {
                 is Event.CallSessionEvent.CallEnded -> onCallEnded
-                    ?.invoke(event.state.activeCall?.reason ?: "")
+                    ?.invoke(event.state.activeCall.toNativeCall())
                 else -> {}
             }
         }
@@ -484,4 +485,16 @@ fun NativeMiddleware.toMiddleware(): Middleware {
         override fun inspect(remoteMessage: RemoteMessage) =
             nativeMiddleware.inspect(remoteMessage)
     }
+}
+
+data class NativeCall(
+    val mos: String,
+    val reason: String,
+    val duration: String,
+    val direction: String,
+)
+
+fun Call?.toNativeCall(): NativeCall = when {
+    this != null -> NativeCall(mos.toString(), reason, duration.toString(), direction.name.lowercase())
+    else -> NativeCall("", "", "", "")
 }
