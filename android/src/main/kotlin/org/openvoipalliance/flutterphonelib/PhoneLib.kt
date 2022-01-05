@@ -50,14 +50,15 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                 flutterPluginBinding.binaryMessenger,
                 "org.openvoipalliance.flutterphonelib/foreground"
             )
-            channel.setMethodCallHandler(this)
         }
 
+        channel?.setMethodCallHandler(this)
         context = flutterPluginBinding.applicationContext
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
+        channel = null
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -269,7 +270,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
     }
 
     companion object {
-        internal lateinit var channel: MethodChannel
+        internal var channel: MethodChannel? = null
 
         internal var app: Application? = null
         internal var activityClass: Class<out Activity>? = null
@@ -285,7 +286,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
             get() = ::pil.isInitialized
 
         internal val isChannelInitialized: Boolean
-            get() = ::channel.isInitialized
+            get() = channel != null
 
         internal lateinit var pil: PIL
 
@@ -399,7 +400,7 @@ fun Application.startPhoneLib(
                         }
                     )
                 } else {
-                    PhoneLib.channel.invokeMethod("onMissedCallNotificationPressed", null)
+                    PhoneLib.channel?.invokeMethod("onMissedCallNotificationPressed", null)
                 }
             },
             userAgent = userAgent
