@@ -8,6 +8,7 @@ import com.google.firebase.messaging.RemoteMessage
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
 import org.openvoipalliance.androidphoneintegration.push.Middleware
+import org.openvoipalliance.androidphoneintegration.push.UnavailableReason
 import org.openvoipalliance.flutterphonelib.PhoneLib
 import org.openvoipalliance.flutterphonelib.invokeMethodThroughCallback
 import kotlin.coroutines.resume
@@ -19,7 +20,11 @@ import kotlin.coroutines.suspendCoroutine
 internal class ProxyMiddleware(
     private val context: Context,
 ) : Middleware {
-    override fun respond(remoteMessage: RemoteMessage, available: Boolean) {
+    override fun respond(
+        remoteMessage: RemoteMessage,
+        available: Boolean,
+        reason: UnavailableReason?,
+    ) {
         context.invokeMethodThroughCallback(
             PhoneLib.Keys.MIDDLEWARE_RESPOND,
             remoteMessage.toMap(),

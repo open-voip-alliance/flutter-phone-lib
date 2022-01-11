@@ -27,6 +27,7 @@ import org.openvoipalliance.androidphoneintegration.events.Event
 import org.openvoipalliance.androidphoneintegration.events.PILEventListener
 import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
 import org.openvoipalliance.androidphoneintegration.push.Middleware
+import org.openvoipalliance.androidphoneintegration.push.UnavailableReason
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
@@ -460,7 +461,11 @@ enum class PhoneLibLogLevel {
  *
  */
 interface NativeMiddleware {
-    fun respond(remoteMessage: RemoteMessage, available: Boolean)
+    fun respond(
+        remoteMessage: RemoteMessage,
+        available: Boolean,
+        reason: NativeMiddlewareUnavailableReason?,
+    )
 
     fun tokenReceived(token: String)
 
@@ -478,14 +483,31 @@ fun NativeMiddleware.toMiddleware(): Middleware {
     val nativeMiddleware = this
 
     return object : Middleware {
-        override fun respond(remoteMessage: RemoteMessage, available: Boolean) =
-            nativeMiddleware.respond(remoteMessage, available)
+        override fun respond(
+            remoteMessage: RemoteMessage,
+            available: Boolean,
+            reason: UnavailableReason?,
+        ) =
+            nativeMiddleware.respond(remoteMessage, available, reason.toNative())
 
         override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
 
         override fun inspect(remoteMessage: RemoteMessage) =
             nativeMiddleware.inspect(remoteMessage)
     }
+}
+
+fun UnavailableReason?.toNative() = when (this) {
+    UnavailableReason.IN_CALL -> NativeMiddlewareUnavailableReason.IN_CALL
+    UnavailableReason.REJECTED_BY_ANDROID_TELECOM_FRAMEWORK -> NativeMiddlewareUnavailableReason.REJECTED_BY_ANDROID_TELECOM_FRAMEWORK
+    UnavailableReason.UNABLE_TO_REGISTER -> NativeMiddlewareUnavailableReason.UNABLE_TO_REGISTER
+    else -> null
+}
+
+enum class NativeMiddlewareUnavailableReason {
+    IN_CALL,
+    REJECTED_BY_ANDROID_TELECOM_FRAMEWORK,
+    UNABLE_TO_REGISTER,
 }
 
 data class NativeCall(
