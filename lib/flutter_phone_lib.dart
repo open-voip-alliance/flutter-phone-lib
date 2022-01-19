@@ -1,10 +1,12 @@
 export 'audio/audio_route.dart';
 export 'audio/audio_state.dart';
+export 'audio/bluetooth_audio_route.dart';
 export 'audio/codec.dart';
 export 'builder.dart';
 export 'call/call.dart';
 export 'call/call_direction.dart';
 export 'call/call_state.dart';
+export 'call_session_state.dart';
 export 'configuration/application_setup.dart';
 export 'configuration/auth.dart';
 export 'configuration/preferences.dart';

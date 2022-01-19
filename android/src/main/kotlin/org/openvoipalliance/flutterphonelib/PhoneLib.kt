@@ -257,7 +257,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         userAgent: String? = null
     ) = context.sharedPreferences.edit().apply {
         auth?.let { putString(Keys.AUTH, Gson().toJson(it)) }
-        preferences?.let { putString(Keys.PREFERENCES,  Gson().toJson(it)) }
+        preferences?.let { putString(Keys.PREFERENCES, Gson().toJson(it)) }
         userAgent?.let { putString(Keys.USER_AGENT, it) }
         apply()
     }
@@ -458,7 +458,6 @@ enum class PhoneLibLogLevel {
 
 /**
  * An interface to allow a native middleware to be provided rather than via Dart.
- *
  */
 interface NativeMiddleware {
     fun respond(
@@ -487,8 +486,7 @@ fun NativeMiddleware.toMiddleware(): Middleware {
             remoteMessage: RemoteMessage,
             available: Boolean,
             reason: UnavailableReason?,
-        ) =
-            nativeMiddleware.respond(remoteMessage, available, reason.toNative())
+        ) = nativeMiddleware.respond(remoteMessage, available, reason.toNative())
 
         override fun tokenReceived(token: String) = nativeMiddleware.tokenReceived(token)
 
@@ -518,6 +516,11 @@ data class NativeCall(
 )
 
 fun Call?.toNativeCall(): NativeCall = when {
-    this != null -> NativeCall(mos.toString(), reason, duration.toString(), direction.name.lowercase())
+    this != null -> NativeCall(
+        mos.toString(),
+        reason,
+        duration.toString(),
+        direction.name.lowercase()
+    )
     else -> NativeCall("", "", "", "")
 }

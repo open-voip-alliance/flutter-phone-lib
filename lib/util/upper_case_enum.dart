@@ -4,19 +4,22 @@ import 'package:meta/meta.dart';
 /// customizable. We need to send and receive values as uppercase.
 @immutable
 abstract class UpperCaseEnum {
-  final String value;
+  final String name;
 
-  const UpperCaseEnum(this.value);
+  const UpperCaseEnum(this.name);
 
-  String toJson() => value;
+  String toJson() => name;
 
   static T fromJson<T extends UpperCaseEnum>(List<T> values, String json) =>
-      values.firstWhere((e) => e.value == json);
+      values.firstWhere((e) => e.name == json);
 
   @override
   bool operator ==(Object other) =>
-      other is UpperCaseEnum ? other.value == value : false;
+      other is UpperCaseEnum ? other.name == name : false;
 
   @override
-  int get hashCode => value.hashCode;
+  int get hashCode => name.hashCode;
+
+  @override
+  String toString() => '$runtimeType(\'$name\')';
 }

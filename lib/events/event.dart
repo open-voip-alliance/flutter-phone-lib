@@ -1,5 +1,6 @@
 import '../call_session_state.dart';
 import '../util/equatable.dart';
+import '../util/upper_case_enum.dart';
 
 class Event extends Equatable {
   const Event._();
@@ -32,6 +33,15 @@ class Event extends Equatable {
           return AttendedTransferStarted._(state);
         } else if (type == (AttendedTransferEnded).toString()) {
           return AttendedTransferEnded._(state);
+        }
+      } else if (json.containsKey('reason')) {
+        final reason = Reason.fromJson((json['reason'] as String));
+        final type = json['type'];
+
+        if (type == (OutgoingCallSetupFailed).toString()) {
+          return OutgoingCallSetupFailed._(reason);
+        } else if (type == (IncomingCallSetupFailed).toString()) {
+          return IncomingCallSetupFailed._(reason);
         }
       }
     }
@@ -100,4 +110,39 @@ class AttendedTransferAborted extends AttendedTransferEvent {
 
 class AttendedTransferEnded extends AttendedTransferEvent {
   const AttendedTransferEnded._(CallSessionState state) : super._(state);
+}
+
+abstract class CallSetupFailedEvent extends Event {
+  final Reason reason;
+
+  const CallSetupFailedEvent._(this.reason) : super._();
+
+  @override
+  List<Object?> get props => [...super.props, reason];
+}
+
+class OutgoingCallSetupFailed extends CallSetupFailedEvent {
+  const OutgoingCallSetupFailed._(Reason reason) : super._(reason);
+}
+
+class IncomingCallSetupFailed extends CallSetupFailedEvent {
+  const IncomingCallSetupFailed._(Reason reason) : super._(reason);
+}
+
+class Reason extends UpperCaseEnum {
+  const Reason._(String value) : super(value);
+
+  static const inCall = Reason._('IN_CALL');
+  static const rejectedByAndroidTelecomFramework = Reason._(
+    'REJECTED_BY_ANDROID_TELECOM_FRAMEWORK',
+  );
+  static const unableToRegister = Reason._('UNABLE_TO_REGISTER');
+
+  static const List<Reason> values = [
+    inCall,
+    rejectedByAndroidTelecomFramework,
+    unableToRegister,
+  ];
+
+  static Reason fromJson(String json) => UpperCaseEnum.fromJson(values, json);
 }
