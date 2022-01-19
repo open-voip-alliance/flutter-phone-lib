@@ -94,7 +94,7 @@ class PhoneLib with WidgetsBindingObserver {
 
   Future<void> start(Preferences preferences, Auth auth) =>
       channel.invokeMethod('PhoneLib.start', [
-          preferences.toJson(),
+        preferences.toJson(),
         auth.toJson(),
       ]);
 
@@ -111,10 +111,10 @@ class PhoneLib with WidgetsBindingObserver {
     _instance = null;
   }
 
-  Future<void> updatePreferences(Preferences preferences)
-  => channel.invokeMethod('PhoneLib.updatePreferences', [
-    preferences.toJson(),
-  ]);
+  Future<void> updatePreferences(Preferences preferences) =>
+      channel.invokeMethod('PhoneLib.updatePreferences', [
+        preferences.toJson(),
+      ]);
 
   Future<void> call(String number) =>
       channel.invokeMethod('PhoneLib.call', number);
