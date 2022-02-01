@@ -4,20 +4,20 @@ PODS:
     - Flutter
     - PIL
   - iOSVoIPLib (0.1.0):
-    - linphone-sdk (= 4.4.1)
-  - linphone-sdk (4.4.1):
-    - linphone-sdk/all-frameworks (= 4.4.1)
-    - linphone-sdk/app-extension (= 4.4.1)
-    - linphone-sdk/app-extension-swift (= 4.4.1)
-    - linphone-sdk/basic-frameworks (= 4.4.1)
-    - linphone-sdk/swift (= 4.4.1)
-  - linphone-sdk/all-frameworks (4.4.1)
-  - linphone-sdk/app-extension (4.4.1)
-  - linphone-sdk/app-extension-swift (4.4.1):
+    - linphone-sdk (= 5.0.40)
+  - linphone-sdk (5.0.40):
+    - linphone-sdk/all-frameworks (= 5.0.40)
+    - linphone-sdk/app-extension (= 5.0.40)
+    - linphone-sdk/app-extension-swift (= 5.0.40)
+    - linphone-sdk/basic-frameworks (= 5.0.40)
+    - linphone-sdk/swift (= 5.0.40)
+  - linphone-sdk/all-frameworks (5.0.40)
+  - linphone-sdk/app-extension (5.0.40)
+  - linphone-sdk/app-extension-swift (5.0.40):
     - linphone-sdk/app-extension
-  - linphone-sdk/basic-frameworks (4.4.1):
+  - linphone-sdk/basic-frameworks (5.0.40):
     - linphone-sdk/app-extension
-  - linphone-sdk/swift (4.4.1):
+  - linphone-sdk/swift (5.0.40):
     - linphone-sdk/app-extension-swift
     - linphone-sdk/basic-frameworks
   - PIL (0.1.0):
@@ -28,8 +28,8 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_phone_lib (from `.symlinks/plugins/flutter_phone_lib/ios`)
-  - iOSVoIPLib (from `https://github.com/open-voip-alliance/iOS-VoIP-Lib.git`)
-  - PIL (from `https://github.com/open-voip-alliance/iOS-Phone-Integration-Lib.git`)
+  - iOSVoIPLib (from `https://github.com/open-voip-alliance/iOS-Phone-Lib.git`)
+  - PIL (from `https://github.com/open-voip-alliance/iOS-Phone-Lib.git`)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -43,26 +43,26 @@ EXTERNAL SOURCES:
   flutter_phone_lib:
     :path: ".symlinks/plugins/flutter_phone_lib/ios"
   iOSVoIPLib:
-    :git: https://github.com/open-voip-alliance/iOS-VoIP-Lib.git
+    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
   PIL:
-    :git: https://github.com/open-voip-alliance/iOS-Phone-Integration-Lib.git
+    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
 
 CHECKOUT OPTIONS:
   iOSVoIPLib:
-    :commit: 02fa2d7431b19c927b6b11d9f1adfc10663a435c
-    :git: https://github.com/open-voip-alliance/iOS-VoIP-Lib.git
+    :commit: 704de0d4f7464d870f1fd5936a9d42c0ed948b66
+    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
   PIL:
-    :commit: 17c02e4941bdcb63339a55e2936aeb7f0397f57a
-    :git: https://github.com/open-voip-alliance/iOS-Phone-Integration-Lib.git
+    :commit: 704de0d4f7464d870f1fd5936a9d42c0ed948b66
+    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
 
 SPEC CHECKSUMS:
-  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  flutter_phone_lib: dc1f7a3cde430bcb8dd6674b7c0d54a42156eb23
-  iOSVoIPLib: 5d0a20228ab3f9bdcbb7e35903be4009bfa267b3
-  linphone-sdk: 91183cb3e3224d2d1a211357cd6a39d61636d17d
-  PIL: 660930395909c8c4b572b049a61ab4b48c8dccb9
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_phone_lib: 721c856fbb850eedcf1e6d00669580c10b737c2b
+  iOSVoIPLib: 3e87e30bb2a7bd37aebf5df1f2eda9fcb8115d08
+  linphone-sdk: 506c61b1eff916866e9c7a5265f8eadb2789e41f
+  PIL: eb7beee40023f67ec5e894cc47982759ec52897f
   Swinject: ddf78b8486dd9b71a667b852cad919ab4484478e
 
-PODFILE CHECKSUM: fff47e60102b8fb403af7bbec3e376fec5567545
+PODFILE CHECKSUM: 661f31ec16a27e4558a8202e3d687ec146ffa89e
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2

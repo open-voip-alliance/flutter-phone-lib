@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import PIL
+import PushKit
 
 public typealias OnLogReceivedCallback = (String, LogLevel) -> Void
 
@@ -158,6 +159,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
     internal static var onLogReceived: OnLogReceivedCallback?
     internal static var logDelegate = OnLogReceivedWrapper()
     internal static var registerPlugins: ((FlutterPluginRegistry) -> Void)?
+    internal static var nativeMiddleware: NativeMiddleware?
     
     internal class Keys {
         static let SHARED_PREFERENCES = "FlutterPhoneLib"
@@ -179,8 +181,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
 }
 
 extension UIApplicationDelegate {
-
-    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, onLogReceived: OnLogReceivedCallback? = nil) {
+    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, nativeMiddleware: NativeMiddleware? = nil, onLogReceived: OnLogReceivedCallback? = nil) {
         if (PIL.isInitialized) {
             log("FlutterPhoneLib is already initialized")
             return
@@ -193,6 +194,10 @@ extension UIApplicationDelegate {
         if (PhoneLibPlugin.registerPlugins == nil) {
             PhoneLibPlugin.registerPlugins = registerPlugins
         }
+        
+        if (PhoneLibPlugin.nativeMiddleware == nil) {
+            PhoneLibPlugin.nativeMiddleware = nativeMiddleware
+        }
 
         if (PhoneLibPlugin.onLogReceived == nil) {
             PhoneLibPlugin.onLogReceived = onLogReceived
@@ -202,6 +207,8 @@ extension UIApplicationDelegate {
         let preferences = preferencesOf(defaults.string(forKey: PhoneLibPlugin.Keys.PREFERENCES))
         let auth = authOf(defaults.string(forKey: PhoneLibPlugin.Keys.AUTH))
         let userAgent = defaults.string(forKey: PhoneLibPlugin.Keys.USER_AGENT)
+        
+        let nativeMiddlewareBridger = nativeMiddleware != nil ? NativeMiddlewareBridger(nativeMiddleware: nativeMiddleware!) : nil
         
         if (preferences == nil || auth == nil || userAgent == nil) {
             log("Not starting yet, arguments are uninitialized")
@@ -213,7 +220,7 @@ extension UIApplicationDelegate {
         do {
             PhoneLibPlugin.pil = try startIOSPIL(
                 applicationSetup: ApplicationSetup(
-                    middleware: ProxyMiddleware(),
+                    middleware: nativeMiddlewareBridger != nil ? nativeMiddlewareBridger : ProxyMiddleware(),
                     requestCallUi: {
                         if let nav = self.window??.rootViewController as? UITabBarController {
                             nav.performSegue(withIdentifier: "LaunchCallSegue", sender: nav)
