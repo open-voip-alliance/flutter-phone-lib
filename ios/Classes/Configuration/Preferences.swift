@@ -7,7 +7,8 @@ internal func preferencesOf(_ dict: Dictionary<String, Any?>) -> Preferences {
     
     return Preferences(
         useApplicationRingtone: dict["useApplicationRingtone"] as? Bool ?? false,
-        codecs: (dict["codecs"] as? Array<String> ?? []).map { Codec(rawValue: $0)! }
+        codecs: (dict["codecs"] as? Array<String> ?? []).map { Codec(rawValue: $0)! },
+        includesCallsInRecents: dict["showCallsInNativeRecents"] as? Bool ?? true
     )
 }
 
@@ -21,6 +22,7 @@ internal extension Preferences {
     func serialize() -> String {
         return serializeToJSON([
             "useApplicationRingtone": useApplicationRingtone,
+            "showCallsInNativeRecents": includesCallsInRecents,
             "codecs": codecs.map { $0.rawValue }
         ])
     }
