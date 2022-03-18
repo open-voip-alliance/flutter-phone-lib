@@ -4,6 +4,7 @@ import PIL
 import PushKit
 
 public typealias OnLogReceivedCallback = (String, LogLevel) -> Void
+public typealias OnCallEndedCallback = (NativeCall) -> Void
 
 public class PhoneLibPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -160,6 +161,8 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
     internal static var logDelegate = OnLogReceivedWrapper()
     internal static var registerPlugins: ((FlutterPluginRegistry) -> Void)?
     internal static var nativeMiddleware: NativeMiddleware?
+    internal static var onCallEnded: OnCallEndedCallback?
+    internal static var callListener: PILEventDelegate?
     
     internal class Keys {
         static let SHARED_PREFERENCES = "FlutterPhoneLib"
@@ -181,7 +184,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
 }
 
 extension UIApplicationDelegate {
-    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, nativeMiddleware: NativeMiddleware? = nil, onLogReceived: OnLogReceivedCallback? = nil) {
+    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, nativeMiddleware: NativeMiddleware? = nil, onCallEnded: OnCallEndedCallback? = nil, onLogReceived: OnLogReceivedCallback? = nil) {
         if (PIL.isInitialized) {
             log("FlutterPhoneLib is already initialized")
             return
@@ -197,6 +200,10 @@ extension UIApplicationDelegate {
         
         if (PhoneLibPlugin.nativeMiddleware == nil) {
             PhoneLibPlugin.nativeMiddleware = nativeMiddleware
+        }
+
+        if (PhoneLibPlugin.onCallEnded == nil) {
+            PhoneLibPlugin.onCallEnded = onCallEnded
         }
 
         if (PhoneLibPlugin.onLogReceived == nil) {
@@ -232,6 +239,10 @@ extension UIApplicationDelegate {
                 auth: auth,
                 preferences: preferences
             )
+
+            PhoneLibPlugin.callListener = CallListener()
+
+            PhoneLibPlugin.pil?.events.listen(delegate: PhoneLibPlugin.callListener!)
         } catch {
             log("Not launching PIL: \(error)")
         }
@@ -243,6 +254,34 @@ extension UIApplicationDelegate {
 }
 
 private let missedCallNotificationDelegate = OnMissedCallNotificationPressedDelegate()
+
+class CallListener : PILEventDelegate {
+
+    func onEvent(event: Event) {
+        switch event {
+            case .callEnded(let state):
+                guard let call = state.activeCall else {
+                    return
+                 }
+
+                PhoneLibPlugin.onCallEnded?(NativeCall(
+                     mos: String(call.mos),
+                     reason: "",
+                     duration: String(call.duration),
+                     direction: call.direction == .inbound ? "inbound" : "outbound"
+                 ))
+            default:
+                return
+        }
+    }
+}
+
+public struct NativeCall {
+    public let mos: String
+    public let reason: String
+    public let duration: String
+    public let direction: String
+}
 
 class OnMissedCallNotificationPressedDelegate : NSObject, UNUserNotificationCenterDelegate  {
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
