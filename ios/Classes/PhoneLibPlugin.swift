@@ -227,7 +227,7 @@ extension UIApplicationDelegate {
         do {
             PhoneLibPlugin.pil = try startIOSPIL(
                 applicationSetup: ApplicationSetup(
-                    middleware: nativeMiddlewareBridger != nil ? nativeMiddlewareBridger : ProxyMiddleware(),
+                    middleware: nativeMiddlewareBridger,
                     requestCallUi: {
                         if let nav = self.window??.rootViewController as? UITabBarController {
                             nav.performSegue(withIdentifier: "LaunchCallSegue", sender: nav)
