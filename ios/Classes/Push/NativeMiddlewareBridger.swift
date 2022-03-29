@@ -3,7 +3,7 @@ import PIL
 import PushKit
 
 public protocol NativeMiddleware {
-    func respond(payload: PKPushPayload, available: Bool)
+    func respond(payload: PKPushPayload, available: Bool, reason: NativeMiddlewareUnavailableReason?)
     
     func tokenReceived(token: String)
     
@@ -29,8 +29,16 @@ class NativeMiddlewareBridger: Middleware {
         self.nativeMiddleware = nativeMiddleware
     }
     
-    func respond(payload: PKPushPayload, available: Bool) {
-        self.nativeMiddleware.respond(payload: payload, available: available)
+    func respond(payload: PKPushPayload, available: Bool, reason: UnavailableReason?) {
+        let nativeUnavailableReason: NativeMiddlewareUnavailableReason? = {
+            switch reason {
+                case .inCall: return NativeMiddlewareUnavailableReason.inCall
+                case .unableToRegister: return NativeMiddlewareUnavailableReason.unableToRegister
+                default: return nil
+            }
+        }()
+
+        self.nativeMiddleware.respond(payload: payload, available: available, reason: nativeUnavailableReason)
     }
     
     func tokenReceived(token: String) {
@@ -49,4 +57,9 @@ class NativeMiddlewareBridger: Middleware {
     func inspect(payload: PKPushPayload, type: PKPushType) {
         self.nativeMiddleware.inspect(payload: payload, type: type)
     }
+}
+
+public enum NativeMiddlewareUnavailableReason {
+    case inCall
+    case unableToRegister
 }

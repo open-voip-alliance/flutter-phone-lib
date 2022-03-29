@@ -15,7 +15,7 @@ internal extension Call {
             "remotePartyHeading": remotePartyHeading,
             "remotePartySubheading": remotePartySubheading,
             "prettyDuration": prettyDuration,
-            "reason" : "",
+            "reason" : reason,
             "callId" : "",
         ]
     }
