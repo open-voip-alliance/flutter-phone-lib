@@ -214,9 +214,7 @@ extension UIApplicationDelegate {
         let preferences = preferencesOf(defaults.string(forKey: PhoneLibPlugin.Keys.PREFERENCES))
         let auth = authOf(defaults.string(forKey: PhoneLibPlugin.Keys.AUTH))
         let userAgent = defaults.string(forKey: PhoneLibPlugin.Keys.USER_AGENT)
-        
-        let nativeMiddlewareBridger = nativeMiddleware != nil ? NativeMiddlewareBridger(nativeMiddleware: PhoneLibPlugin.nativeMiddleware!) : nil
-        
+                
         if (preferences == nil || auth == nil || userAgent == nil) {
             log("Not starting yet, arguments are uninitialized")
             return
@@ -227,7 +225,7 @@ extension UIApplicationDelegate {
         do {
             PhoneLibPlugin.pil = try startIOSPIL(
                 applicationSetup: ApplicationSetup(
-                    middleware: nativeMiddlewareBridger,
+                    middleware: NativeMiddlewareBridger(nativeMiddleware: PhoneLibPlugin.nativeMiddleware!),
                     requestCallUi: {
                         if let nav = self.window??.rootViewController as? UITabBarController {
                             nav.performSegue(withIdentifier: "LaunchCallSegue", sender: nav)
