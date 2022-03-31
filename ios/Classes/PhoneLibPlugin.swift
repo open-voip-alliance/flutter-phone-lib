@@ -215,7 +215,7 @@ extension UIApplicationDelegate {
         let auth = authOf(defaults.string(forKey: PhoneLibPlugin.Keys.AUTH))
         let userAgent = defaults.string(forKey: PhoneLibPlugin.Keys.USER_AGENT)
         
-        let nativeMiddlewareBridger = nativeMiddleware != nil ? NativeMiddlewareBridger(nativeMiddleware: nativeMiddleware!) : nil
+        let nativeMiddlewareBridger = nativeMiddleware != nil ? NativeMiddlewareBridger(nativeMiddleware: PhoneLibPlugin.nativeMiddleware!) : nil
         
         if (preferences == nil || auth == nil || userAgent == nil) {
             log("Not starting yet, arguments are uninitialized")
