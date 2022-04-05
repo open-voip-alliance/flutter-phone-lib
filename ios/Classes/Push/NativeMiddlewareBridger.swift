@@ -8,8 +8,6 @@ public protocol NativeMiddleware {
     func tokenReceived(token: String)
     
     func inspect(payload: PKPushPayload, type: PKPushType)
-    
-    func extractCallDetail(from payload: PKPushPayload) -> CallDetail
 }
 
 public struct CallDetail {
@@ -43,15 +41,6 @@ class NativeMiddlewareBridger: Middleware {
     
     func tokenReceived(token: String) {
         self.nativeMiddleware.tokenReceived(token: token)
-    }
-    
-    func extractCallDetail(from payload: PKPushPayload) -> IncomingPayloadCallDetail {
-        let callDetail = self.nativeMiddleware.extractCallDetail(from: payload)
-        
-        return IncomingPayloadCallDetail(
-            phoneNumber: callDetail.phoneNumber,
-            callerId: callDetail.callId
-        )
     }
     
     func inspect(payload: PKPushPayload, type: PKPushType) {
