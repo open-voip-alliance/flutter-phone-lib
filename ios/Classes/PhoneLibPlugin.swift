@@ -32,6 +32,10 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
             log("ERROR: PhoneLibPlugin instance already exists")
         }
     }
+    
+    public func call(number: String) {
+        pil.call(number: number)
+    }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let hasType = call.method.contains(".")
@@ -247,6 +251,10 @@ extension UIApplicationDelegate {
 
     public func addOnMissedCallNotificationPressedDelegate() {
         UNUserNotificationCenter.current().delegate = missedCallNotificationDelegate
+    }
+    
+    public func startCall(number: String) {
+        PhoneLibPlugin.pil?.call(number: number)
     }
 }
 
