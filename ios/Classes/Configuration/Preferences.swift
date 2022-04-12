@@ -6,7 +6,7 @@ internal func preferencesOf(_ dict: Dictionary<String, Any?>) -> Preferences {
     NSLog(String(describing: dict))
     
     return Preferences(
-        useApplicationRingtone: dict["useApplicationRingtone"] as? Bool ?? false,
+        useApplicationRingtone: dict["useApplicationProvidedRingtone"] as? Bool ?? false,
         codecs: (dict["codecs"] as? Array<String> ?? []).map { Codec(rawValue: $0)! },
         includesCallsInRecents: dict["showCallsInNativeRecents"] as? Bool ?? true
     )
