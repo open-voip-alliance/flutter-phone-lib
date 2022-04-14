@@ -1,6 +1,5 @@
 import Foundation
-import PIL
-import iOSVoIPLib
+import iOSPhoneLib
 
 internal func preferencesOf(_ dict: Dictionary<String, Any?>) -> Preferences {
     NSLog(String(describing: dict))

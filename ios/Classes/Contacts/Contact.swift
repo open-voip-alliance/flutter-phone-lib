@@ -1,4 +1,4 @@
-import PIL
+import iOSPhoneLib
 
 internal extension Contact {
     func toDictionary() -> Dictionary<String, Any?> {

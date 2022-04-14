@@ -1,5 +1,5 @@
 import Foundation
-import PIL
+import iOSPhoneLib
 
 internal func authOf(_ dict: Dictionary<String, Any?>) -> Auth {
     return Auth(

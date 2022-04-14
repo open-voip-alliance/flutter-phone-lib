@@ -1,6 +1,6 @@
 import Flutter
 import UIKit
-import PIL
+import iOSPhoneLib
 import PushKit
 
 public typealias OnLogReceivedCallback = (String, LogLevel) -> Void
