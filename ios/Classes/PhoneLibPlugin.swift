@@ -162,6 +162,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
     internal static var pil: PIL?
     internal static var appDelegate: UIApplicationDelegate?
     internal static var onLogReceived: OnLogReceivedCallback?
+    internal static var ringtonePath: String?
     internal static var logDelegate = OnLogReceivedWrapper()
     internal static var registerPlugins: ((FlutterPluginRegistry) -> Void)?
     internal static var nativeMiddleware: NativeMiddleware?
@@ -188,7 +189,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
 }
 
 extension UIApplicationDelegate {
-    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, nativeMiddleware: NativeMiddleware? = nil, onCallEnded: OnCallEndedCallback? = nil, onLogReceived: OnLogReceivedCallback? = nil) {
+    public func startPhoneLib(_ registerPlugins: ((FlutterPluginRegistry) -> Void)? = nil, nativeMiddleware: NativeMiddleware? = nil, onCallEnded: OnCallEndedCallback? = nil, onLogReceived: OnLogReceivedCallback? = nil, ringtonePath: String? = nil) {
         if (PIL.isInitialized) {
             log("FlutterPhoneLib is already initialized")
             return
@@ -214,6 +215,10 @@ extension UIApplicationDelegate {
             PhoneLibPlugin.onLogReceived = onLogReceived
         }
         
+        if (PhoneLibPlugin.ringtonePath == nil) {
+            PhoneLibPlugin.ringtonePath = ringtonePath
+        }
+        
         let defaults = UserDefaults.standard
         let preferences = preferencesOf(defaults.string(forKey: PhoneLibPlugin.Keys.PREFERENCES))
         let auth = authOf(defaults.string(forKey: PhoneLibPlugin.Keys.AUTH))
@@ -236,7 +241,8 @@ extension UIApplicationDelegate {
                         }
                     },
                     userAgent: userAgent!,
-                    logDelegate: PhoneLibPlugin.logDelegate
+                    logDelegate: PhoneLibPlugin.logDelegate,
+                    ringtonePath: ringtonePath ?? ""
                 ),
                 auth: auth,
                 preferences: preferences
