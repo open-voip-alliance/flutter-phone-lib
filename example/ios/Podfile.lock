@@ -2,7 +2,6 @@ PODS:
   - Flutter (1.0.0)
   - flutter_phone_lib (0.0.1):
     - Flutter
-    - PIL
   - iOSVoIPLib (0.1.1):
     - linphone-sdk (= 5.1.10)
   - linphone-sdk (5.1.10):
@@ -57,7 +56,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_phone_lib: 721c856fbb850eedcf1e6d00669580c10b737c2b
+  flutter_phone_lib: d5b403e24150d44669355ad38b47b8b42e05dc77
   iOSVoIPLib: 029718ce59664cc0e1d12e5657f0716d68e3dabf
   linphone-sdk: c296697bc33e187d32ee7a7ad350ec7cbfd4ea30
   PIL: a5e8bc3c52e98c374c2b68afd71b1b7703220425

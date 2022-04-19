@@ -9,4 +9,5 @@ target 'flutter_phone_lib' do
   source 'https://github.com/CocoaPods/Specs.git'
 
   pod 'iOSPhoneLib', :git =>'https://github.com/open-voip-alliance/iOS-Phone-Lib.git'
+
 end
