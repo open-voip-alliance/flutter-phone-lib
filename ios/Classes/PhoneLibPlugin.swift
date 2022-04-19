@@ -242,7 +242,7 @@ extension UIApplicationDelegate {
                     },
                     userAgent: userAgent!,
                     logDelegate: PhoneLibPlugin.logDelegate,
-                    ringtonePath: ringtonePath ?? ""
+                    ringtonePath: PhoneLibPlugin.ringtonePath ?? ""
                 ),
                 auth: auth,
                 preferences: preferences
