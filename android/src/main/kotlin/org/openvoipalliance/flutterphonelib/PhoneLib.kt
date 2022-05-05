@@ -186,7 +186,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     "toggleHold" -> pil.actions.toggleHold()
                     "sendDtmf" -> pil.actions.sendDtmf(
                         call.arguments<String>().toCharArray().first(),
-                        playToneLocally = true
+                        playToneLocally = false
                     )
                     "beginAttendedTransfer" -> pil.actions.beginAttendedTransfer(call.arguments())
                     "completeAttendedTransfer" -> pil.actions.completeAttendedTransfer()
