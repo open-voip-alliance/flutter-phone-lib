@@ -106,10 +106,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                 case "hold": pil.actions.hold()
                 case "unhold": pil.actions.unhold()
                 case "toggleHold": pil.actions.toggleHold()
-                case "sendDtmf": pil.actions.sendDtmf(
-                    String((call.arguments as! String).first!),
-                    playToneLocally: false
-                )
+                case "sendDtmf": pil.actions.sendDtmf(String((call.arguments as! String).first!))
                 case "beginAttendedTransfer": pil.actions.beginAttendedTransfer(number: call.arguments as! String)
                 case "completeAttendedTransfer": pil.actions.completeAttendedTransfer()
                 case "answer" : pil.actions.answer()
