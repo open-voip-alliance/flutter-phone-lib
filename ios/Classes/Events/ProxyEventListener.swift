@@ -7,6 +7,7 @@ class ProxyEventListener : PILEventDelegate {
           switch event {
             case .incomingCallReceived(let state),
                  .outgoingCallStarted(let state),
+                 .outgoingCallSetupFailed(let state),
                  .callStateUpdated(let state),
                  .callDurationUpdated(let state),
                  .callConnected(let state),
