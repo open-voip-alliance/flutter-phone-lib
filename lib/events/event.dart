@@ -132,16 +132,20 @@ class IncomingCallSetupFailed extends CallSetupFailedEvent {
 class Reason extends UpperCaseEnum {
   const Reason._(String value) : super(value);
 
+  static const unknown = Reason._('UNKNOWN');
   static const inCall = Reason._('IN_CALL');
   static const rejectedByAndroidTelecomFramework = Reason._(
     'REJECTED_BY_ANDROID_TELECOM_FRAMEWORK',
   );
   static const unableToRegister = Reason._('UNABLE_TO_REGISTER');
+  static const rejectedByCallKit = Reason._('REJECTED_BY_CALL_KIT');
 
   static const List<Reason> values = [
+    unknown,
     inCall,
     rejectedByAndroidTelecomFramework,
     unableToRegister,
+    rejectedByCallKit,
   ];
 
   static Reason fromJson(String json) => UpperCaseEnum.fromJson(values, json);

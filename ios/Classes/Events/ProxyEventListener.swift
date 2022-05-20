@@ -4,10 +4,11 @@ import iOSPhoneLib
 class ProxyEventListener : PILEventDelegate {
 
     func onEvent(event: Event) {
+          var arguments: Dictionary<String, Any?> = [:]
+
           switch event {
             case .incomingCallReceived(let state),
                  .outgoingCallStarted(let state),
-                 .outgoingCallSetupFailed(let state),
                  .callStateUpdated(let state),
                  .callDurationUpdated(let state),
                  .callConnected(let state),
@@ -17,12 +18,14 @@ class ProxyEventListener : PILEventDelegate {
                  .attendedTransferStarted(let state),
                  .audioStateUpdated(let state),
                  .callEnded(let state):
-                phoneLib.channel.invokeMethod(
-                    "onEvent",
-                    arguments: event.toDictionary(state: state)
-                )
+                 arguments = event.toDictionary(state: state)
+            case .outgoingCallSetupFailed(let reason),
+                 .incomingCallSetupFailed(let reason):
+                 arguments = event.toDictionary(reason: reason)
             default: fatalError("Unknown event: \(event) - Add event type to ProxyEventListener")
         }
+
+        phoneLib.channel.invokeMethod("onEvent", arguments: arguments)
     }
     
     private let phoneLib: PhoneLibPlugin
