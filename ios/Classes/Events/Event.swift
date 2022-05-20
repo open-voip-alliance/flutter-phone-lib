@@ -4,7 +4,7 @@ import Flutter
 internal extension Event {
 
     private func formatEventType() -> String {
-        var type = String(describing: self).components(separatedBy: "(")[0]
+        let type = String(describing: self).components(separatedBy: "(")[0]
         return type.prefix(1).capitalized + type.dropFirst(1)
     }
 
@@ -16,17 +16,20 @@ internal extension Event {
     }
 
     func toDictionary(reason: CallSetupFailedReason) -> Dictionary<String, Any?> {
-        var stringReason = "UNKNOWN"
-
-        switch reason {
-            case .inCall: stringReason = "IN_CALL"
-            case .unableToRegister: stringReason = "UNABLE_TO_REGISTER"
-            case .rejectedByCallKit: stringReason = "REJECTED_BY_CALL_KIT"
-        }
-
         return [
             "type": formatEventType(),
-            "reason": stringReason
+            "reason": reason.asReasonString()
         ]
+    }
+}
+
+internal extension CallSetupFailedReason {
+    func asReasonString() -> String {
+        switch self {
+            case .unknown: return "UNKNOWN"
+            case .inCall: return "IN_CALL"
+            case .unableToRegister: return "UNABLE_TO_REGISTER"
+            case .rejectedByCallKit: return "REJECTED_BY_CALL_KIT"
+        }
     }
 }
