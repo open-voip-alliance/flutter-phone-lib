@@ -53,7 +53,7 @@ class PhoneLib with WidgetsBindingObserver {
       throw StateError('Only one instance of the PhoneLib is supported.');
     }
 
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     channel.setMethodCallHandler(_onMethodCall);
 
@@ -106,7 +106,7 @@ class PhoneLib with WidgetsBindingObserver {
   /// You don't need to call [stop] before closing, it's handled here.
   Future<void> close() async {
     await stop();
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     channel.setMethodCallHandler(null);
     _instance = null;
   }
