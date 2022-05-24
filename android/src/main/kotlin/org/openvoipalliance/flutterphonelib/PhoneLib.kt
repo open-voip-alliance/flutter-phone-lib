@@ -76,7 +76,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
         when {
             !hasType && method == "initializePhoneLib" -> {
-                val arguments = call.arguments<List<*>>()
+                val arguments = call.arguments<List<*>>()!!
                 val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                 val auth = authOf(arguments[1]!! as Map<String, Any>)
                 val callbackDispatcherHandle = arguments[2].asLong()
@@ -114,7 +114,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                 when (method) {
                     "start" -> {
-                        val arguments = call.arguments<List<*>>()
+                        val arguments = call.arguments<List<*>>()!!
 
                         pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                         pil.auth = authOf(arguments[1]!! as Map<String, Any>)
@@ -131,12 +131,12 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                         result.success(null)
                     }
                     "updatePreferences" -> {
-                        val arguments = call.arguments<List<*>>()
+                        val arguments = call.arguments<List<*>>()!!
                         pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                         result.success(true);
                     }
                     "call" -> {
-                        val number = call.arguments<String>()
+                        val number = call.arguments<String>()!!
 
                         pil.call(number)
 
@@ -185,10 +185,10 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     "unhold" -> pil.actions.unhold()
                     "toggleHold" -> pil.actions.toggleHold()
                     "sendDtmf" -> pil.actions.sendDtmf(
-                        call.arguments<String>().toCharArray().first(),
+                        call.arguments<String>()!!.toCharArray().first(),
                         playToneLocally = false
                     )
-                    "beginAttendedTransfer" -> pil.actions.beginAttendedTransfer(call.arguments())
+                    "beginAttendedTransfer" -> pil.actions.beginAttendedTransfer(call.arguments()!!)
                     "completeAttendedTransfer" -> pil.actions.completeAttendedTransfer()
                     "answer" -> pil.actions.answer()
                     "decline" -> pil.actions.decline()
@@ -212,10 +212,10 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
                         if (isStandardAudioRoute) {
                             pil.audio.routeAudio(
-                                AudioRoute.valueOf(call.arguments())
+                                AudioRoute.valueOf(call.arguments()!!)
                             )
                         } else {
-                            val arguments = call.arguments<Map<String, String>>()
+                            val arguments = call.arguments<Map<String, String>>()!!
                             pil.audio.routeAudio(
                                 BluetoothAudioRoute(
                                     arguments["displayName"]!!,
