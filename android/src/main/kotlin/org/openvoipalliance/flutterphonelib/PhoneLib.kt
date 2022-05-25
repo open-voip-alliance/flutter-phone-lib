@@ -2,6 +2,7 @@ package org.openvoipalliance.flutterphonelib
 
 import android.app.Activity
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
@@ -29,6 +30,7 @@ import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
 import org.openvoipalliance.androidphoneintegration.push.Middleware
 import org.openvoipalliance.androidphoneintegration.push.UnavailableReason
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
+import org.openvoipalliance.flutterphonelib.MissedCallNotificationReceiver
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
 import org.openvoipalliance.flutterphonelib.configuration.authOf
@@ -368,7 +370,7 @@ fun Application.startPhoneLib(
 
     Log.d(PhoneLib.LOG_TAG, "Starting..")
 
-    val activityTracker = ActivityForegroundTracker()
+//    val activityTracker = ActivityForegroundTracker()
 
     PhoneLib.pil = startAndroidPIL {
         this.preferences = preferences
@@ -391,19 +393,40 @@ fun Application.startPhoneLib(
                     }
                 )
             },
-            onMissedCallNotificationPressed = {
-                if (!activityTracker.isAnyActivityVisible) {
-                    PhoneLib.wasMissedCallNotificationPressed = true
-
-                    startActivity(
-                        Intent(this@startPhoneLib, activityClass).apply {
-                            flags = FLAG_ACTIVITY_NEW_TASK
-                        }
-                    )
-                } else {
-                    PhoneLib.channel?.invokeMethod("onMissedCallNotificationPressed", null)
-                }
-            },
+//            onMissedCallNotificationPressed = {
+//                if (!activityTracker.isAnyActivityVisible) {
+//                    PhoneLib.wasMissedCallNotificationPressed = true
+//
+//                    startActivity(
+//                        Intent(this@startPhoneLib, activityClass).apply {
+//                            flags = FLAG_ACTIVITY_NEW_TASK
+//                        }
+//                    )
+//                } else {
+//                    PhoneLib.channel?.invokeMethod("onMissedCallNotificationPressed", null)
+//                }
+//            },
+//            onMissedCallNotificationPressed = PendingIntent.getBroadcast(
+//                    this@startPhoneLib,
+//                    0,
+//                    Intent(
+//                        this@startPhoneLib,
+//                        MissedCallNotificationReceiver::class.java
+//                    ).apply{
+//                        action = MissedCallNotificationReceiver.Action.MISSED_CALL_NOTIFICATION_PRESSED.name
+//                        putExtra("activity_class", activityClass)
+//                    },
+//                    PendingIntent.FLAG_IMMUTABLE
+//            ),
+            onMissedCallNotificationPressed = PendingIntent.getActivity(
+                    this@startPhoneLib,
+                    0,
+                    Intent(this@startPhoneLib, activityClass).apply {
+                        flags = FLAG_ACTIVITY_NEW_TASK
+                        putExtra("PRESSED_MISSED_CALL_NOTIFICATION", true)
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+            ),
             userAgent = userAgent
         )
     }
@@ -421,32 +444,6 @@ fun Application.startPhoneLib(
     }
 
     Log.d(PhoneLib.LOG_TAG, "Started!")
-}
-
-private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks {
-    private var activitiesVisible = 0;
-
-    val isAnyActivityVisible
-        get() = activitiesVisible > 0
-
-    override fun onActivityResumed(activity: Activity) {
-        activitiesVisible++
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        activitiesVisible--
-    }
-
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-
-    override fun onActivityStarted(activity: Activity) {}
-
-    override fun onActivityStopped(activity: Activity) {}
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-
-    override fun onActivityDestroyed(activity: Activity) {}
-
 }
 
 internal val Context.sharedPreferences
