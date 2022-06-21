@@ -71,13 +71,6 @@ class PhoneLib with WidgetsBindingObserver {
         }
       },
     );
-
-    // This doesn't work for now.
-    _wasMissedCallNotificationPressed.then((wasPressed) {
-      if (wasPressed) {
-        _onMissedCallNotificationPressed?.call();
-      }
-    });
   }
 
   Future<dynamic> _onMethodCall(MethodCall call) async {
@@ -125,25 +118,5 @@ class PhoneLib with WidgetsBindingObserver {
             .then((v) => (v as Map).cast()),
       );
 
-  /// Whether the missed call notification was pressed.
-  ///
-  /// **Note that calling this will _consume_ the value**, meaning if this
-  /// returns true, the next call will return false, unless the missed call
-  /// notification was pressed again.
-  Future<bool> get _wasMissedCallNotificationPressed => channel
-      .invokeMethod('PhoneLib.wasMissedCallNotificationPressed')
-      .then((v) => v as bool);
-
   void _onEvent(Event event) => _eventsController.add(event);
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    super.didChangeAppLifecycleState(state);
-
-    if (state == AppLifecycleState.resumed) {
-      if (await _wasMissedCallNotificationPressed) {
-        _onMissedCallNotificationPressed?.call();
-      }
-    }
-  }
 }

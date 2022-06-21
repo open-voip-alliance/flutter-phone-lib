@@ -147,11 +147,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     "sessionState" -> {
                         result.success(pil.sessionState.toMap())
                     }
-                    "wasMissedCallNotificationPressed" -> {
-                        result.success(wasMissedCallNotificationPressed)
-                        // Value is 'consumed', reverts back to false to prevent false positives.
-                        wasMissedCallNotificationPressed = false
-                    }
                 }
             }
             type == "Calls" -> {
@@ -293,7 +288,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
         internal lateinit var pil: PIL
 
-        internal var wasMissedCallNotificationPressed = false
+        fun notifyMissedCallNotificationPressed() = channel?.invokeMethod("onMissedCallNotificationPressed", null)
 
         internal const val LOG_TAG = "FlutterPhoneLib"
     }
@@ -370,8 +365,6 @@ fun Application.startPhoneLib(
 
     Log.d(PhoneLib.LOG_TAG, "Starting..")
 
-//    val activityTracker = ActivityForegroundTracker()
-
     PhoneLib.pil = startAndroidPIL {
         this.preferences = preferences
         this.auth = auth
@@ -393,31 +386,6 @@ fun Application.startPhoneLib(
                     }
                 )
             },
-//            onMissedCallNotificationPressed = {
-//                if (!activityTracker.isAnyActivityVisible) {
-//                    PhoneLib.wasMissedCallNotificationPressed = true
-//
-//                    startActivity(
-//                        Intent(this@startPhoneLib, activityClass).apply {
-//                            flags = FLAG_ACTIVITY_NEW_TASK
-//                        }
-//                    )
-//                } else {
-//                    PhoneLib.channel?.invokeMethod("onMissedCallNotificationPressed", null)
-//                }
-//            },
-//            onMissedCallNotificationPressed = PendingIntent.getBroadcast(
-//                    this@startPhoneLib,
-//                    0,
-//                    Intent(
-//                        this@startPhoneLib,
-//                        MissedCallNotificationReceiver::class.java
-//                    ).apply{
-//                        action = MissedCallNotificationReceiver.Action.MISSED_CALL_NOTIFICATION_PRESSED.name
-//                        putExtra("activity_class", activityClass)
-//                    },
-//                    PendingIntent.FLAG_IMMUTABLE
-//            ),
             onMissedCallNotificationPressed = PendingIntent.getActivity(
                     this@startPhoneLib,
                     0,
