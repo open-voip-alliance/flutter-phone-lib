@@ -290,6 +290,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         fun notifyMissedCallNotificationPressed() = channel?.invokeMethod("onMissedCallNotificationPressed", null)
 
         internal const val LOG_TAG = "FlutterPhoneLib"
+
+        const val PRESSED_MISSED_CALL_NOTIFICATION_EXTRA = "PRESSED_MISSED_CALL_NOTIFICATION"
     }
 
     internal object Keys {
@@ -390,7 +392,7 @@ fun Application.startPhoneLib(
                     0,
                     Intent(this@startPhoneLib, activityClass).apply {
                         flags = FLAG_ACTIVITY_NEW_TASK
-                        putExtra("PRESSED_MISSED_CALL_NOTIFICATION", true)
+                        putExtra(PhoneLib.PRESSED_MISSED_CALL_NOTIFICATION_EXTRA, true)
                     },
                     PendingIntent.FLAG_IMMUTABLE
             ),
