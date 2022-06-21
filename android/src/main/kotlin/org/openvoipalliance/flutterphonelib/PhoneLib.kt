@@ -30,7 +30,6 @@ import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
 import org.openvoipalliance.androidphoneintegration.push.Middleware
 import org.openvoipalliance.androidphoneintegration.push.UnavailableReason
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
-import org.openvoipalliance.flutterphonelib.MissedCallNotificationReceiver
 import org.openvoipalliance.flutterphonelib.audio.toMap
 import org.openvoipalliance.flutterphonelib.call.toMap
 import org.openvoipalliance.flutterphonelib.configuration.authOf
