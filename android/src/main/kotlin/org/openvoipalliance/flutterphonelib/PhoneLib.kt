@@ -2,6 +2,7 @@ package org.openvoipalliance.flutterphonelib
 
 import android.app.Activity
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
@@ -145,11 +146,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     "sessionState" -> {
                         result.success(pil.sessionState.toMap())
                     }
-                    "wasMissedCallNotificationPressed" -> {
-                        result.success(wasMissedCallNotificationPressed)
-                        // Value is 'consumed', reverts back to false to prevent false positives.
-                        wasMissedCallNotificationPressed = false
-                    }
                 }
             }
             type == "Calls" -> {
@@ -291,9 +287,11 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
         internal lateinit var pil: PIL
 
-        internal var wasMissedCallNotificationPressed = false
+        fun notifyMissedCallNotificationPressed() = channel?.invokeMethod("onMissedCallNotificationPressed", null)
 
         internal const val LOG_TAG = "FlutterPhoneLib"
+
+        const val PRESSED_MISSED_CALL_NOTIFICATION_EXTRA = "PRESSED_MISSED_CALL_NOTIFICATION"
     }
 
     internal object Keys {
@@ -368,8 +366,6 @@ fun Application.startPhoneLib(
 
     Log.d(PhoneLib.LOG_TAG, "Starting..")
 
-    val activityTracker = ActivityForegroundTracker()
-
     PhoneLib.pil = startAndroidPIL {
         this.preferences = preferences
         this.auth = auth
@@ -391,19 +387,15 @@ fun Application.startPhoneLib(
                     }
                 )
             },
-            onMissedCallNotificationPressed = {
-                if (!activityTracker.isAnyActivityVisible) {
-                    PhoneLib.wasMissedCallNotificationPressed = true
-
-                    startActivity(
-                        Intent(this@startPhoneLib, activityClass).apply {
-                            flags = FLAG_ACTIVITY_NEW_TASK
-                        }
-                    )
-                } else {
-                    PhoneLib.channel?.invokeMethod("onMissedCallNotificationPressed", null)
-                }
-            },
+            onMissedCallNotificationPressed = PendingIntent.getActivity(
+                    this@startPhoneLib,
+                    0,
+                    Intent(this@startPhoneLib, activityClass).apply {
+                        flags = FLAG_ACTIVITY_NEW_TASK
+                        putExtra(PhoneLib.PRESSED_MISSED_CALL_NOTIFICATION_EXTRA, true)
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+            ),
             userAgent = userAgent
         )
     }
@@ -421,32 +413,6 @@ fun Application.startPhoneLib(
     }
 
     Log.d(PhoneLib.LOG_TAG, "Started!")
-}
-
-private class ActivityForegroundTracker : Application.ActivityLifecycleCallbacks {
-    private var activitiesVisible = 0;
-
-    val isAnyActivityVisible
-        get() = activitiesVisible > 0
-
-    override fun onActivityResumed(activity: Activity) {
-        activitiesVisible++
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        activitiesVisible--
-    }
-
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-
-    override fun onActivityStarted(activity: Activity) {}
-
-    override fun onActivityStopped(activity: Activity) {}
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-
-    override fun onActivityDestroyed(activity: Activity) {}
-
 }
 
 internal val Context.sharedPreferences
