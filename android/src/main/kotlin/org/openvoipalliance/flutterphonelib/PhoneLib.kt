@@ -307,6 +307,12 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
     }
 }
 
+fun Activity.startCall(number: String) {
+    if (PhoneLib.isPILInitialized) {
+        PhoneLib.pil.call(number)
+    }
+}
+
 fun Application.startPhoneLib(
     /**
      * The activity to show when the incoming call notification is pressed. Almost always the
