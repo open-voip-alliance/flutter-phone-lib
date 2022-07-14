@@ -38,7 +38,7 @@ lib/generated_plugin_registrant.dart
 
 .env
 
-# Generated files
-*.g.dart
-*.chopper.dart
-*.i18n.dart
+# Generated files (we can ignore these again once we're on pub.dev)
+#*.g.dart
+#*.chopper.dart
+#*.i18n.dart
