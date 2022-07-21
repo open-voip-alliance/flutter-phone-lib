@@ -38,124 +38,124 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        let hasType = call.method.contains(".")
-        let type = hasType ? String(call.method.split(separator: ".")[0]) : nil
-        let method = hasType ? String(call.method.split(separator: ".")[1]) : call.method
+        do {
+            let hasType = call.method.contains(".")
+            let type = hasType ? String(call.method.split(separator: ".")[0]) : nil
+            let method = hasType ? String(call.method.split(separator: ".")[1]) : call.method
 
-        if (!hasType && method == "initializePhoneLib") {
-            let arguments = call.arguments as! Array<Any>
-            let preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
-            let auth = authOf(arguments[1] as! Dictionary<String, Any?>)
-            let callbackDispatcherHandle = arguments[2] as! NSNumber
-            let initializeResourcesHandle = arguments[3] as! NSNumber
-            let middlewareRespondHandle = arguments[4] as! NSNumber
-            let middlewareTokenReceivedHandle = arguments[5] as! NSNumber
-            let middlewareInspectHandle = arguments[6] as! NSNumber
-            let userAgent = arguments[7] as! String
-            
-            let defaults = UserDefaults.standard
-            defaults.set(preferences.serialize(), forKey: Keys.PREFERENCES)
-            defaults.set(auth.serialize(), forKey: Keys.AUTH)
-            defaults.set(userAgent, forKey: Keys.USER_AGENT)
-            
-            FlutterCallback.register(key: Keys.CALLBACK_DISPATCHER, handle: callbackDispatcherHandle.int64Value)
-            FlutterCallback.register(key: Keys.INITIALIZE, handle: initializeResourcesHandle.int64Value)
-            FlutterCallback.register(key: Keys.MIDDLEWARE_RESPOND, handle: middlewareRespondHandle.int64Value)
-            FlutterCallback.register(
-                key: Keys.MIDDLEWARE_TOKEN_RECEIVED,
-                handle: middlewareTokenReceivedHandle.int64Value
-            )
-            FlutterCallback.register(key: Keys.MIDDLEWARE_INSPECT, handle: middlewareInspectHandle.int64Value)
-            
-            PhoneLibPlugin.appDelegate!.startPhoneLib()
-            
-            result(nil)
-        } else if (type == "PhoneLib") {
-            if (method == "call") {
-                pil.call(number: call.arguments as! String)
+            if (!hasType && method == "initializePhoneLib") {
+                withSuccess(result) {
+                    let arguments = call.arguments as! Array<Any>
+                    let preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
+                    let auth = authOf(arguments[1] as! Dictionary<String, Any?>)
+                    let callbackDispatcherHandle = arguments[2] as! NSNumber
+                    let initializeResourcesHandle = arguments[3] as! NSNumber
+                    let middlewareRespondHandle = arguments[4] as! NSNumber
+                    let middlewareTokenReceivedHandle = arguments[5] as! NSNumber
+                    let middlewareInspectHandle = arguments[6] as! NSNumber
+                    let userAgent = arguments[7] as! String
 
-                result(nil)
-            } else if (method == "start") {
-                let arguments = call.arguments as! Array<Any>
-                 pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
-                 pil.auth = authOf(arguments[1] as! Dictionary<String, Any?>)
-                 pil.start(forceInitialize: false, forceReregister: true)
-                 result(nil)
-            } else if (method == "stop") {
-                pil.stop()
-                result(nil)
-            } else if (method == "updatePreferences") {
-                let arguments = call.arguments as! Array<Any>
-                pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
-                result(nil)
-            }
-        } else if (type == "Calls") {
-            if (method == "active") {
-                result(PhoneLibPlugin.pil!.calls.activeCall?.toDictionary())
-            }
-        } else if (type == "EventsManager") {
-            if (method == "listen") {
-                pil.events.listen(delegate: eventListener)
-                result(nil)
-            } else if (method == "stopListening") {
-                pil.events.stopListening(delegate: eventListener)
-                result(nil)
-            }
-        } else if (type == "CallActions") {
-            switch method {
-                case "hold": pil.actions.hold()
-                case "unhold": pil.actions.unhold()
-                case "toggleHold": pil.actions.toggleHold()
-                case "sendDtmf": pil.actions.sendDtmf(String((call.arguments as! String).first!))
-                case "beginAttendedTransfer": pil.actions.beginAttendedTransfer(number: call.arguments as! String)
-                case "completeAttendedTransfer": pil.actions.completeAttendedTransfer()
-                case "answer" : pil.actions.answer()
-                case "decline": pil.actions.decline()
-                case "end" : pil.actions.end()
-                default:
-                    result(FlutterMethodNotImplemented)
-                    return
-            }
-            
-            result(nil)
-        } else if (type == "AudioManager") {
-            switch method {
-                case "isMicrophoneMuted":
-                    result(pil.audio.isMicrophoneMuted)
-                case "state":
-                    result(pil.audio.state.toDictionary())
-                case "routeAudio":
-                    let isStandardAudioRoute = (call.arguments as? String != nil)
+                    let defaults = UserDefaults.standard
+                    defaults.set(preferences.serialize(), forKey: Keys.PREFERENCES)
+                    defaults.set(auth.serialize(), forKey: Keys.AUTH)
+                    defaults.set(userAgent, forKey: Keys.USER_AGENT)
 
-                    if (isStandardAudioRoute) {
-                        pil.audio.routeAudio(audioRouteOf(call.arguments as! String))
+                    FlutterCallback.register(key: Keys.CALLBACK_DISPATCHER, handle: callbackDispatcherHandle.int64Value)
+                    FlutterCallback.register(key: Keys.INITIALIZE, handle: initializeResourcesHandle.int64Value)
+                    FlutterCallback.register(key: Keys.MIDDLEWARE_RESPOND, handle: middlewareRespondHandle.int64Value)
+                    FlutterCallback.register(
+                        key: Keys.MIDDLEWARE_TOKEN_RECEIVED,
+                        handle: middlewareTokenReceivedHandle.int64Value
+                    )
+                    FlutterCallback.register(key: Keys.MIDDLEWARE_INSPECT, handle: middlewareInspectHandle.int64Value)
+
+                    PhoneLibPlugin.appDelegate!.startPhoneLib()
+                }
+            } else {
+                switch type {
+                    case "PhoneLib": switch method {
+                        case "call": withSuccess(result) {
+                            pil.call(number: call.arguments as! String)
+                        }
+                        case "start": withSuccess(result) {
+                            let arguments = call.arguments as! Array<Any>
+                            pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
+                            pil.auth = authOf(arguments[1] as! Dictionary<String, Any?>)
+                            pil.start(forceInitialize: false, forceReregister: true)
+                        }
+                        case "stop": withSuccess(result) {
+                            pil.stop()
+                        }
+                        case "updatePreferences": withSuccess(result) {
+                            let arguments = call.arguments as! Array<Any>
+                            pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
+                        }
+                        default: result(FlutterMethodNotImplemented)
                     }
+                    case "Calls": switch method {
+                        case "active": result(PhoneLibPlugin.pil!.calls.activeCall?.toDictionary())
+                        default: result(FlutterMethodNotImplemented)
+                    }
+                    case "EventsManager": switch method {
+                        case "listen": withSuccess(result) {
+                            pil.events.listen(delegate: eventListener)
+                        }
+                        case "stopListening": withSuccess(result) {
+                            pil.events.stopListening(delegate: eventListener)
+                        }
+                        default: result(FlutterMethodNotImplemented)
+                    }
+                    case "CallActions": switch method {
+                        case "hold": withSuccess(result) { pil.actions.hold() }
+                        case "unhold": withSuccess(result) { pil.actions.unhold() }
+                        case "toggleHold": withSuccess(result) { pil.actions.toggleHold() }
+                        case "sendDtmf": withSuccess(result) {
+                            pil.actions.sendDtmf(String((call.arguments as! String).first!))
+                        }
+                        case "beginAttendedTransfer": withSuccess(result) {
+                            pil.actions.beginAttendedTransfer(number: call.arguments as! String)
+                        }
+                        case "completeAttendedTransfer": withSuccess(result) { pil.actions.completeAttendedTransfer() }
+                        case "answer" : withSuccess(result) { pil.actions.answer() }
+                        case "decline": withSuccess(result) { pil.actions.decline() }
+                        case "end": withSuccess(result) { pil.actions.end() }
+                        default: result(FlutterMethodNotImplemented)
+                    }
+                    case "AudioManager": switch method {
+                        case "isMicrophoneMuted": result(pil.audio.isMicrophoneMuted)
+                        case "state": result(pil.audio.state.toDictionary())
+                        case "routeAudio": withSuccess(result) {
+                            let isStandardAudioRoute = (call.arguments as? String != nil)
 
-                    result(nil)
-                case "launchAudioRoutePicker":
-                    pil.audio.launchAudioRoutePicker()
-                    result(nil)
-                case "mute":
-                    pil.audio.mute()
-                    result(nil)
-                case "unmute":
-                    pil.audio.unmute()
-                    result(nil)
-                case "toggleMute":
-                    pil.audio.toggleMute()
-                    result(nil)
-                default: result(FlutterMethodNotImplemented)
+                            if (isStandardAudioRoute) {
+                                pil.audio.routeAudio(audioRouteOf(call.arguments as! String))
+                            }
+                        }
+                        case "launchAudioRoutePicker": withSuccess(result) { pil.audio.launchAudioRoutePicker() }
+                        case "mute": withSuccess(result) { pil.audio.mute() }
+                        case "unmute": withSuccess(result) { pil.audio.unmute() }
+                        case "toggleMute": withSuccess(result) { pil.audio.toggleMute() }
+                        default: result(FlutterMethodNotImplemented)
+                    }
+                    default: result(FlutterMethodNotImplemented)
+                }
             }
-        } else {
-            result(FlutterMethodNotImplemented)
+        } catch {
+            result(
+                FlutterError(
+                    code: String(describing: type(of: error)),
+                    message: error.localizedDescription,
+                    details: Thread.callStackSymbols.joined(separator: "\n")
+                )
+            )
         }
     }
-    
+
     // Ease of use getter.
     private var pil: PIL {
         get { PhoneLibPlugin.pil! }
     }
-    
+
     internal static var pil: PIL?
     internal static var appDelegate: UIApplicationDelegate?
     internal static var onLogReceived: OnLogReceivedCallback?
@@ -182,6 +182,14 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
         func onLogReceived(message: String, level: LogLevel) {
             PhoneLibPlugin.onLogReceived?(message, level)
         }
+    }
+
+    /**
+     Assumes that the [block] runs successfully.
+     */
+    private func withSuccess(_ result: FlutterResult, _ block: () -> Void) {
+        block()
+        result(nil)
     }
 }
 
