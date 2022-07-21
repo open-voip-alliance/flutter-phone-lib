@@ -64,184 +64,169 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
-        val hasType = call.method.contains('.')
-        val type = if (hasType) call.method.split('.')[0] else null
-        val method = if (hasType) call.method.split('.')[1] else call.method
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) =
+        try {
+            val hasType = call.method.contains('.')
+            val type = if (hasType) call.method.split('.')[0] else null
+            val method = if (hasType) call.method.split('.')[1] else call.method
 
-        fun assertPILInitialized() {
-            if (BuildConfig.DEBUG && !isPILInitialized) {
-                error("PhoneLib not initialized. Create an instance using startPhoneLib.")
-            }
-        }
-
-        when {
-            !hasType && method == "initializePhoneLib" -> {
-                val arguments = call.arguments<List<*>>()!!
-                val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
-                val auth = authOf(arguments[1]!! as Map<String, Any>)
-                val callbackDispatcherHandle = arguments[2].asLong()
-                val initializeResourcesHandle = arguments[3].asLong()
-                val middlewareRespondHandle = arguments[4].asLong()
-                val middlewareTokenReceivedHandle = arguments[5].asLong()
-                val middlewareInspectHandle = arguments[6].asLong()
-                val userAgent = arguments[7]!! as String
-
-                persist(auth, preferences, userAgent)
-                context.registerFlutterCallback(Keys.CALLBACK_DISPATCHER, callbackDispatcherHandle)
-                context.registerFlutterCallback(
-                    Keys.INITIALIZE,
-                    initializeResourcesHandle
-                )
-                context.registerFlutterCallback(Keys.MIDDLEWARE_RESPOND, middlewareRespondHandle)
-                context.registerFlutterCallback(
-                    Keys.MIDDLEWARE_TOKEN_RECEIVED,
-                    middlewareTokenReceivedHandle
-                )
-                context.registerFlutterCallback(Keys.MIDDLEWARE_INSPECT, middlewareInspectHandle)
-
-                app!!.startPhoneLib(
-                    activityClass!!,
-                    incomingCallActivityClass,
-                    nativeMiddleware,
-                    onCallEnded,
-                    onLogReceived,
-                )
-
-                result.success(null)
-            }
-            type == "PhoneLib" -> {
-                assertPILInitialized()
-
-                when (method) {
-                    "start" -> {
-                        val arguments = call.arguments<List<*>>()!!
-
-                        pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
-                        pil.auth = authOf(arguments[1]!! as Map<String, Any>)
-                        persist(auth = pil.auth, preferences = pil.preferences)
-                        pil.start(
-                            forceInitialize = false,
-                            forceReregister = true,
-                        )
-                        result.success(null)
-                    }
-                    "stop" -> {
-                        context.sharedPreferences.edit().clear().apply()
-                        pil.stop()
-                        result.success(null)
-                    }
-                    "updatePreferences" -> {
-                        val arguments = call.arguments<List<*>>()!!
-                        pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
-                        result.success(true);
-                    }
-                    "call" -> {
-                        val number = call.arguments<String>()!!
-
-                        pil.call(number)
-
-                        result.success(null)
-                    }
-                    "sessionState" -> {
-                        result.success(pil.sessionState.toMap())
-                    }
+            fun assertPILInitialized() {
+                if (BuildConfig.DEBUG && !isPILInitialized) {
+                    error("PhoneLib not initialized. Create an instance using startPhoneLib.")
                 }
             }
-            type == "Calls" -> {
-                assertPILInitialized()
 
-                when (method) {
-                    "active" -> {
-                        result.success(pil.calls.active?.toMap())
-                    }
-                }
-            }
-            type == "EventsManager" -> {
-                assertPILInitialized()
+            when {
+                !hasType && method == "initializePhoneLib" -> result.withSuccess {
+                    val arguments = call.arguments<List<*>>()!!
+                    val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                    val auth = authOf(arguments[1]!! as Map<String, Any>)
+                    val callbackDispatcherHandle = arguments[2].asLong()
+                    val initializeResourcesHandle = arguments[3].asLong()
+                    val middlewareRespondHandle = arguments[4].asLong()
+                    val middlewareTokenReceivedHandle = arguments[5].asLong()
+                    val middlewareInspectHandle = arguments[6].asLong()
+                    val userAgent = arguments[7]!! as String
 
-                when (method) {
-                    "listen" -> {
-                        pil.events.listen(eventListener)
-
-                        result.success(null)
-                    }
-                    "stopListening" -> {
-                        pil.events.stopListening(eventListener)
-
-                        result.success(null)
-                    }
-                }
-            }
-            type == "CallActions" -> {
-                assertPILInitialized()
-
-                when (method) {
-                    "hold" -> pil.actions.hold()
-                    "unhold" -> pil.actions.unhold()
-                    "toggleHold" -> pil.actions.toggleHold()
-                    "sendDtmf" -> pil.actions.sendDtmf(
-                        call.arguments<String>()!!.toCharArray().first(),
-                        playToneLocally = false
+                    persist(auth, preferences, userAgent)
+                    context.registerFlutterCallback(
+                        Keys.CALLBACK_DISPATCHER,
+                        callbackDispatcherHandle
                     )
-                    "beginAttendedTransfer" -> pil.actions.beginAttendedTransfer(call.arguments()!!)
-                    "completeAttendedTransfer" -> pil.actions.completeAttendedTransfer()
-                    "answer" -> pil.actions.answer()
-                    "decline" -> pil.actions.decline()
-                    "end" -> pil.actions.end()
+                    context.registerFlutterCallback(
+                        Keys.INITIALIZE,
+                        initializeResourcesHandle
+                    )
+                    context.registerFlutterCallback(
+                        Keys.MIDDLEWARE_RESPOND,
+                        middlewareRespondHandle
+                    )
+                    context.registerFlutterCallback(
+                        Keys.MIDDLEWARE_TOKEN_RECEIVED,
+                        middlewareTokenReceivedHandle
+                    )
+                    context.registerFlutterCallback(
+                        Keys.MIDDLEWARE_INSPECT,
+                        middlewareInspectHandle
+                    )
+
+                    app!!.startPhoneLib(
+                        activityClass!!,
+                        incomingCallActivityClass,
+                        nativeMiddleware,
+                        onCallEnded,
+                        onLogReceived,
+                    )
                 }
+                type == "PhoneLib" -> {
+                    assertPILInitialized()
 
-                result.success(null)
-            }
-            type == "AudioManager" -> {
-                assertPILInitialized()
+                    when (method) {
+                        "start" -> result.withSuccess {
+                            val arguments = call.arguments<List<*>>()!!
 
-                when (method) {
-                    "isMicrophoneMuted" -> {
-                        result.success(pil.audio.isMicrophoneMuted)
-                    }
-                    "state" -> {
-                        result.success(pil.audio.state.toMap())
-                    }
-                    "routeAudio" -> {
-                        val isStandardAudioRoute = (call.arguments() as? String != null)
-
-                        if (isStandardAudioRoute) {
-                            pil.audio.routeAudio(
-                                AudioRoute.valueOf(call.arguments()!!)
-                            )
-                        } else {
-                            val arguments = call.arguments<Map<String, String>>()!!
-                            pil.audio.routeAudio(
-                                BluetoothAudioRoute(
-                                    arguments["displayName"]!!,
-                                    arguments["identifier"]!!,
-                                )
+                            pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                            pil.auth = authOf(arguments[1]!! as Map<String, Any>)
+                            persist(auth = pil.auth, preferences = pil.preferences)
+                            pil.start(
+                                forceInitialize = false,
+                                forceReregister = true,
                             )
                         }
-
-                        result.success(null)
-                    }
-                    "launchAudioRoutePicker" -> {
-                        result.notImplemented()
-                    }
-                    "mute" -> {
-                        pil.audio.mute()
-                        result.success(null)
-                    }
-                    "unmute" -> {
-                        pil.audio.unmute()
-                        result.success(null)
-                    }
-                    "toggleMute" -> {
-                        pil.audio.toggleMute()
-                        result.success(null)
+                        "stop" -> result.withSuccess {
+                            context.sharedPreferences.edit().clear().apply()
+                            pil.stop()
+                        }
+                        "updatePreferences" -> result.withSuccess {
+                            val arguments = call.arguments<List<*>>()!!
+                            pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                        }
+                        "call" -> result.withSuccess {
+                            val number = call.arguments<String>()!!
+                            pil.call(number)
+                        }
+                        "sessionState" -> result.success(pil.sessionState.toMap())
+                        else -> result.notImplemented()
                     }
                 }
+                type == "Calls" -> {
+                    assertPILInitialized()
+
+                    when (method) {
+                        "active" -> result.success(pil.calls.active?.toMap())
+                        else -> result.notImplemented()
+                    }
+                }
+                type == "EventsManager" -> {
+                    assertPILInitialized()
+
+                    when (method) {
+                        "listen" -> result.withSuccess {
+                            pil.events.listen(eventListener)
+                        }
+                        "stopListening" -> result.withSuccess {
+                            pil.events.stopListening(eventListener)
+                        }
+                        else -> result.notImplemented()
+                    }
+                }
+                type == "CallActions" -> {
+                    assertPILInitialized()
+
+                    when (method) {
+                        "hold" -> result.withSuccess { pil.actions.hold() }
+                        "unhold" -> result.withSuccess { pil.actions.unhold() }
+                        "toggleHold" -> result.withSuccess { pil.actions.toggleHold() }
+                        "sendDtmf" -> result.withSuccess {
+                            pil.actions.sendDtmf(
+                                call.arguments<String>()!!.toCharArray().first(),
+                                playToneLocally = false
+                            )
+                        }
+                        "beginAttendedTransfer" -> result.withSuccess {
+                            pil.actions.beginAttendedTransfer(call.arguments()!!)
+                        }
+                        "completeAttendedTransfer" -> result.withSuccess { pil.actions.completeAttendedTransfer() }
+                        "answer" -> result.withSuccess { pil.actions.answer() }
+                        "decline" -> result.withSuccess { pil.actions.decline() }
+                        "end" -> result.withSuccess { pil.actions.end() }
+                        else -> result.notImplemented()
+                    }
+                }
+                type == "AudioManager" -> {
+                    assertPILInitialized()
+
+                    when (method) {
+                        "isMicrophoneMuted" -> result.success(pil.audio.isMicrophoneMuted)
+                        "state" -> result.success(pil.audio.state.toMap())
+                        "routeAudio" -> result.withSuccess {
+                            val isStandardAudioRoute = (call.arguments() as? String != null)
+
+                            if (isStandardAudioRoute) {
+                                pil.audio.routeAudio(
+                                    AudioRoute.valueOf(call.arguments()!!)
+                                )
+                            } else {
+                                val arguments = call.arguments<Map<String, String>>()!!
+                                pil.audio.routeAudio(
+                                    BluetoothAudioRoute(
+                                        arguments["displayName"]!!,
+                                        arguments["identifier"]!!,
+                                    )
+                                )
+                            }
+                        }
+                        "mute" -> result.withSuccess { pil.audio.mute() }
+                        "unmute" -> result.withSuccess { pil.audio.unmute() }
+                        "toggleMute" -> result.withSuccess { pil.audio.toggleMute() }
+                        else -> result.notImplemented()
+                    }
+                }
+                else -> result.notImplemented()
             }
-            else -> result.notImplemented()
+        } catch (t: Throwable) {
+            result.error(t.javaClass.simpleName, t.message, t.stackTraceToString())
         }
-    }
 
     /**
      * Persists the data in shared preferences so that we can boot the PIL natively, without
@@ -256,6 +241,14 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         preferences?.let { putString(Keys.PREFERENCES, Gson().toJson(it)) }
         userAgent?.let { putString(Keys.USER_AGENT, it) }
         apply()
+    }
+
+    /**
+     * Assumes that the [block] runs successfully.
+     */
+    private fun MethodChannel.Result.withSuccess(block: () -> Unit) {
+        block()
+        success(null)
     }
 
     private fun Any?.asLong(): Long {
@@ -287,7 +280,8 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
         internal lateinit var pil: PIL
 
-        fun notifyMissedCallNotificationPressed() = channel?.invokeMethod("onMissedCallNotificationPressed", null)
+        fun notifyMissedCallNotificationPressed() =
+            channel?.invokeMethod("onMissedCallNotificationPressed", null)
 
         internal const val LOG_TAG = "FlutterPhoneLib"
 
@@ -394,13 +388,13 @@ fun Application.startPhoneLib(
                 )
             },
             onMissedCallNotificationPressed = PendingIntent.getActivity(
-                    this@startPhoneLib,
-                    0,
-                    Intent(this@startPhoneLib, activityClass).apply {
-                        flags = FLAG_ACTIVITY_NEW_TASK
-                        putExtra(PhoneLib.PRESSED_MISSED_CALL_NOTIFICATION_EXTRA, true)
-                    },
-                    PendingIntent.FLAG_IMMUTABLE
+                this@startPhoneLib,
+                0,
+                Intent(this@startPhoneLib, activityClass).apply {
+                    flags = FLAG_ACTIVITY_NEW_TASK
+                    putExtra(PhoneLib.PRESSED_MISSED_CALL_NOTIFICATION_EXTRA, true)
+                },
+                PendingIntent.FLAG_IMMUTABLE
             ),
             userAgent = userAgent
         )
