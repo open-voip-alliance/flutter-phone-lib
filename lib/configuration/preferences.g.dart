@@ -10,4 +10,5 @@ Map<String, dynamic> _$PreferencesToJson(Preferences instance) =>
     <String, dynamic>{
       'codecs': instance.codecs.map((e) => e.toJson()).toList(),
       'useApplicationProvidedRingtone': instance.useApplicationProvidedRingtone,
+      'showCallsInNativeRecents': instance.showCallsInNativeRecents,
     };
