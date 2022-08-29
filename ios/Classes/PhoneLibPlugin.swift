@@ -90,6 +90,9 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                             let arguments = call.arguments as! Array<Any>
                             pil.preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
                         }
+                        case "sessionState": withSuccess(result) {
+                            result(pil.sessionState.toDictionary())
+                        }
                         default: result(FlutterMethodNotImplemented)
                     }
                     case "Calls": switch method {
