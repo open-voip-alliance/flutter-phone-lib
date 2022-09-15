@@ -113,5 +113,8 @@ class PhoneLib {
             .then((v) => (v as Map).cast()),
       );
 
+  Future<void> performEchoCancellationCalibration() =>
+      channel.invokeMethod('PhoneLib.performEchoCancellationCalibration');
+
   void _onEvent(Event event) => _eventsController.add(event);
 }
