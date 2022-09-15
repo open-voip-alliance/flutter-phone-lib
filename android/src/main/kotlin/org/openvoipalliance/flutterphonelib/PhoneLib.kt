@@ -146,6 +146,9 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                             pil.call(number)
                         }
                         "sessionState" -> result.success(pil.sessionState.toMap())
+                        "performEchoCancellationCalibration" -> result.withSuccess {
+                            pil.performEchoCancellationCalibration()
+                        }
                         else -> result.notImplemented()
                     }
                 }
