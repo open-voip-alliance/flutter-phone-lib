@@ -93,6 +93,9 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                         case "sessionState": withSuccess(result) {
                             result(pil.sessionState.toDictionary())
                         }
+                        case "performEchoCancellationCalibration": withSuccess(result) {
+                            pil.performEchoCancellationCalibration()
+                        }
                         default: result(FlutterMethodNotImplemented)
                     }
                     case "Calls": switch method {
