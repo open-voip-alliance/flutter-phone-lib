@@ -16,10 +16,6 @@ class PhoneLib {
   static const MethodChannel channel =
       MethodChannel('org.openvoipalliance.flutterphonelib/foreground');
 
-  /// For internal use only.
-  static const MethodChannel backgroundChannel =
-      MethodChannel('org.openvoipalliance.flutterphonelib/background');
-
   static PhoneLib? _instance;
 
   static PhoneLib get instance => _instance!;
