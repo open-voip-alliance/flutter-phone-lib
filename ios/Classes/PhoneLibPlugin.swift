@@ -48,26 +48,12 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                     let arguments = call.arguments as! Array<Any>
                     let preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
                     let auth = authOf(arguments[1] as! Dictionary<String, Any?>)
-                    let callbackDispatcherHandle = arguments[2] as! NSNumber
-                    let initializeResourcesHandle = arguments[3] as! NSNumber
-                    let middlewareRespondHandle = arguments[4] as! NSNumber
-                    let middlewareTokenReceivedHandle = arguments[5] as! NSNumber
-                    let middlewareInspectHandle = arguments[6] as! NSNumber
                     let userAgent = arguments[7] as! String
 
                     let defaults = UserDefaults.standard
                     defaults.set(preferences.serialize(), forKey: Keys.PREFERENCES)
                     defaults.set(auth.serialize(), forKey: Keys.AUTH)
                     defaults.set(userAgent, forKey: Keys.USER_AGENT)
-
-                    FlutterCallback.register(key: Keys.CALLBACK_DISPATCHER, handle: callbackDispatcherHandle.int64Value)
-                    FlutterCallback.register(key: Keys.INITIALIZE, handle: initializeResourcesHandle.int64Value)
-                    FlutterCallback.register(key: Keys.MIDDLEWARE_RESPOND, handle: middlewareRespondHandle.int64Value)
-                    FlutterCallback.register(
-                        key: Keys.MIDDLEWARE_TOKEN_RECEIVED,
-                        handle: middlewareTokenReceivedHandle.int64Value
-                    )
-                    FlutterCallback.register(key: Keys.MIDDLEWARE_INSPECT, handle: middlewareInspectHandle.int64Value)
 
                     PhoneLibPlugin.appDelegate!.startPhoneLib()
                 }

@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../push/middleware.dart';
 import '../util/equatable.dart';
 
 /// Note that the `application` and `activityClass` should be set
@@ -23,10 +22,6 @@ class ApplicationSetup extends Equatable {
   /// Must be a static or top level function.
   final Future<void> Function()? initialize;
 
-  /// Provide a middleware if it is required to receive incoming calls
-  /// in your infrastructure.
-  final Middleware? middleware;
-
   /// Invoked when a missed call notification is pressed.
   ///
   /// When the app is in the foreground, this is called the instant the user
@@ -42,18 +37,13 @@ class ApplicationSetup extends Equatable {
 
   const ApplicationSetup({
     this.initialize,
-    this.middleware,
     this.onMissedCallNotificationPressed,
     this.userAgent = 'Flutter Phone Lib',
-  }) : assert(
-          userAgent.length > 0 &&
-              (middleware == null || initialize != null),
-        );
+  }) : assert(userAgent.length > 0 && initialize != null);
 
   @override
   @JsonKey(ignore: true)
   List<Object?> get props => [
-        middleware,
         initialize,
         onMissedCallNotificationPressed,
         userAgent,

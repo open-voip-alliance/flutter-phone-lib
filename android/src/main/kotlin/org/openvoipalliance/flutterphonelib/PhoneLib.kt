@@ -81,34 +81,9 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     val arguments = call.arguments<List<*>>()!!
                     val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                     val auth = authOf(arguments[1]!! as Map<String, Any>)
-                    val callbackDispatcherHandle = arguments[2].asLong()
-                    val initializeResourcesHandle = arguments[3].asLong()
-                    val middlewareRespondHandle = arguments[4].asLong()
-                    val middlewareTokenReceivedHandle = arguments[5].asLong()
-                    val middlewareInspectHandle = arguments[6].asLong()
                     val userAgent = arguments[7]!! as String
 
                     persist(auth, preferences, userAgent)
-                    context.registerFlutterCallback(
-                        Keys.CALLBACK_DISPATCHER,
-                        callbackDispatcherHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.INITIALIZE,
-                        initializeResourcesHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_RESPOND,
-                        middlewareRespondHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_TOKEN_RECEIVED,
-                        middlewareTokenReceivedHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_INSPECT,
-                        middlewareInspectHandle
-                    )
 
                     app!!.startPhoneLib(
                         activityClass!!,
