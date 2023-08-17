@@ -48,7 +48,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                     let arguments = call.arguments as! Array<Any>
                     let preferences = preferencesOf(arguments[0] as! Dictionary<String, Any?>)
                     let auth = authOf(arguments[1] as! Dictionary<String, Any?>)
-                    let userAgent = arguments[7] as! String
+                    let userAgent = arguments[2] as! String
 
                     let defaults = UserDefaults.standard
                     defaults.set(preferences.serialize(), forKey: Keys.PREFERENCES)
