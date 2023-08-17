@@ -13,15 +13,6 @@ import '../util/equatable.dart';
 /// }
 /// ```
 class ApplicationSetup extends Equatable {
-  /// Guaranteed to be called before any background callbacks
-  /// (middleware and logging) are called. Used to initialize dependencies of
-  /// other resources necessary to run these callbacks.
-  ///
-  /// Runs in a separate isolate.
-  ///
-  /// Must be a static or top level function.
-  final Future<void> Function()? initialize;
-
   /// Invoked when a missed call notification is pressed.
   ///
   /// When the app is in the foreground, this is called the instant the user
@@ -36,15 +27,13 @@ class ApplicationSetup extends Equatable {
   final String userAgent;
 
   const ApplicationSetup({
-    this.initialize,
     this.onMissedCallNotificationPressed,
     this.userAgent = 'Flutter Phone Lib',
-  }) : assert(userAgent.length > 0 && initialize != null);
+  }) : assert(userAgent.length > 0);
 
   @override
   @JsonKey(ignore: true)
   List<Object?> get props => [
-        initialize,
         onMissedCallNotificationPressed,
         userAgent,
       ];
