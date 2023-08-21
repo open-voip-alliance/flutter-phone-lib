@@ -12,5 +12,4 @@ export 'src/configuration/auth.dart';
 export 'src/configuration/preferences.dart';
 export 'src/events/event.dart';
 export 'src/phone_lib.dart';
-export 'src/push/middleware.dart';
 export 'src/push/remote_message.dart';
