@@ -35,7 +35,6 @@ import org.openvoipalliance.flutterphonelib.call.toMap
 import org.openvoipalliance.flutterphonelib.configuration.authOf
 import org.openvoipalliance.flutterphonelib.configuration.preferencesOf
 import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
-import org.openvoipalliance.flutterphonelib.push.ProxyMiddleware
 
 typealias OnLogReceivedCallback = (message: String, level: PhoneLibLogLevel) -> Unit
 typealias OnCallEndedCallback = (call: NativeCall) -> Unit
@@ -81,34 +80,9 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                     val arguments = call.arguments<List<*>>()!!
                     val preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                     val auth = authOf(arguments[1]!! as Map<String, Any>)
-                    val callbackDispatcherHandle = arguments[2].asLong()
-                    val initializeResourcesHandle = arguments[3].asLong()
-                    val middlewareRespondHandle = arguments[4].asLong()
-                    val middlewareTokenReceivedHandle = arguments[5].asLong()
-                    val middlewareInspectHandle = arguments[6].asLong()
-                    val userAgent = arguments[7]!! as String
+                    val userAgent = arguments[2]!! as String
 
                     persist(auth, preferences, userAgent)
-                    context.registerFlutterCallback(
-                        Keys.CALLBACK_DISPATCHER,
-                        callbackDispatcherHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.INITIALIZE,
-                        initializeResourcesHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_RESPOND,
-                        middlewareRespondHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_TOKEN_RECEIVED,
-                        middlewareTokenReceivedHandle
-                    )
-                    context.registerFlutterCallback(
-                        Keys.MIDDLEWARE_INSPECT,
-                        middlewareInspectHandle
-                    )
 
                     app!!.startPhoneLib(
                         activityClass!!,
@@ -379,7 +353,7 @@ fun Application.startPhoneLib(
                 activityClass,
                 incomingCall = incomingCallActivityClass ?: activityClass
             ),
-            middleware = nativeMiddleware?.toMiddleware() ?: ProxyMiddleware(this@startPhoneLib),
+            middleware = nativeMiddleware?.toMiddleware(),
             logger = { message, level ->
                 onLogReceived?.invoke(
                     message, when (level) {
