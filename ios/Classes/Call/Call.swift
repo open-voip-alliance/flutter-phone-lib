@@ -11,6 +11,7 @@ internal extension Call {
             "isOnHold": isOnHold,
             "uuid": String(describing: uuid),
             "mos": mos,
+            "currentMos": currentMos,
             "contact": contact?.toDictionary(),
             "remotePartyHeading": remotePartyHeading,
             "remotePartySubheading": remotePartySubheading,
