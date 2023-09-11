@@ -15,6 +15,7 @@ Call _$CallFromJson(Map<String, dynamic> json) => Call(
       isOnHold: json['isOnHold'] as bool,
       uuid: json['uuid'] as String,
       mos: (json['mos'] as num).toDouble(),
+      currentMos: (json['currentMos'] as num).toDouble(),
       contact: json['contact'] == null
           ? null
           : Contact.fromJson(json['contact'] as Map<String, dynamic>),
@@ -34,6 +35,7 @@ Map<String, dynamic> _$CallToJson(Call instance) => <String, dynamic>{
       'isOnHold': instance.isOnHold,
       'uuid': instance.uuid,
       'mos': instance.mos,
+      'currentMos': instance.currentMos,
       'contact': instance.contact?.toJson(),
       'remotePartyHeading': instance.remotePartyHeading,
       'remotePartySubheading': instance.remotePartySubheading,
