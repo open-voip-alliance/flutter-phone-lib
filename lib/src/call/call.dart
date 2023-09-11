@@ -21,6 +21,7 @@ class Call extends Equatable {
   final bool isOnHold;
   final String uuid;
   final double mos;
+  final double currentMos;
   final Contact? contact;
   final String remotePartyHeading;
   final String remotePartySubheading;
@@ -37,6 +38,7 @@ class Call extends Equatable {
     required this.isOnHold,
     required this.uuid,
     required this.mos,
+    required this.currentMos,
     this.contact,
     required this.remotePartyHeading,
     required this.remotePartySubheading,
@@ -56,6 +58,7 @@ class Call extends Equatable {
         isOnHold,
         uuid,
         mos,
+        currentMos,
         contact,
         remotePartyHeading,
         remotePartySubheading,

@@ -12,6 +12,7 @@ fun Call.toMap() = mapOf(
         "isOnHold" to isOnHold,
         "uuid" to uuid,
         "mos" to mos,
+        "currentMos" to currentMos,
         "contact" to contact?.toMap(),
         "remotePartyHeading" to remotePartyHeading,
         "remotePartySubheading" to remotePartySubheading,
