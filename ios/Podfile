@@ -5,9 +5,8 @@ use_frameworks!
 project ''
 
 target 'flutter_phone_lib' do
-  source 'https://gitlab.linphone.org/BC/public/podspec.git'
   source 'https://github.com/CocoaPods/Specs.git'
 
-  pod 'iOSPhoneLib', :git =>'https://github.com/open-voip-alliance/iOS-Phone-Lib.git'
+  pod 'iOSPhoneLib', '0.1.4'
 
 end
