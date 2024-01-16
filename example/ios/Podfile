@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '11.3'
+platform :ios, '12.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -33,16 +33,18 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  source 'https://gitlab.linphone.org/BC/public/podspec.git'
   source 'https://github.com/CocoaPods/Specs.git'
 
-  pod 'iOSVoIPLib', :git =>'https://github.com/open-voip-alliance/iOS-Phone-Lib.git'
-  pod 'PIL', :git =>'https://github.com/open-voip-alliance/iOS-Phone-Lib.git'
+  pod 'iOSPhoneLib', '0.1.4'
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    
+    target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+     end
   end
 end
 
