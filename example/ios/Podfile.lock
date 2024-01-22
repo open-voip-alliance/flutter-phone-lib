@@ -2,66 +2,33 @@ PODS:
   - Flutter (1.0.0)
   - flutter_phone_lib (0.0.1):
     - Flutter
-  - iOSVoIPLib (0.1.1):
-    - linphone-sdk (= 5.1.10)
-  - linphone-sdk (5.1.10):
-    - linphone-sdk/all-frameworks (= 5.1.10)
-    - linphone-sdk/app-extension (= 5.1.10)
-    - linphone-sdk/app-extension-swift (= 5.1.10)
-    - linphone-sdk/basic-frameworks (= 5.1.10)
-    - linphone-sdk/swift (= 5.1.10)
-  - linphone-sdk/all-frameworks (5.1.10)
-  - linphone-sdk/app-extension (5.1.10)
-  - linphone-sdk/app-extension-swift (5.1.10):
-    - linphone-sdk/app-extension
-  - linphone-sdk/basic-frameworks (5.1.10):
-    - linphone-sdk/app-extension
-  - linphone-sdk/swift (5.1.10):
-    - linphone-sdk/app-extension-swift
-    - linphone-sdk/basic-frameworks
-  - PIL (0.1.0):
-    - iOSVoIPLib (~> 0.1.0)
-    - Swinject (~> 2.7.1)
-  - Swinject (2.7.1)
+    - iOSPhoneLib (= 0.1.4)
+  - iOSPhoneLib (0.1.4):
+    - Swinject (~> 2.8.2)
+  - Swinject (2.8.3)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_phone_lib (from `.symlinks/plugins/flutter_phone_lib/ios`)
-  - iOSVoIPLib (from `https://github.com/open-voip-alliance/iOS-Phone-Lib.git`)
-  - PIL (from `https://github.com/open-voip-alliance/iOS-Phone-Lib.git`)
+  - iOSPhoneLib (= 0.1.4)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
+    - iOSPhoneLib
     - Swinject
-  https://gitlab.linphone.org/BC/public/podspec.git:
-    - linphone-sdk
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   flutter_phone_lib:
     :path: ".symlinks/plugins/flutter_phone_lib/ios"
-  iOSVoIPLib:
-    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
-  PIL:
-    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
-
-CHECKOUT OPTIONS:
-  iOSVoIPLib:
-    :commit: fbff7c4f6aed9d8db4a736ab430836a43dee0b07
-    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
-  PIL:
-    :commit: fbff7c4f6aed9d8db4a736ab430836a43dee0b07
-    :git: https://github.com/open-voip-alliance/iOS-Phone-Lib.git
 
 SPEC CHECKSUMS:
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_phone_lib: d5b403e24150d44669355ad38b47b8b42e05dc77
-  iOSVoIPLib: 029718ce59664cc0e1d12e5657f0716d68e3dabf
-  linphone-sdk: c296697bc33e187d32ee7a7ad350ec7cbfd4ea30
-  PIL: a5e8bc3c52e98c374c2b68afd71b1b7703220425
-  Swinject: ddf78b8486dd9b71a667b852cad919ab4484478e
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_phone_lib: 6108d4ccd9fb5fecef07b46cd8a7defd7df00236
+  iOSPhoneLib: bf982971b4be7a4b535352011abed5e542deb196
+  Swinject: 893c9a543000ac2f10ee4cbaf0933c6992c935d5
 
-PODFILE CHECKSUM: 661f31ec16a27e4558a8202e3d687ec146ffa89e
+PODFILE CHECKSUM: a6100cab552615b5bda9aa69a3797b195cc564f4
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.14.3

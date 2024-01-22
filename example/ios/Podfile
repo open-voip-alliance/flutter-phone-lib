@@ -33,9 +33,7 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  source 'https://github.com/CocoaPods/Specs.git'
-
-  pod 'iOSPhoneLib', '0.1.4'
+  pod 'iOSPhoneLib', '0.1.5'
 end
 
 post_install do |installer|
@@ -47,4 +45,3 @@ post_install do |installer|
      end
   end
 end
-
