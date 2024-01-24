@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.3] - 2024-01-24
+
+- Upgraded to APL 0.1.121, allowing emergency calls to be made
+
 ## [0.0.3] - 2024-01-18
 
 - Upgraded to iOSPhoneLib 0.1.5, fixing an issue where the iOS dynamic island would not update call duration.
