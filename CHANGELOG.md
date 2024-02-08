@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.9] - 2024-02-08
+
+- Fixed issue with preferences object
+
 ## [0.0.8] - 2024-02-08
 
 - Upgraded to APL 0.1.123, allowing for adding supplementary contacts.

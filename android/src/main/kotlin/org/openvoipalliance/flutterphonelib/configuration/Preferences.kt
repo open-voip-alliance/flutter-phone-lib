@@ -10,5 +10,6 @@ fun preferencesOf(map: Map<String, Any?>) = object {
     val preferences = Preferences(
             codecs.map { Codec.valueOf(it as String) }.toTypedArray(),
             useApplicationProvidedRingtone,
+            setOf()
     )
 }.preferences
