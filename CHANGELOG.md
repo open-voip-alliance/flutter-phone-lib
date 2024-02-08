@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.8] - 2024-02-08
+
+- Upgraded to APL 0.1.123, allowing for adding supplementary contacts.
+
 ## [0.0.7] - 2024-01-25
 
 - Upgraded to APL 0.1.122, emergency calls will now open in the native dialer
