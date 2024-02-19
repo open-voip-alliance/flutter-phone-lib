@@ -47,11 +47,6 @@ dependencies {
     api "com.google.firebase:firebase-messaging:21.0.1"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
-    implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.123'
+    implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.126'
     implementation 'com.google.code.gson:gson:2.8.6'
-
-    // Uncomment this while working on the PhoneLib, but comment it again when building the app.
-    // This is necessary purely so IntelliJ can resolve the symbols on the Kotlin side.
-    // See the issue here: https://github.com/flutter/flutter/issues/19830
-    //debugImplementation "io.flutter:flutter_embedding_debug:1.0.0-ee76268252c22f5c11e82a7b87423ca3982e51a7"
 }
