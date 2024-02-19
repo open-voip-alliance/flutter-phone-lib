@@ -6,9 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.os.Bundle
 import android.util.Log
-import androidx.annotation.NonNull
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import io.flutter.BuildConfig
@@ -21,12 +19,14 @@ import org.openvoipalliance.androidphoneintegration.audio.AudioRoute
 import org.openvoipalliance.androidphoneintegration.audio.BluetoothAudioRoute
 import org.openvoipalliance.androidphoneintegration.call.Call
 import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup
-import org.openvoipalliance.androidphoneintegration.configuration.ApplicationSetup.AutomaticallyLaunchCallActivity.*
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
 import org.openvoipalliance.androidphoneintegration.events.Event
 import org.openvoipalliance.androidphoneintegration.events.PILEventListener
-import org.openvoipalliance.androidphoneintegration.logging.LogLevel.*
+import org.openvoipalliance.androidphoneintegration.logging.LogLevel.DEBUG
+import org.openvoipalliance.androidphoneintegration.logging.LogLevel.ERROR
+import org.openvoipalliance.androidphoneintegration.logging.LogLevel.INFO
+import org.openvoipalliance.androidphoneintegration.logging.LogLevel.WARNING
 import org.openvoipalliance.androidphoneintegration.push.Middleware
 import org.openvoipalliance.androidphoneintegration.push.UnavailableReason
 import org.openvoipalliance.androidphoneintegration.startAndroidPIL
@@ -44,7 +44,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
 
     private val eventListener = ProxyEventListener()
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         // For some reason onAttachedEngine is called twice, so this check is needed.
         if (!isChannelInitialized) {
             channel = MethodChannel(
@@ -57,13 +57,13 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         context = flutterPluginBinding.applicationContext
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel?.setMethodCallHandler(null)
         channel = null
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) =
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) =
         try {
             val hasType = call.method.contains('.')
             val type = if (hasType) call.method.split('.')[0] else null
@@ -102,10 +102,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                             pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
                             pil.auth = authOf(arguments[1]!! as Map<String, Any>)
                             persist(auth = pil.auth, preferences = pil.preferences)
-                            pil.start(
-                                forceInitialize = false,
-                                forceReregister = true,
-                            )
+                            pil.start()
                         }
                         "stop" -> result.withSuccess {
                             context.sharedPreferences.edit().clear().apply()
@@ -114,6 +111,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                         "updatePreferences" -> result.withSuccess {
                             val arguments = call.arguments<List<*>>()!!
                             pil.preferences = preferencesOf(arguments[0]!! as Map<String, Any>)
+                            persist(preferences = pil.preferences)
                         }
                         "call" -> result.withSuccess {
                             val number = call.arguments<String>()!!
@@ -228,14 +226,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         success(null)
     }
 
-    private fun Any?.asLong(): Long {
-        if (this is Int) {
-            return toLong()
-        }
-
-        return this as Long
-    }
-
     companion object {
         internal var channel: MethodChannel? = null
 
@@ -269,11 +259,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         const val SHARED_PREFERENCES = "FlutterPhoneLib"
         const val AUTH = "auth"
         const val PREFERENCES = "preferences"
-        const val CALLBACK_DISPATCHER = "callbackDispatcher"
-        const val INITIALIZE = "initialize"
-        const val MIDDLEWARE_RESPOND = "Middleware.respond"
-        const val MIDDLEWARE_TOKEN_RECEIVED = "Middleware.tokenReceived"
-        const val MIDDLEWARE_INSPECT = "Middleware.inspect"
         const val USER_AGENT = "userAgent"
     }
 }
