@@ -47,6 +47,43 @@ class Call extends Equatable {
     required this.reason,
   });
 
+  Call copyWith({
+    String? remoteNumber,
+    String? displayName,
+    CallState? state,
+    CallDirection? direction,
+    int? duration,
+    bool? isOnHold,
+    String? uuid,
+    double? mos,
+    double? currentMos,
+    Contact? contact,
+    String? remotePartyHeading,
+    String? remotePartySubheading,
+    String? prettyDuration,
+    String? callId,
+    String? reason,
+  }) {
+    return Call(
+      remoteNumber: remoteNumber ?? this.remoteNumber,
+      displayName: displayName ?? this.displayName,
+      state: state ?? this.state,
+      direction: direction ?? this.direction,
+      duration: duration ?? this.duration,
+      isOnHold: isOnHold ?? this.isOnHold,
+      uuid: uuid ?? this.uuid,
+      mos: mos ?? this.mos,
+      currentMos: currentMos ?? this.currentMos,
+      contact: contact ?? this.contact,
+      remotePartyHeading: remotePartyHeading ?? this.remotePartyHeading,
+      remotePartySubheading:
+          remotePartySubheading ?? this.remotePartySubheading,
+      prettyDuration: prettyDuration ?? this.prettyDuration,
+      callId: callId ?? this.callId,
+      reason: reason ?? this.reason,
+    );
+  }
+
   @override
   @JsonKey(ignore: true)
   List<Object?> get props => [
@@ -70,4 +107,28 @@ class Call extends Equatable {
   static Call fromJson(Map<String, dynamic> json) => _$CallFromJson(json);
 
   Map<String, dynamic> toJson() => _$CallToJson(this);
+}
+
+///This will compare two Call objects while ignoring duration, prettyDuration,
+///uuid, mos and currentMos properties.
+extension CallComparison on Call {
+  bool compareCalls(Call other) {
+    final thisCall = copyWith(
+      duration: 0,
+      prettyDuration: '',
+      uuid: '',
+      mos: 0,
+      currentMos: 0,
+    );
+
+    final otherCall = other.copyWith(
+      duration: 0,
+      prettyDuration: '',
+      uuid: '',
+      mos: 0,
+      currentMos: 0,
+    );
+
+    return thisCall == otherCall;
+  }
 }
