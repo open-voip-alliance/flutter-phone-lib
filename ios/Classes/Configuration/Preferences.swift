@@ -3,12 +3,17 @@ import iOSPhoneLib
 
 internal func preferencesOf(_ dict: Dictionary<String, Any?>) -> Preferences {
     NSLog(String(describing: dict))
-    
+
     return Preferences(
         useApplicationRingtone: dict["useApplicationProvidedRingtone"] as? Bool ?? false,
-        codecs: (dict["codecs"] as? Array<String> ?? []).map { Codec(rawValue: $0)! },
-        includesCallsInRecents: dict["showCallsInNativeRecents"] as? Bool ?? true
-    )
+        includesCallsInRecents: dict["showCallsInNativeRecents"] as? Bool ?? true,
+        supplementaryContacts: Set((dict["supplementaryContacts"] as? Array<Dictionary<String, String?>> ?? []).map {
+            (item) in  SupplementaryContact(
+                number: (item["number"] ?? "") ?? "",
+                name: (item["name"] ?? "") ?? ""
+            )
+        }
+    ))
 }
 
 internal func preferencesOf(_ json: String?) -> Preferences? {
@@ -22,7 +27,7 @@ internal extension Preferences {
         return serializeToJSON([
             "useApplicationRingtone": useApplicationRingtone,
             "showCallsInNativeRecents": includesCallsInRecents,
-            "codecs": codecs.map { $0.rawValue }
+            "supplementaryContacts": supplementaryContacts.map { item in ["name": item.name, "number": item.number]},
         ])
     }
 }

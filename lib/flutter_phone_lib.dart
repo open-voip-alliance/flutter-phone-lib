@@ -1,7 +1,6 @@
 export 'src/audio/audio_route.dart';
 export 'src/audio/audio_state.dart';
 export 'src/audio/bluetooth_audio_route.dart';
-export 'src/audio/codec.dart';
 export 'src/builder.dart';
 export 'src/call/call.dart';
 export 'src/call/call_direction.dart';
@@ -10,6 +9,7 @@ export 'src/call_session_state.dart';
 export 'src/configuration/application_setup.dart';
 export 'src/configuration/auth.dart';
 export 'src/configuration/preferences.dart';
+export 'src/contacts/supplementary_contact.dart';
 export 'src/events/event.dart';
 export 'src/phone_lib.dart';
 export 'src/push/remote_message.dart';

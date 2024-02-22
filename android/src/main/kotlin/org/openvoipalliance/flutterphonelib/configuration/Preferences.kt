@@ -1,15 +1,17 @@
 package org.openvoipalliance.flutterphonelib.configuration
 
 import org.openvoipalliance.androidphoneintegration.configuration.Preferences
-import org.openvoipalliance.voiplib.model.Codec
+import org.openvoipalliance.androidphoneintegration.contacts.SupplementaryContact
 
 fun preferencesOf(map: Map<String, Any?>) = object {
-    val codecs: List<*> by map
     val useApplicationProvidedRingtone: Boolean by map
+    val supplementaryContacts: List<Map<String, Any?>> by map
 
     val preferences = Preferences(
-            codecs.map { Codec.valueOf(it as String) }.toTypedArray(),
             useApplicationProvidedRingtone,
-            setOf()
+            supplementaryContacts.map { item -> SupplementaryContact(
+                item["number"] as String? ?: "",
+                item["name"] as String? ?: ""
+            ) }.toSet(),
     )
 }.preferences
