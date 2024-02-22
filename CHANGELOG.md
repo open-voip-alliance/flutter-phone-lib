@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.12] - 2024-02-22
+
+- Added generated files back to git
+
 ## [0.0.11] - 2024-02-22
 
 - Lowered meta dependency requirement

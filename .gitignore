@@ -74,8 +74,5 @@
 
 .env
 
-# Generated files (we can ignore these again once we're on pub.dev)
-*.g.dart
-#*.chopper.dart
-#*.i18n.dart
-*.freezed.dart
+# Note: Generated files must be included in the git repository for pub.dev
+# See this Github issue for more information: https://github.com/dart-lang/pub/issues/2222
