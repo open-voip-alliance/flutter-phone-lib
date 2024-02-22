@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.10] - 2024-02-22
+
+- Supports supplementary contacts
+- Updated gradle project
+- Removed generated files from git tracking
+
 ## [0.0.9] - 2024-02-08
 
 - Fixed issue with preferences object
