@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.11] - 2024-02-22
+
+- Lowered meta dependency requirement
+
 ## [0.0.10] - 2024-02-22
 
 - Supports supplementary contacts
