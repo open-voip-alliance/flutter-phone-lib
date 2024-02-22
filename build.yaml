@@ -5,7 +5,6 @@ targets:
         options:
           any_map: false
           checked: false
-          create_factory: false
           create_to_json: true
           disallow_unrecognized_keys: false
           explicit_to_json: true
