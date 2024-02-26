@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.13] - 2024-02-26
+
+- Android: Fixed a bug where media playback would not resume after an incoming call
+
 ## [0.0.12] - 2024-02-22
 
 - Added generated files back to git
