@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.14] - 2024-02-27
+
+- iOS: Supplementary contacts will be used for incoming calls
+
 ## [0.0.13] - 2024-02-26
 
 - Android: Fixed a bug where media playback would not resume after an incoming call
