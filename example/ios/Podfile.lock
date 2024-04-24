@@ -2,19 +2,18 @@ PODS:
   - Flutter (1.0.0)
   - flutter_phone_lib (0.0.1):
     - Flutter
-    - iOSPhoneLib (= 0.1.8)
-  - iOSPhoneLib (0.1.8):
+    - iOSPhoneLib (= 0.1.9)
+  - iOSPhoneLib (0.1.9):
     - Swinject (~> 2.8.2)
   - Swinject (2.8.3)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_phone_lib (from `.symlinks/plugins/flutter_phone_lib/ios`)
-  - iOSPhoneLib (= 0.1.8)
+  - iOSPhoneLib (from `/Users/chris/projects/Vialer/iOS/ios-phone-lib`)
 
 SPEC REPOS:
   trunk:
-    - iOSPhoneLib
     - Swinject
 
 EXTERNAL SOURCES:
@@ -22,13 +21,15 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_phone_lib:
     :path: ".symlinks/plugins/flutter_phone_lib/ios"
+  iOSPhoneLib:
+    :path: "/Users/chris/projects/Vialer/iOS/ios-phone-lib"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_phone_lib: d5936cb990dbf9338cf0c133fb0a9d68fcb4792d
-  iOSPhoneLib: 0e9a577688b97e5ae39d48f5d6a120addddf81f2
+  flutter_phone_lib: 695d2ce126a72f35a04c3d76ddcea7ec94c3e4ae
+  iOSPhoneLib: fe36a48e818fd51b96cabccb9037fa9350fa8667
   Swinject: 893c9a543000ac2f10ee4cbaf0933c6992c935d5
 
-PODFILE CHECKSUM: dd8cc94e1ba34db695892d22faccf20fee1bf123
+PODFILE CHECKSUM: 27a0a2ee841b6a90177835be78c7be868bc02c26
 
 COCOAPODS: 1.15.2
