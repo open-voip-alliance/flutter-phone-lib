@@ -7,5 +7,5 @@ project ''
 target 'flutter_phone_lib' do
   source 'https://github.com/CocoaPods/Specs.git'
 
-  pod 'iOSPhoneLib', '0.1.9'
+  pod 'iOSPhoneLib', '0.1.10'
 end
