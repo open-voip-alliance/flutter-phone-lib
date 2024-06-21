@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.19] - 2024-06-21
+
+- Upgraded IPL to 0.1.11 for app icon badge support
+
 ## [0.0.18] - 2024-06-20
 
 - Upgraded IPL to 0.1.10
