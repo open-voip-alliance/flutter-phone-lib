@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.20] - 2024-08-22
+
+- Upgraded APL for foreground service requirements
+
 ## [0.0.19] - 2024-06-21
 
 - Upgraded IPL to 0.1.11 for app icon badge support
