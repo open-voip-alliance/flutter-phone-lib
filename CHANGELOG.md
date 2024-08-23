@@ -1,5 +1,5 @@
 # Changelog
-## [0.0.20] - 2024-08-22
+## [0.0.21] - 2024-08-22
 
 - Upgraded APL for foreground service requirements
 
