@@ -15,8 +15,8 @@ A new Flutter plugin.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'iOSPhoneLib', '0.1.11'
-  s.platform = :ios, '12.0'
+  s.dependency 'iOSPhoneLib', '0.1.12'
+  s.platform = :ios, '13.0'
   s.static_framework = true
 
   # Flutter.framework does not contain a i386 slice.

@@ -1,4 +1,4 @@
-platform :ios, '12.0'
+platform :ios, '13.0'
 inhibit_all_warnings!
 use_frameworks!
 
@@ -7,5 +7,5 @@ project ''
 target 'flutter_phone_lib' do
   source 'https://github.com/CocoaPods/Specs.git'
 
-  pod 'iOSPhoneLib', '0.1.11'
+  pod 'iOSPhoneLib', '0.1.12'
 end

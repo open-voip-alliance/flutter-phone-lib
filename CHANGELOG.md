@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.22] - 2024-08-27
+
+- Improved experience when answering calls on iOS
+
 ## [0.0.21] - 2024-08-22
 
 - Upgraded APL for foreground service requirements
