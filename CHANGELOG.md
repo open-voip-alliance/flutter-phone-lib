@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.23] - 2024-09-04
+
+- Reverted change to re-add microphone as foreground service to fix audio disappearing when phone goes to background during a call
+
 ## [0.0.22] - 2024-08-27
 
 - Improved experience when answering calls on iOS
