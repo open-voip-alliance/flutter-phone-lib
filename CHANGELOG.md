@@ -1,4 +1,7 @@
 # Changelog
+## [0.0.26] - 2024-09-13
+
+- Upgraded APL to 0.1.134 for improved incoming call handling
 ## [0.0.25] - 2024-09-06
 
 - Fixed background push notifications not working on iOS
