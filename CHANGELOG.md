@@ -1,4 +1,12 @@
 # Changelog
+## [0.0.28] - 2024-10-01
+
+- Upgraded APL to 0.1.136 for improved incoming call handling
+
+## [0.0.27] - 2024-09-27
+
+- Upgraded APL to 0.1.135 for improved incoming call handling
+
 ## [0.0.26] - 2024-09-13
 
 - Upgraded APL to 0.1.134 for improved incoming call handling
