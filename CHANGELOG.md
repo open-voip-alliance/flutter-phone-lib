@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.29] - 2024-10-04
+
+- Upgraded APL to 0.1.138 to fix a bug where calls were ending early
+
 ## [0.0.28] - 2024-10-01
 
 - Upgraded APL to 0.1.136 for improved incoming call handling
