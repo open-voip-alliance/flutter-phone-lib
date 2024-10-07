@@ -47,6 +47,6 @@ dependencies {
     api "com.google.firebase:firebase-messaging:21.0.1"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
-    implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.137'
+    implementation 'com.github.open-voip-alliance:Android-Phone-Integration-Lib:0.1.138'
     implementation 'com.google.code.gson:gson:2.8.6'
 }

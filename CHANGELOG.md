@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.30] - 2024-10-07
+
+- Forcing ipv4
+
 ## [0.0.29] - 2024-10-04
 
 - Upgraded APL to 0.1.138 to fix a bug where calls were ending early
