@@ -24,6 +24,7 @@ mixin _$Preferences {
   bool get showCallsInNativeRecents => throw _privateConstructorUsedError;
   Set<SupplementaryContact> get supplementaryContacts =>
       throw _privateConstructorUsedError;
+  bool get enableAdvancedLogging => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,7 +41,8 @@ abstract class $PreferencesCopyWith<$Res> {
   $Res call(
       {bool useApplicationProvidedRingtone,
       bool showCallsInNativeRecents,
-      Set<SupplementaryContact> supplementaryContacts});
+      Set<SupplementaryContact> supplementaryContacts,
+      bool enableAdvancedLogging});
 }
 
 /// @nodoc
@@ -59,6 +61,7 @@ class _$PreferencesCopyWithImpl<$Res, $Val extends Preferences>
     Object? useApplicationProvidedRingtone = null,
     Object? showCallsInNativeRecents = null,
     Object? supplementaryContacts = null,
+    Object? enableAdvancedLogging = null,
   }) {
     return _then(_value.copyWith(
       useApplicationProvidedRingtone: null == useApplicationProvidedRingtone
@@ -73,6 +76,10 @@ class _$PreferencesCopyWithImpl<$Res, $Val extends Preferences>
           ? _value.supplementaryContacts
           : supplementaryContacts // ignore: cast_nullable_to_non_nullable
               as Set<SupplementaryContact>,
+      enableAdvancedLogging: null == enableAdvancedLogging
+          ? _value.enableAdvancedLogging
+          : enableAdvancedLogging // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -88,7 +95,8 @@ abstract class _$$PreferencesImplCopyWith<$Res>
   $Res call(
       {bool useApplicationProvidedRingtone,
       bool showCallsInNativeRecents,
-      Set<SupplementaryContact> supplementaryContacts});
+      Set<SupplementaryContact> supplementaryContacts,
+      bool enableAdvancedLogging});
 }
 
 /// @nodoc
@@ -105,6 +113,7 @@ class __$$PreferencesImplCopyWithImpl<$Res>
     Object? useApplicationProvidedRingtone = null,
     Object? showCallsInNativeRecents = null,
     Object? supplementaryContacts = null,
+    Object? enableAdvancedLogging = null,
   }) {
     return _then(_$PreferencesImpl(
       useApplicationProvidedRingtone: null == useApplicationProvidedRingtone
@@ -119,6 +128,10 @@ class __$$PreferencesImplCopyWithImpl<$Res>
           ? _value._supplementaryContacts
           : supplementaryContacts // ignore: cast_nullable_to_non_nullable
               as Set<SupplementaryContact>,
+      enableAdvancedLogging: null == enableAdvancedLogging
+          ? _value.enableAdvancedLogging
+          : enableAdvancedLogging // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -129,7 +142,8 @@ class _$PreferencesImpl implements _Preferences {
   const _$PreferencesImpl(
       {required this.useApplicationProvidedRingtone,
       required this.showCallsInNativeRecents,
-      final Set<SupplementaryContact> supplementaryContacts = const {}})
+      final Set<SupplementaryContact> supplementaryContacts = const {},
+      this.enableAdvancedLogging = false})
       : _supplementaryContacts = supplementaryContacts;
 
   factory _$PreferencesImpl.fromJson(Map<String, dynamic> json) =>
@@ -150,8 +164,12 @@ class _$PreferencesImpl implements _Preferences {
   }
 
   @override
+  @JsonKey()
+  final bool enableAdvancedLogging;
+
+  @override
   String toString() {
-    return 'Preferences(useApplicationProvidedRingtone: $useApplicationProvidedRingtone, showCallsInNativeRecents: $showCallsInNativeRecents, supplementaryContacts: $supplementaryContacts)';
+    return 'Preferences(useApplicationProvidedRingtone: $useApplicationProvidedRingtone, showCallsInNativeRecents: $showCallsInNativeRecents, supplementaryContacts: $supplementaryContacts, enableAdvancedLogging: $enableAdvancedLogging)';
   }
 
   @override
@@ -167,7 +185,9 @@ class _$PreferencesImpl implements _Preferences {
                     other.showCallsInNativeRecents, showCallsInNativeRecents) ||
                 other.showCallsInNativeRecents == showCallsInNativeRecents) &&
             const DeepCollectionEquality()
-                .equals(other._supplementaryContacts, _supplementaryContacts));
+                .equals(other._supplementaryContacts, _supplementaryContacts) &&
+            (identical(other.enableAdvancedLogging, enableAdvancedLogging) ||
+                other.enableAdvancedLogging == enableAdvancedLogging));
   }
 
   @JsonKey(ignore: true)
@@ -176,7 +196,8 @@ class _$PreferencesImpl implements _Preferences {
       runtimeType,
       useApplicationProvidedRingtone,
       showCallsInNativeRecents,
-      const DeepCollectionEquality().hash(_supplementaryContacts));
+      const DeepCollectionEquality().hash(_supplementaryContacts),
+      enableAdvancedLogging);
 
   @JsonKey(ignore: true)
   @override
@@ -194,10 +215,10 @@ class _$PreferencesImpl implements _Preferences {
 
 abstract class _Preferences implements Preferences {
   const factory _Preferences(
-          {required final bool useApplicationProvidedRingtone,
-          required final bool showCallsInNativeRecents,
-          final Set<SupplementaryContact> supplementaryContacts}) =
-      _$PreferencesImpl;
+      {required final bool useApplicationProvidedRingtone,
+      required final bool showCallsInNativeRecents,
+      final Set<SupplementaryContact> supplementaryContacts,
+      final bool enableAdvancedLogging}) = _$PreferencesImpl;
 
   factory _Preferences.fromJson(Map<String, dynamic> json) =
       _$PreferencesImpl.fromJson;
@@ -208,6 +229,8 @@ abstract class _Preferences implements Preferences {
   bool get showCallsInNativeRecents;
   @override
   Set<SupplementaryContact> get supplementaryContacts;
+  @override
+  bool get enableAdvancedLogging;
   @override
   @JsonKey(ignore: true)
   _$$PreferencesImplCopyWith<_$PreferencesImpl> get copyWith =>

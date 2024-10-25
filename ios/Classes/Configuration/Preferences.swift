@@ -13,6 +13,7 @@ internal func preferencesOf(_ dict: Dictionary<String, Any?>) -> Preferences {
                 name: (item["name"] ?? "") ?? ""
             )
         }
+        enableAdvancedLogging: dict["enableAdvancedLogging"] as? Bool ?? false,
     ))
 }
 

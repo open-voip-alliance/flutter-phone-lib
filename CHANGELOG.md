@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.32] - 2024-10-25
+
+- Android: It is now possible to enable advanced logging for voip
+
 ## [0.0.31] - 2024-10-25
 
 - Updated iOSPhoneLib to 0.1.14 to optimise contact searching

@@ -16,6 +16,7 @@ _$PreferencesImpl _$$PreferencesImplFromJson(Map<String, dynamic> json) =>
                   SupplementaryContact.fromJson(e as Map<String, dynamic>))
               .toSet() ??
           const {},
+      enableAdvancedLogging: json['enableAdvancedLogging'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$PreferencesImplToJson(_$PreferencesImpl instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$$PreferencesImplToJson(_$PreferencesImpl instance) =>
       'showCallsInNativeRecents': instance.showCallsInNativeRecents,
       'supplementaryContacts':
           instance.supplementaryContacts.map((e) => e.toJson()).toList(),
+      'enableAdvancedLogging': instance.enableAdvancedLogging,
     };

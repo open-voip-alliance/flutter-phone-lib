@@ -11,12 +11,14 @@ class Preferences with _$Preferences {
     required bool useApplicationProvidedRingtone,
     required bool showCallsInNativeRecents,
     @Default({}) Set<SupplementaryContact> supplementaryContacts,
+    @Default(false) bool enableAdvancedLogging,
   }) = _Preferences;
 
   /// Equivalent to `Preferences.DEFAULT` in the PIL.
   static const standard = Preferences(
     useApplicationProvidedRingtone: false,
     showCallsInNativeRecents: true,
+    enableAdvancedLogging: false,
   );
 
   factory Preferences.fromJson(Map<String, dynamic> json) =>

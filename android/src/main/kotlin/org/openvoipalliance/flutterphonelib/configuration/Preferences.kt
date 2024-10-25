@@ -5,6 +5,7 @@ import org.openvoipalliance.androidphoneintegration.contacts.SupplementaryContac
 
 fun preferencesOf(map: Map<String, Any?>) = object {
     val useApplicationProvidedRingtone: Boolean by map
+    val enableAdvancedLogging: Boolean by map
     val supplementaryContacts: List<Map<String, Any?>> by map
 
     val preferences = Preferences(
@@ -13,5 +14,6 @@ fun preferencesOf(map: Map<String, Any?>) = object {
                 item["number"] as String? ?: "",
                 item["name"] as String? ?: ""
             ) }.toSet(),
+        enableAdvancedLogging,
     )
 }.preferences
