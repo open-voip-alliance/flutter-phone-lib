@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.31] - 2024-10-25
+
+- Updated iOSPhoneLib to 0.1.14 to optimise contact searching
+
 ## [0.0.30] - 2024-10-07
 
 - Forcing ipv4
