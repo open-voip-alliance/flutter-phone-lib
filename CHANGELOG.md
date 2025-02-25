@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.32] - 2025-02-25
+
+- Android: Calls will now be rejected if you are in GSM or other-app call
+
 ## [0.0.32] - 2024-10-25
 
 - Android: It is now possible to enable advanced logging for voip
