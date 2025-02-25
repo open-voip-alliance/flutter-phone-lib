@@ -1,5 +1,5 @@
 # Changelog
-## [0.0.32] - 2025-02-25
+## [0.0.34] - 2025-02-25
 
 - Android: Calls will now be rejected if you are in GSM or other-app call
 
