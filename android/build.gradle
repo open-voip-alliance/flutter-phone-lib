@@ -27,6 +27,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace "org.openvoipalliance.flutterphonelib"
     compileSdk 33
 
     sourceSets {
