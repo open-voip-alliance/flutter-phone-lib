@@ -1,11 +1,11 @@
 name: flutter_phone_lib
 description: Use VoIP in Flutter.
-version: 0.0.36
+version: 0.0.37
 repository: https://github.com/open-voip-alliance/flutter-phone-lib
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=2.5.0"
+  flutter: ">=3.24.0" # Required by Swift Package Manager
 
 dependencies:
   flutter:
@@ -41,7 +41,7 @@ flutter:
         package: org.openvoipalliance.flutterphonelib
         pluginClass: PhoneLib
       ios:
-        pluginClass: PhoneLib
+        pluginClass: PhoneLibPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

@@ -1,3 +1,6 @@
+# Flutter example ephemeral
+example/ios/flutter/ephemeral/
+
 # Miscellaneous
 *.class
 *.log
