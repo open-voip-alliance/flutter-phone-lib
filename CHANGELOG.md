@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.39] - 2025-10-27
+
+- Fixed JVM target compatibility issue between Java and Kotlin compilation tasks on Android.
+
 ## [0.0.38] - 2025-10-27
 
 - Solved dependency conflict with freezed 3.x in the project.
