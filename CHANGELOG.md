@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.38] - 2025-10-27
+
+- Solved dependency conflict with freezed 3.x in the project.
+
 ## [0.0.37] - 2025-07-29
 
 - Migrated for iOS to Swift Package Manager 
