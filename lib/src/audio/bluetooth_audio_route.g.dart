@@ -13,8 +13,8 @@ BluetoothAudioRoute _$BluetoothAudioRouteFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$BluetoothAudioRouteToJson(
-        BluetoothAudioRoute instance) =>
-    <String, dynamic>{
-      'displayName': instance.displayName,
-      'identifier': instance.identifier,
-    };
+  BluetoothAudioRoute instance,
+) => <String, dynamic>{
+  'displayName': instance.displayName,
+  'identifier': instance.identifier,
+};

@@ -28,14 +28,14 @@ class AudioState extends Equatable {
   });
 
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Object?> get props => [
-        currentRoute,
-        availableRoutes,
-        bluetoothDeviceName,
-        isMicrophoneMuted,
-        bluetoothRoutes,
-      ];
+    currentRoute,
+    availableRoutes,
+    bluetoothDeviceName,
+    isMicrophoneMuted,
+    bluetoothRoutes,
+  ];
 
   static AudioState fromJson(Map<String, dynamic> json) =>
       _$AudioStateFromJson(json);
@@ -49,8 +49,7 @@ List<AudioRoute> _audioRoutesFromJson(List<dynamic> values) =>
 List<BluetoothAudioRoute> _bluetoothAudioRoutesFromJson(List<dynamic> values) =>
     values
         .map(
-          (v) => BluetoothAudioRoute.fromJson(
-            (v as Map).cast<String, dynamic>(),
-          ),
+          (v) =>
+              BluetoothAudioRoute.fromJson((v as Map).cast<String, dynamic>()),
         )
         .toList();

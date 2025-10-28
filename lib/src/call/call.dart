@@ -48,24 +48,24 @@ class Call extends Equatable {
   });
 
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Object?> get props => [
-        remoteNumber,
-        displayName,
-        state,
-        direction,
-        duration,
-        isOnHold,
-        uuid,
-        mos,
-        currentMos,
-        contact,
-        remotePartyHeading,
-        remotePartySubheading,
-        prettyDuration,
-        callId,
-        reason,
-      ];
+    remoteNumber,
+    displayName,
+    state,
+    direction,
+    duration,
+    isOnHold,
+    uuid,
+    mos,
+    currentMos,
+    contact,
+    remotePartyHeading,
+    remotePartySubheading,
+    prettyDuration,
+    callId,
+    reason,
+  ];
 
   static Call fromJson(Map<String, dynamic> json) => _$CallFromJson(json);
 

@@ -17,14 +17,11 @@ Future<PhoneLib> initializePhoneLib(
   assert(builder.preferences != null);
   assert(builder.auth != null);
 
-  await PhoneLib.channel.invokeMethod(
-    'initializePhoneLib',
-    [
-      builder.preferences!.toJson(),
-      builder.auth!.toJson(),
-      applicationSetup.userAgent,
-    ],
-  );
+  await PhoneLib.channel.invokeMethod('initializePhoneLib', [
+    builder.preferences!.toJson(),
+    builder.auth!.toJson(),
+    applicationSetup.userAgent,
+  ]);
 
   return PhoneLib(applicationSetup.onMissedCallNotificationPressed);
 }

@@ -7,6 +7,4 @@ part of 'remote_message.dart';
 // **************************************************************************
 
 RemoteMessage _$RemoteMessageFromJson(Map<String, dynamic> json) =>
-    RemoteMessage(
-      json['data'] as Map<String, dynamic>,
-    );
+    RemoteMessage(json['data'] as Map<String, dynamic>);

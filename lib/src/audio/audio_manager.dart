@@ -12,10 +12,10 @@ class AudioManager {
           as bool;
 
   Future<AudioState> get state async => AudioState.fromJson(
-        await PhoneLib.channel
-            .invokeMethod('AudioManager.state')
-            .then((v) => (v as Map).cast()),
-      );
+    await PhoneLib.channel
+        .invokeMethod('AudioManager.state')
+        .then((v) => (v as Map).cast()),
+  );
 
   Future<void> routeAudio(AudioRoute route) =>
       PhoneLib.channel.invokeMethod('AudioManager.routeAudio', route.toJson());

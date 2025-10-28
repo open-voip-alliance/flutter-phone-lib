@@ -20,7 +20,7 @@ class Auth extends Equatable {
   });
 
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Object?> get props => [username, password, domain, port, secure];
 
   Map<String, dynamic> toJson() => _$AuthToJson(this);

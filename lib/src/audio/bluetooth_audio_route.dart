@@ -15,10 +15,7 @@ class BluetoothAudioRoute extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        displayName,
-        identifier,
-      ];
+  List<Object?> get props => [displayName, identifier];
 
   static BluetoothAudioRoute fromJson(Map<String, dynamic> json) =>
       _$BluetoothAudioRouteFromJson(json);
