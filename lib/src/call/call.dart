@@ -1,73 +1,33 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../contacts/contact.dart';
-import '../util/equatable.dart';
 import 'call_direction.dart';
+import 'call_direction_converter.dart';
 import 'call_state.dart';
+import 'call_state_converter.dart';
 
+part 'call.freezed.dart';
 part 'call.g.dart';
 
-@JsonSerializable(createFactory: true)
-class Call extends Equatable {
-  final String remoteNumber;
-  final String displayName;
+@freezed
+sealed class Call with _$Call {
+  const factory Call({
+    required String remoteNumber,
+    required String displayName,
+    @CallStateConverter() required CallState state,
+    @CallDirectionConverter() required CallDirection direction,
+    required int duration,
+    required bool isOnHold,
+    required String uuid,
+    required double mos,
+    required double currentMos,
+    Contact? contact,
+    required String remotePartyHeading,
+    required String remotePartySubheading,
+    required String prettyDuration,
+    required String callId,
+    required String reason,
+  }) = _Call;
 
-  @JsonKey(fromJson: CallState.fromJson)
-  final CallState state;
-
-  @JsonKey(fromJson: CallDirection.fromJson)
-  final CallDirection direction;
-  final int duration;
-  final bool isOnHold;
-  final String uuid;
-  final double mos;
-  final double currentMos;
-  final Contact? contact;
-  final String remotePartyHeading;
-  final String remotePartySubheading;
-  final String prettyDuration;
-  final String callId;
-  final String reason;
-
-  const Call({
-    required this.remoteNumber,
-    required this.displayName,
-    required this.state,
-    required this.direction,
-    required this.duration,
-    required this.isOnHold,
-    required this.uuid,
-    required this.mos,
-    required this.currentMos,
-    this.contact,
-    required this.remotePartyHeading,
-    required this.remotePartySubheading,
-    required this.prettyDuration,
-    required this.callId,
-    required this.reason,
-  });
-
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  List<Object?> get props => [
-    remoteNumber,
-    displayName,
-    state,
-    direction,
-    duration,
-    isOnHold,
-    uuid,
-    mos,
-    currentMos,
-    contact,
-    remotePartyHeading,
-    remotePartySubheading,
-    prettyDuration,
-    callId,
-    reason,
-  ];
-
-  static Call fromJson(Map<String, dynamic> json) => _$CallFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CallToJson(this);
+  factory Call.fromJson(Map<String, dynamic> json) => _$CallFromJson(json);
 }

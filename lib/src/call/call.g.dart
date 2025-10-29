@@ -6,11 +6,13 @@ part of 'call.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Call _$CallFromJson(Map<String, dynamic> json) => Call(
+_Call _$CallFromJson(Map<String, dynamic> json) => _Call(
   remoteNumber: json['remoteNumber'] as String,
   displayName: json['displayName'] as String,
-  state: CallState.fromJson(json['state'] as String),
-  direction: CallDirection.fromJson(json['direction'] as String),
+  state: const CallStateConverter().fromJson(json['state'] as String),
+  direction: const CallDirectionConverter().fromJson(
+    json['direction'] as String,
+  ),
   duration: (json['duration'] as num).toInt(),
   isOnHold: json['isOnHold'] as bool,
   uuid: json['uuid'] as String,
@@ -26,11 +28,11 @@ Call _$CallFromJson(Map<String, dynamic> json) => Call(
   reason: json['reason'] as String,
 );
 
-Map<String, dynamic> _$CallToJson(Call instance) => <String, dynamic>{
+Map<String, dynamic> _$CallToJson(_Call instance) => <String, dynamic>{
   'remoteNumber': instance.remoteNumber,
   'displayName': instance.displayName,
-  'state': instance.state.toJson(),
-  'direction': instance.direction.toJson(),
+  'state': const CallStateConverter().toJson(instance.state),
+  'direction': const CallDirectionConverter().toJson(instance.direction),
   'duration': instance.duration,
   'isOnHold': instance.isOnHold,
   'uuid': instance.uuid,

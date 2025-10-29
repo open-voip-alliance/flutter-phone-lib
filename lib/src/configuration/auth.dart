@@ -1,27 +1,17 @@
-import 'package:json_annotation/json_annotation.dart';
-import '../util/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'auth.freezed.dart';
 part 'auth.g.dart';
 
-@JsonSerializable()
-class Auth extends Equatable {
-  final String username;
-  final String password;
-  final String domain;
-  final int port;
-  final bool secure;
+@freezed
+sealed class Auth with _$Auth {
+  const factory Auth({
+    required String username,
+    required String password,
+    required String domain,
+    required int port,
+    required bool secure,
+  }) = _Auth;
 
-  const Auth({
-    required this.username,
-    required this.password,
-    required this.domain,
-    required this.port,
-    required this.secure,
-  });
-
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  List<Object?> get props => [username, password, domain, port, secure];
-
-  Map<String, dynamic> toJson() => _$AuthToJson(this);
+  factory Auth.fromJson(Map<String, dynamic> json) => _$AuthFromJson(json);
 }
