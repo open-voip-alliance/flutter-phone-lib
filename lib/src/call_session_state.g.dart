@@ -14,8 +14,9 @@ CallSessionState _$CallSessionStateFromJson(Map<String, dynamic> json) =>
       inactiveCall: json['inactiveCall'] == null
           ? null
           : Call.fromJson(json['inactiveCall'] as Map<String, dynamic>),
-      audioState:
-          AudioState.fromJson(json['audioState'] as Map<String, dynamic>),
+      audioState: AudioState.fromJson(
+        json['audioState'] as Map<String, dynamic>,
+      ),
     );
 
 Map<String, dynamic> _$CallSessionStateToJson(CallSessionState instance) =>

@@ -32,9 +32,6 @@ class ApplicationSetup extends Equatable {
   }) : assert(userAgent.length > 0);
 
   @override
-  @JsonKey(ignore: true)
-  List<Object?> get props => [
-        onMissedCallNotificationPressed,
-        userAgent,
-      ];
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  List<Object?> get props => [onMissedCallNotificationPressed, userAgent];
 }

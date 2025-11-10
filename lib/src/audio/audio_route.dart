@@ -7,11 +7,7 @@ class AudioRoute extends UpperCaseEnum {
   static const phone = AudioRoute._('PHONE');
   static const bluetooth = AudioRoute._('BLUETOOTH');
 
-  static const List<AudioRoute> values = [
-    speaker,
-    phone,
-    bluetooth,
-  ];
+  static const List<AudioRoute> values = [speaker, phone, bluetooth];
 
   static AudioRoute fromJson(String json) =>
       UpperCaseEnum.fromJson(values, json);

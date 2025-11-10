@@ -9,10 +9,10 @@ class Contact extends Equatable {
   final String name;
   final Uri? imageUri;
 
-  Contact({required this.name, this.imageUri});
+  const Contact({required this.name, this.imageUri});
 
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   List<Object?> get props => [name, imageUri];
 
   static Contact fromJson(Map<String, dynamic> json) {

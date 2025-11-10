@@ -20,12 +20,8 @@ class CallSessionState extends Equatable {
   });
 
   @override
-  @JsonKey(ignore: true)
-  List<Object?> get props => [
-        activeCall,
-        inactiveCall,
-        audioState,
-      ];
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  List<Object?> get props => [activeCall, inactiveCall, audioState];
 
   static CallSessionState fromJson(Map<String, dynamic> json) =>
       CallSessionState(

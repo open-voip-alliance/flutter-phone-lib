@@ -7,13 +7,13 @@ part of 'contact.dart';
 // **************************************************************************
 
 Contact _$ContactFromJson(Map<String, dynamic> json) => Contact(
-      name: json['name'] as String,
-      imageUri: json['imageUri'] == null
-          ? null
-          : Uri.parse(json['imageUri'] as String),
-    );
+  name: json['name'] as String,
+  imageUri: json['imageUri'] == null
+      ? null
+      : Uri.parse(json['imageUri'] as String),
+);
 
 Map<String, dynamic> _$ContactToJson(Contact instance) => <String, dynamic>{
-      'name': instance.name,
-      'imageUri': instance.imageUri?.toString(),
-    };
+  'name': instance.name,
+  'imageUri': instance.imageUri?.toString(),
+};
