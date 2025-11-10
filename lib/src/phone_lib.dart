@@ -13,8 +13,9 @@ import 'util/cast_recursive.dart';
 
 class PhoneLib {
   /// For internal use only.
-  static const MethodChannel channel =
-      MethodChannel('org.openvoipalliance.flutterphonelib/foreground');
+  static const MethodChannel channel = MethodChannel(
+    'org.openvoipalliance.flutterphonelib/foreground',
+  );
 
   static PhoneLib? _instance;
 
@@ -77,11 +78,8 @@ class PhoneLib {
     }
   }
 
-  Future<void> start(Preferences preferences, Auth auth) =>
-      channel.invokeMethod('PhoneLib.start', [
-        preferences.toJson(),
-        auth.toJson(),
-      ]);
+  Future<void> start(Preferences preferences, Auth auth) => channel
+      .invokeMethod('PhoneLib.start', [preferences.toJson(), auth.toJson()]);
 
   Future<void> stop() => channel.invokeMethod('PhoneLib.stop');
 
@@ -95,19 +93,17 @@ class PhoneLib {
     _instance = null;
   }
 
-  Future<void> updatePreferences(Preferences preferences) =>
-      channel.invokeMethod('PhoneLib.updatePreferences', [
-        preferences.toJson(),
-      ]);
+  Future<void> updatePreferences(Preferences preferences) => channel
+      .invokeMethod('PhoneLib.updatePreferences', [preferences.toJson()]);
 
   Future<void> call(String number) =>
       channel.invokeMethod('PhoneLib.call', number);
 
   Future<CallSessionState> get sessionState async => CallSessionState.fromJson(
-        await channel
-            .invokeMethod('PhoneLib.sessionState')
-            .then((v) => (v as Map).cast()),
-      );
+    await channel
+        .invokeMethod('PhoneLib.sessionState')
+        .then((v) => (v as Map).cast()),
+  );
 
   Future<void> performEchoCancellationCalibration() =>
       channel.invokeMethod('PhoneLib.performEchoCancellationCalibration');

@@ -6,10 +6,7 @@ class CallDirection extends UpperCaseEnum {
   static const inbound = CallDirection._('INBOUND');
   static const outbound = CallDirection._('OUTBOUND');
 
-  static const List<CallDirection> values = [
-    inbound,
-    outbound,
-  ];
+  static const List<CallDirection> values = [inbound, outbound];
 
   static CallDirection fromJson(String json) =>
       UpperCaseEnum.fromJson(values, json);

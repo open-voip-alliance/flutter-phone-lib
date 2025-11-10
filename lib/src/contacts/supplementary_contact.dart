@@ -4,7 +4,7 @@ part 'supplementary_contact.freezed.dart';
 part 'supplementary_contact.g.dart';
 
 @freezed
-class SupplementaryContact with _$SupplementaryContact {
+sealed class SupplementaryContact with _$SupplementaryContact {
   const factory SupplementaryContact({
     required String number,
     required String name,

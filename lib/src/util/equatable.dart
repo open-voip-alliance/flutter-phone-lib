@@ -6,11 +6,11 @@ abstract class Equatable extends equatable.Equatable {
   const Equatable();
 
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   bool? get stringify => super.stringify;
 
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   // ignore: hash_and_equals
   int get hashCode => super.hashCode;
 }

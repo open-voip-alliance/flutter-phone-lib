@@ -6,7 +6,7 @@ part 'preferences.freezed.dart';
 part 'preferences.g.dart';
 
 @freezed
-class Preferences with _$Preferences {
+sealed class Preferences with _$Preferences {
   const factory Preferences({
     required bool useApplicationProvidedRingtone,
     required bool showCallsInNativeRecents,
