@@ -108,5 +108,20 @@ class PhoneLib {
   Future<void> performEchoCancellationCalibration() =>
       channel.invokeMethod('PhoneLib.performEchoCancellationCalibration');
 
+  /// Play a DTMF tone locally without sending it over the network.
+  ///
+  /// [digit] The DTMF digit to play ('0'-'9', '#', '*').
+  /// Must be exactly one character.
+  ///
+  /// Throws [ArgumentError] if [digit] is not exactly one character.
+  Future<void> playToneLocally(String digit) {
+    if (digit.length != 1) {
+      throw ArgumentError(
+        'digit must be exactly one character, got: "$digit"',
+      );
+    }
+    return channel.invokeMethod('PhoneLib.playToneLocally', digit);
+  }
+
   void _onEvent(Event event) => _eventsController.add(event);
 }

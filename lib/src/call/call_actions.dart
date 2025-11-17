@@ -8,8 +8,11 @@ class CallActions {
   Future<void> toggleHold() =>
       PhoneLib.channel.invokeMethod('CallActions.toggleHold');
 
-  Future<void> sendDtmf(String dtmf) =>
-      PhoneLib.channel.invokeMethod('CallActions.sendDtmf', dtmf);
+  Future<void> sendDtmf(String dtmf, {bool playToneLocally = true}) =>
+      PhoneLib.channel.invokeMethod('CallActions.sendDtmf', {
+        'dtmf': dtmf,
+        'playToneLocally': playToneLocally,
+      });
 
   Future<void> beginAttendedTransfer(String number) => PhoneLib.channel
       .invokeMethod('CallActions.beginAttendedTransfer', number);
