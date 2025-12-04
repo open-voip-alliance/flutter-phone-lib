@@ -121,6 +121,10 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                         "performEchoCancellationCalibration" -> result.withSuccess {
                             pil.performEchoCancellationCalibration()
                         }
+                        "playToneLocally" -> result.withSuccess {
+                            val digit = call.arguments<String>()!!.first()
+                            pil.playToneLocally(digit)
+                        }
                         else -> result.notImplemented()
                     }
                 }
@@ -153,9 +157,12 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
                         "unhold" -> result.withSuccess { pil.actions.unhold() }
                         "toggleHold" -> result.withSuccess { pil.actions.toggleHold() }
                         "sendDtmf" -> result.withSuccess {
+                            val arguments = call.arguments<Map<String, Any>>()!!
+                            val dtmf = arguments["dtmf"] as String
+                            val playToneLocally = arguments["playToneLocally"] as Boolean
                             pil.actions.sendDtmf(
-                                call.arguments<String>()!!.toCharArray().first(),
-                                playToneLocally = false
+                                dtmf.toCharArray().first(),
+                                playToneLocally = playToneLocally
                             )
                         }
                         "beginAttendedTransfer" -> result.withSuccess {

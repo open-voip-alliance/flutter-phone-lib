@@ -82,6 +82,10 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                         case "performEchoCancellationCalibration": withSuccess(result) {
                             pil.performEchoCancellationCalibration()
                         }
+                        case "playToneLocally": withSuccess(result) {
+                            let digit = (call.arguments as! String).first!
+                            pil.playToneLocally(digit: digit)
+                        }
                         default: result(FlutterMethodNotImplemented)
                     }
                     case "Calls": switch method {
@@ -102,7 +106,10 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                         case "unhold": withSuccess(result) { pil.actions.unhold() }
                         case "toggleHold": withSuccess(result) { pil.actions.toggleHold() }
                         case "sendDtmf": withSuccess(result) {
-                            pil.actions.sendDtmf(String((call.arguments as! String).first!))
+                            let arguments = call.arguments as! Dictionary<String, Any>
+                            let dtmf = arguments["dtmf"] as! String
+                            let playToneLocally = arguments["playToneLocally"] as! Bool
+                            pil.actions.sendDtmf(dtmf, playToneLocally: playToneLocally)
                         }
                         case "beginAttendedTransfer": withSuccess(result) {
                             pil.actions.beginAttendedTransfer(number: call.arguments as! String)

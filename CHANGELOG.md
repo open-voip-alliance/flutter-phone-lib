@@ -1,4 +1,13 @@
 # Changelog
+## [0.0.41] - 2025-12-04
+
+- Fixed an issue on iOS that transfer events weren't properly passed along
+
+## [0.0.40] - 2025-11-17
+
+- Added `playToneLocally()` method to play DTMF tones on-demand
+- Added `playToneLocally` parameter to `sendDtmf()` for automatic local playback when sending DTMF
+
 ## [0.0.39] - 2025-10-27
 
 - Fixed JVM target compatibility issue between Java and Kotlin compilation tasks on Android.
