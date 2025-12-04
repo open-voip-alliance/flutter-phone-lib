@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.41] - 2025-12-04
+
+- Fixed an issue on iOS that transfer events weren't properly passed along
+
 ## [0.0.40] - 2025-11-17
 
 - Added `playToneLocally()` method to play DTMF tones on-demand
