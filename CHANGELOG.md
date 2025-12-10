@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.42] - 2025-12-10
+
+- Upgraded iOS Phone Lib to 0.1.18 to fix audio route reset issue when a call starts
+
 ## [0.0.41] - 2025-12-04
 
 - Fixed an issue on iOS that transfer events weren't properly passed along
