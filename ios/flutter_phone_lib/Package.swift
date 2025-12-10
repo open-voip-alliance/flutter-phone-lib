@@ -14,7 +14,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/open-voip-alliance/iOS-Phone-Lib.git", exact: "0.1.17"),
+        .package(url: "https://github.com/open-voip-alliance/iOS-Phone-Lib.git", exact: "0.1.18"),
     ],
     targets: [
         .target(
