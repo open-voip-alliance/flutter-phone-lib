@@ -11,6 +11,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import io.flutter.BuildConfig
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -39,28 +41,43 @@ import org.openvoipalliance.flutterphonelib.events.ProxyEventListener
 typealias OnLogReceivedCallback = (message: String, level: PhoneLibLogLevel) -> Unit
 typealias OnCallEndedCallback = (call: NativeCall) -> Unit
 
-class PhoneLib : FlutterPlugin, MethodCallHandler {
+class PhoneLib : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var context: Context
+    private var pendingBinaryMessenger: io.flutter.plugin.common.BinaryMessenger? = null
 
     private val eventListener = ProxyEventListener()
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        // Always create a new channel for each engine attachment. Each FlutterEngine has its
-        // own binaryMessenger, so we must bind the channel to this engine's messenger.
-        // This is critical when multiple engines exist (e.g., firebase_messaging background
-        // isolate creates a separate engine from the main app engine).
-        channel = MethodChannel(
-            flutterPluginBinding.binaryMessenger,
-            "org.openvoipalliance.flutterphonelib/foreground"
-        )
-        channel?.setMethodCallHandler(this)
+        // Store the messenger - we'll create the channel when attached to an Activity.
+        // This prevents background isolates (like firebase_messaging) from setting the
+        // channel before the main app does.
+        pendingBinaryMessenger = flutterPluginBinding.binaryMessenger
         context = flutterPluginBinding.applicationContext
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel?.setMethodCallHandler(null)
         channel = null
+        pendingBinaryMessenger = null
     }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        // We're in the main app (has Activity), so create/update the channel.
+        // This ensures the main app's channel takes precedence over any background isolate.
+        pendingBinaryMessenger?.let { messenger ->
+            channel = MethodChannel(
+                messenger,
+                "org.openvoipalliance.flutterphonelib/foreground"
+            )
+            channel?.setMethodCallHandler(this)
+        }
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {}
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
+
+    override fun onDetachedFromActivity() {}
 
     @Suppress("UNCHECKED_CAST")
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) =
