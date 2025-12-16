@@ -45,14 +45,14 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
     private val eventListener = ProxyEventListener()
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        // For some reason onAttachedEngine is called twice, so this check is needed.
-        if (!isChannelInitialized) {
-            channel = MethodChannel(
-                flutterPluginBinding.binaryMessenger,
-                "org.openvoipalliance.flutterphonelib/foreground"
-            )
-        }
-
+        // Always create a new channel for each engine attachment. Each FlutterEngine has its
+        // own binaryMessenger, so we must bind the channel to this engine's messenger.
+        // This is critical when multiple engines exist (e.g., firebase_messaging background
+        // isolate creates a separate engine from the main app engine).
+        channel = MethodChannel(
+            flutterPluginBinding.binaryMessenger,
+            "org.openvoipalliance.flutterphonelib/foreground"
+        )
         channel?.setMethodCallHandler(this)
         context = flutterPluginBinding.applicationContext
     }
@@ -248,9 +248,6 @@ class PhoneLib : FlutterPlugin, MethodCallHandler {
         // getter.
         internal val isPILInitialized: Boolean
             get() = ::pil.isInitialized
-
-        internal val isChannelInitialized: Boolean
-            get() = channel != null
 
         internal lateinit var pil: PIL
 
