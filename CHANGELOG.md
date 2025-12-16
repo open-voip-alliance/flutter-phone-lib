@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.43] - 2025-12-16
+
+- Fixed a bug on Android caused by having multiple Flutter engines booted simultaneously
+
 ## [0.0.42] - 2025-12-10
 
 - Upgraded iOS Phone Lib to 0.1.18 to fix audio route reset issue when a call starts
