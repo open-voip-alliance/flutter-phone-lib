@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.44] - 2025-12-16
+
+- Fixed a bug on Android where background isolates (e.g. firebase_messaging) could interfere with the MethodChannel by setting it before the main app
+
 ## [0.0.42] - 2025-12-10
 
 - Upgraded iOS Phone Lib to 0.1.18 to fix audio route reset issue when a call starts
