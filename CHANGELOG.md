@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.46] - 2026-07-21
+
+- Upgraded Android Phone Lib to 0.1.147 so ringtone isn't played briefly on the phone before switching to bluetooth
+
 ## [0.0.45] - 2026-03-27
 
 - Upgraded Android Phone Lib to 0.1.146, you can now receive Vialer calls while on a GSM call
