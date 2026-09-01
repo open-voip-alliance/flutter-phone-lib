@@ -1,0 +1,64 @@
+package org.openvoipalliance.androidphoneintegration.audio
+
+import android.content.Context
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.provider.Settings
+import java.util.*
+import kotlin.concurrent.schedule
+
+class LocalDtmfToneGenerator(private val context: Context) {
+
+    /**
+     * This is the native system setting that can be found under `Dialling keypad (sound)` (Samsung)
+     * or `Dial pad tones` (Stock Android)
+     */
+    private val isDiallingKeypadSoundEnabled: Boolean
+        get() = Settings.System.getInt(
+            context.contentResolver,
+            Settings.System.DTMF_TONE_WHEN_DIALING,
+            1
+        ) != 0
+
+    fun play(tone: Char) {
+        val toneValue = convertCharacterToTone(tone) ?: return
+
+        if (!isDiallingKeypadSoundEnabled) {
+            return
+        }
+
+        ToneGenerator(STREAM, VOLUME_PERCENTAGE).apply {
+            startToneAndReleaseAfterPlayed(toneValue, DURATION)
+        }
+    }
+
+    private fun convertCharacterToTone(tone: Char): Int? = when(tone) {
+        '0' -> ToneGenerator.TONE_DTMF_0
+        '1' -> ToneGenerator.TONE_DTMF_1
+        '2' -> ToneGenerator.TONE_DTMF_2
+        '3' -> ToneGenerator.TONE_DTMF_3
+        '4' -> ToneGenerator.TONE_DTMF_4
+        '5' -> ToneGenerator.TONE_DTMF_5
+        '6' -> ToneGenerator.TONE_DTMF_6
+        '7' -> ToneGenerator.TONE_DTMF_7
+        '8' -> ToneGenerator.TONE_DTMF_8
+        '9' -> ToneGenerator.TONE_DTMF_9
+        '#' -> ToneGenerator.TONE_DTMF_P
+        '*' -> ToneGenerator.TONE_DTMF_S
+        else -> null
+    }
+
+    companion object {
+        const val STREAM = AudioManager.STREAM_DTMF
+        const val DURATION = 150
+        const val VOLUME_PERCENTAGE = 100
+    }
+}
+
+fun ToneGenerator.startToneAndReleaseAfterPlayed(tone: Int, duration: Int) {
+    startTone(tone, duration)
+
+    Timer().schedule((duration + 500).toLong()) {
+        release()
+    }
+}
