@@ -9,65 +9,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Architecture:** Flutter Plugin with three layers:
 1. Dart/Flutter API (lib/)
 2. Platform Channel (MethodChannel: `org.openvoipalliance.flutterphonelib/foreground`)
-3. Native implementations (Android-Phone-Integration-Lib v0.1.142, iOS-Phone-Integration-Lib v0.1.15)
+3. Native VoIP implementations, vendored into this repository:
+   - Android: `android/src/main/kotlin/org/openvoipalliance/{androidphoneintegration,voiplib}/` (formerly Android-Phone-Integration-Lib, vendored at v0.1.147)
+   - iOS: `ios/flutter_phone_lib/{iOSPhoneLib,LinphoneWrapper}/` (formerly iOS-Phone-Lib, vendored at v0.1.18)
 
-## CRITICAL: FPL is a Thin Bridge Layer
+## Layering: Bridge vs VoIP Implementation
 
-**Core Principle:** Flutter Phone Lib (FPL) is designed to be a **thin translation layer** between Dart and the native phone libraries. It should contain **minimal logic** and be as **invisible as possible**.
+The former APL (Android Phone Integration Lib) and IPL (iOS Phone Lib) libraries are now vendored into this repository, but the layering they enforced still applies:
 
-**What FPL Should Do:**
+**The bridge layer** (`lib/`, `android/.../flutterphonelib/`, `ios/flutter_phone_lib/Sources/`) is a **thin translation layer**:
 - Bridge Dart ↔ Native via MethodChannel
 - Serialize/deserialize data between Dart and native formats
-- Expose APL/IPL functionality to Flutter developers
 - Maintain type-safe Dart API surface
+- No VoIP logic or call-handling decisions
 
-**What FPL Should NOT Do:**
-- Implement VoIP logic (belongs in APL/IPL)
-- Make business decisions about call handling (belongs in APL/IPL)
-- Duplicate functionality that exists in native libraries
-- Add features not supported by APL/IPL
+**The VoIP layer** (`android/.../androidphoneintegration/`, `android/.../voiplib/`, `ios/flutter_phone_lib/iOSPhoneLib/`, `ios/flutter_phone_lib/LinphoneWrapper/`) contains the real business logic:
+- Call lifecycle, audio routing, push handling, Telecom/CallKit integration
+- Wraps the linphone SDK (the actual SIP stack)
 
-### Required Context: Related Codebases
+VoIP logic changes go in the VoIP layer; serialization/channel changes go in the bridge layer. Don't blur the boundary.
 
-**IMPORTANT:** Before working on this codebase, verify you have access to these three related projects (one directory level up from this repository):
+### Required Context: Vialer (Consumer App)
 
-1. **Android Phone Integration Lib (APL)**
-   - Path: `../android-phone-integration-lib/`
-   - Repository: https://github.com/open-voip-alliance/Android-Phone-Integration-Lib
-   - Purpose: The actual Android VoIP implementation. Contains the real business logic.
-   - Current version used by FPL: v0.1.142
+- Path: `../vialer/`
+- Purpose: Real-world consumer of this library. Shows actual usage patterns and integration examples.
+- Use this to understand: How FPL is used in practice, what API patterns work well, common integration patterns
+- Use vialer as the source of truth for API design decisions, and check whether bugs manifest there.
 
-2. **iOS Phone Lib (IPL)**
-   - Path: `../ios-phone-lib/`
-   - Repository: https://github.com/open-voip-alliance/iOS-Phone-Lib
-   - Purpose: The actual iOS VoIP implementation. Contains the real business logic.
-   - Current version used by FPL: v0.1.15
+### Historical Repositories
 
-3. **Vialer (Consumer App)**
-   - Path: `../vialer/`
-   - Purpose: Real-world consumer of this library. Shows actual usage patterns and integration examples.
-   - Use this to understand: How FPL is used in practice, what API patterns work well, common integration patterns
-
-**If any of these projects are missing:** Stop and prompt the user to clone them. These codebases are essential context for any work on FPL.
-
-### Development Workflow with Related Codebases
-
-**When adding a new feature:**
-1. Check if APL/IPL already support this functionality
-2. If yes: Simply expose it through FPL's Dart API
-3. If no: Feature needs to be added to APL/IPL first, not FPL
-4. Check `../vialer/` to see if similar patterns exist
-
-**When fixing a bug:**
-1. Determine if the bug is in FPL's bridging code or in APL/IPL
-2. If it's VoIP logic: The bug is likely in APL/IPL
-3. If it's serialization/channel communication: The bug is in FPL
-4. Check `../vialer/` to see if the issue manifests there
-
-**When understanding usage:**
-1. Look at `../vialer/` project to see real-world usage patterns
-2. Check how vialer initializes FPL, handles events, manages calls
-3. Use vialer as the source of truth for API design decisions
+The vendored native code originates from these (now unmaintained) repositories; their git history can be useful context:
+- https://github.com/open-voip-alliance/Android-Phone-Integration-Lib (vendored at 0.1.147, commit bc735c4)
+- https://github.com/open-voip-alliance/iOS-Phone-Lib (vendored at 0.1.18, commit c5b897a)
 
 ## Essential Development Commands
 
@@ -172,10 +145,15 @@ lib/
 
 android/                                # Kotlin implementation
 ├── build.gradle                        # Android build config
-└── src/main/kotlin/org/openvoipalliance/flutterphonelib/
+└── src/main/kotlin/org/openvoipalliance/
+    ├── flutterphonelib/                # Bridge layer (method channel)
+    ├── androidphoneintegration/        # Vendored APL (VoIP logic)
+    └── voiplib/                        # Vendored APL linphone wrapper
 
-ios/                                    # Swift implementation
-└── flutter_phone_lib/PhoneLibPlugin.swift
+ios/flutter_phone_lib/                  # Swift implementation (SPM package)
+├── Sources/flutter_phone_lib/          # Bridge layer (method channel)
+├── iOSPhoneLib/                        # Vendored IPL (VoIP logic)
+└── LinphoneWrapper/                    # Vendored IPL linphone wrapper
 
 example/                                # Demo app
 ```
@@ -226,9 +204,9 @@ example/                                # Demo app
 - `json_annotation ^4.8.1` / `json_serializable ^6.7.1` - JSON serialization
 - `freezed_annotation ^3.1.0` / `freezed ^3.2.3` - Immutable data classes
 
-**Native libraries:**
-- Android: `Android-Phone-Integration-Lib` (APL) v0.1.142
-- iOS: `iOS-Phone-Integration-Lib` (IPL) v0.1.15
+**Native dependencies (of the vendored VoIP code):**
+- Android: `org.linphone.minimal:linphone-sdk-android` 5.4.94, `io.insert-koin:koin-android` 2.2.2
+- iOS: `linphone-sdk-swift-ios` 5.4.24 (from gitlab.linphone.org), `Swinject` 2.9.2 (JohannesNevels fork)
 
 ## Important Notes
 
