@@ -14,14 +14,35 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/open-voip-alliance/iOS-Phone-Lib.git", exact: "0.1.18"),
+        .package(url: "https://github.com/JohannesNevels/Swinject.git", exact: "2.9.2"),
+        .package(url: "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git", exact: "5.4.24"),
     ],
     targets: [
         .target(
             name: "flutter_phone_lib",
             dependencies: [
-                .product(name: "iOSPhoneLib", package: "ios-phone-lib")
+                "iOSPhoneLib"
             ]
-        )
+        ),
+        // Vendored from open-voip-alliance/iOS-Phone-Lib (0.1.18).
+        .target(
+            name: "iOSPhoneLib",
+            dependencies: [
+                .product(name: "Swinject", package: "Swinject"),
+                "LinphoneWrapper"
+            ],
+            path: "iOSPhoneLib",
+            resources: [
+                .process("iOSVoIPLib/Resources/ringback.wav"),
+                .process("PIL/Localizable.stringsdict"),
+            ]
+        ),
+        .target(
+            name: "LinphoneWrapper",
+            dependencies: [
+                .product(name: "linphonesw", package: "linphone-sdk-swift-ios")
+            ],
+            path: "LinphoneWrapper/Sources"
+        ),
     ]
 )
