@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.47] - unreleased
+
+- Vendored the native libraries into this repository: Android Phone Integration Lib (0.1.147) and iOS Phone Lib (0.1.18) are no longer external dependencies. No functional changes intended.
+
 ## [0.0.46] - 2026-07-21
 
 - Upgraded Android Phone Lib to 0.1.147 so ringtone isn't played briefly on the phone before switching to bluetooth
