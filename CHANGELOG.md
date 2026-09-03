@@ -1,7 +1,7 @@
 # Changelog
-## [0.0.47] - unreleased
+## [1.0.0] - 2026-09-03
 
-- Vendored the native libraries into this repository: Android Phone Integration Lib (0.1.147) and iOS Phone Lib (0.1.18) are no longer external dependencies. No functional changes intended.
+- The native libraries are now part of this plugin. Android Phone Integration Lib (0.1.147) and iOS Phone Lib (0.1.18) were vendored into the repository and are no longer external dependencies. Calling behaviour is unchanged.
 
 ## [0.0.46] - 2026-07-21
 
