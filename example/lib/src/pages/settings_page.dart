@@ -30,6 +30,27 @@ class _SettingsPageState extends State<SettingsPage> {
   var _loggingIn = false;
   var _registering = false;
 
+  final _voipSection = GlobalKey();
+  final _voipgridSection = GlobalKey();
+  final _middlewareSection = GlobalKey();
+
+  void _scrollTo(GlobalKey section) {
+    final context = section.currentContext;
+    if (context == null) return;
+
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 300),
+      alignment: 0,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _phone.middleware.refresh();
+  }
+
   @override
   void dispose() {
     _username.dispose();
@@ -126,18 +147,21 @@ class _SettingsPageState extends State<SettingsPage> {
             items: [
               _Status(
                 'Phone lib',
+                onTap: () => _scrollTo(_voipSection),
                 _phone.isRunning,
                 'Running',
                 'Not running',
               ),
               _Status(
                 'VoIPGRID',
+                onTap: () => _scrollTo(_voipgridSection),
                 voipgrid.isLoggedIn,
                 'Logged in',
                 'Not logged in',
               ),
               _Status(
                 'Middleware',
+                onTap: () => _scrollTo(_middlewareSection),
                 middleware.isRegistered,
                 'Registered',
                 'Not registered',
@@ -146,152 +170,160 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const Divider(height: 1),
           Expanded(
-            child: ListView(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  'VoIP authentication',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                if (kDebugMode && _phone.username.isEmpty) ...[
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        'Tip: debug builds can pre-fill these fields from the '
-                        '.env file, see .env.example.',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'VoIP authentication',
+                    key: _voipSection,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
-                ],
-                TextField(
-                  controller: _username,
-                  decoration: const InputDecoration(labelText: 'Username'),
-                ),
-                TextField(
-                  controller: _password,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                ),
-                TextField(
-                  controller: _domain,
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'Domain'),
-                ),
-                TextField(
-                  controller: _port,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Port'),
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Encryption (TLS)'),
-                  value: _secure,
-                  onChanged: (value) => setState(() => _secure = value),
-                ),
-                const SizedBox(height: 8),
-                _Actions(
-                  busy: _applying,
-                  primaryLabel: 'Start',
-                  onPrimary: _saveAndApply,
-                  secondaryLabel: 'Stop',
-                  onSecondary: _phone.isRunning ? _stop : null,
-                ),
-                const Divider(height: 32),
-                Text(
-                  'VoIPGRID authentication',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _voipgridUsername,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: _voipgridPassword,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                ),
-                const SizedBox(height: 8),
-                _Actions(
-                  busy: _loggingIn,
-                  primaryLabel: 'Log in',
-                  onPrimary: _login,
-                  secondaryLabel: 'Log out',
-                  onSecondary: voipgrid.isLoggedIn ? _logout : null,
-                ),
-                const Divider(height: 32),
-                Text(
-                  'Middleware registration',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Push token'),
-                  subtitle: Text(
-                    middleware.pushToken == null
-                        ? 'Not received yet'
-                        : 'Received',
+                  if (kDebugMode && _phone.username.isEmpty) ...[
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          'Tip: debug builds can pre-fill these fields from the '
+                          '.env file, see .env.example.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  TextField(
+                    controller: _username,
+                    decoration: const InputDecoration(labelText: 'Username'),
                   ),
-                ),
-                _Actions(
-                  busy: _registering,
-                  primaryLabel: 'Register',
-                  onPrimary: voipgrid.isLoggedIn ? _register : null,
-                  secondaryLabel: 'Unregister',
-                  onSecondary: middleware.isRegistered ? _unregister : null,
-                ),
-                const Divider(height: 32),
-                Text(
-                  'Preferences',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Use application provided ringtone'),
-                  value: _phone.useApplicationProvidedRingtone,
-                  onChanged: (value) =>
-                      _phone.setUseApplicationProvidedRingtone(value),
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Show calls in native recents'),
-                  value: _phone.showCallsInNativeRecents,
-                  onChanged: (value) =>
-                      _phone.setShowCallsInNativeRecents(value),
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Advanced logging'),
-                  value: _phone.enableAdvancedLogging,
-                  onChanged: (value) => _phone.setEnableAdvancedLogging(value),
-                ),
-                const Divider(height: 32),
-                Text(
-                  'Advanced',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Echo cancellation calibration'),
-                  enabled: _phone.isRunning,
-                  onTap: () {
-                    _phone.phoneLib.performEchoCancellationCalibration();
-                    _showSnackBar(
-                        'Performing echo cancellation calibration...');
-                  },
-                ),
-                const Divider(height: 32),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Linphone version'),
-                  subtitle: Text(_phone.linphoneVersion ?? 'Unknown'),
-                ),
-              ],
+                  TextField(
+                    controller: _password,
+                    obscureText: true,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                  ),
+                  TextField(
+                    controller: _domain,
+                    keyboardType: TextInputType.url,
+                    decoration: const InputDecoration(labelText: 'Domain'),
+                  ),
+                  TextField(
+                    controller: _port,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Port'),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Encryption (TLS)'),
+                    value: _secure,
+                    onChanged: (value) => setState(() => _secure = value),
+                  ),
+                  const SizedBox(height: 8),
+                  _Actions(
+                    busy: _applying,
+                    primaryLabel: 'Start',
+                    onPrimary: _saveAndApply,
+                    secondaryLabel: 'Stop',
+                    onSecondary: _phone.isRunning ? _stop : null,
+                  ),
+                  const Divider(height: 32),
+                  Text(
+                    'VoIPGRID authentication',
+                    key: _voipgridSection,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _voipgridUsername,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                  ),
+                  TextField(
+                    controller: _voipgridPassword,
+                    obscureText: true,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                  ),
+                  const SizedBox(height: 8),
+                  _Actions(
+                    busy: _loggingIn,
+                    primaryLabel: 'Log in',
+                    onPrimary: _login,
+                    secondaryLabel: 'Log out',
+                    onSecondary: voipgrid.isLoggedIn ? _logout : null,
+                  ),
+                  const Divider(height: 32),
+                  Text(
+                    'Middleware registration',
+                    key: _middlewareSection,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Push token'),
+                    subtitle: middleware.pushToken == null
+                        ? const Text('Not received yet')
+                        : SelectableText(
+                            middleware.pushToken!,
+                            style: const TextStyle(fontFamily: 'monospace'),
+                          ),
+                  ),
+                  _Actions(
+                    busy: _registering,
+                    primaryLabel: 'Register',
+                    onPrimary: voipgrid.isLoggedIn ? _register : null,
+                    secondaryLabel: 'Unregister',
+                    onSecondary: middleware.isRegistered ? _unregister : null,
+                  ),
+                  const Divider(height: 32),
+                  Text(
+                    'Preferences',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Use application provided ringtone'),
+                    value: _phone.useApplicationProvidedRingtone,
+                    onChanged: (value) =>
+                        _phone.setUseApplicationProvidedRingtone(value),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Show calls in native recents'),
+                    value: _phone.showCallsInNativeRecents,
+                    onChanged: (value) =>
+                        _phone.setShowCallsInNativeRecents(value),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Advanced logging'),
+                    value: _phone.enableAdvancedLogging,
+                    onChanged: (value) =>
+                        _phone.setEnableAdvancedLogging(value),
+                  ),
+                  const Divider(height: 32),
+                  Text(
+                    'Advanced',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Echo cancellation calibration'),
+                    enabled: _phone.isRunning,
+                    onTap: () {
+                      _phone.phoneLib.performEchoCancellationCalibration();
+                      _showSnackBar(
+                          'Performing echo cancellation calibration...');
+                    },
+                  ),
+                  const Divider(height: 32),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Linphone version'),
+                    subtitle: Text(_phone.linphoneVersion ?? 'Unknown'),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -338,12 +370,19 @@ class _Actions extends StatelessWidget {
 }
 
 class _Status {
-  const _Status(this.title, this.active, this.activeText, this.inactiveText);
+  const _Status(
+    this.title,
+    this.active,
+    this.activeText,
+    this.inactiveText, {
+    required this.onTap,
+  });
 
   final String title;
   final bool active;
   final String activeText;
   final String inactiveText;
+  final VoidCallback onTap;
 }
 
 class _StatusBar extends StatelessWidget {
@@ -363,26 +402,30 @@ class _StatusBar extends StatelessWidget {
           children: [
             for (final item in items)
               Expanded(
-                child: Column(
-                  children: [
-                    Icon(
-                      item.active
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                      size: 20,
-                      color: item.active
-                          ? Colors.green
-                          : theme.colorScheme.outline,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(item.title, style: theme.textTheme.labelMedium),
-                    Text(
-                      item.active ? item.activeText : item.inactiveText,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                child: InkWell(
+                  onTap: item.onTap,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Column(
+                    children: [
+                      Icon(
+                        item.active
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        size: 20,
+                        color: item.active
+                            ? Colors.green
+                            : theme.colorScheme.outline,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(item.title, style: theme.textTheme.labelMedium),
+                      Text(
+                        item.active ? item.activeText : item.inactiveText,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
           ],

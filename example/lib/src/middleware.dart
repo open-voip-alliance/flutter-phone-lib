@@ -30,8 +30,13 @@ class Middleware extends ChangeNotifier {
 
   bool get isRegistered => registrationToken != null;
 
+  /// The native side writes the push token, so bypass the plugin's cache.
+  Future<void> refresh() async {
+    await _storage.reload();
+    notifyListeners();
+  }
+
   Future<void> register({required String sipUserId}) async {
-    // The native side writes the token, so bypass the plugin's cache.
     await _storage.reload();
 
     final pushToken = this.pushToken;
