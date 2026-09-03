@@ -21,6 +21,11 @@ public class PIL {
     private lazy var systemTones = { di.resolve(SystemTones.self)! }()
     
     let voipLib: VoIPLib = di.resolve(VoIPLib.self)!
+
+    /// The version of the underlying linphone SDK.
+    public var linphoneVersion: String {
+        voipLib.version
+    }
     lazy var iOSCallKit = { di.resolve(IOSCallKit.self)! }()
     
     public lazy var actions = { di.resolve(CallActions.self)! }()

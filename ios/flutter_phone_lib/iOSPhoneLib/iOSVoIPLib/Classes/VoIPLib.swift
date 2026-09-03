@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import linphonesw
 import Swinject
 
 class VoIPLib {
@@ -14,6 +15,10 @@ class VoIPLib {
     
     var isInitialized: Bool {
         get { linphone.isInitialized }
+    }
+
+    var version: String {
+        Core.getVersion
     }
     
     var config: VoIPLibConfig? {
