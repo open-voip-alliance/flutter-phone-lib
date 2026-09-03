@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -22,6 +23,21 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+if (!file('google-services.json').exists()) {
+    throw new GradleException('''
+        |example/android/app/google-services.json is missing.
+        |
+        |The example app uses Vialer's application ID so its Firebase project can
+        |be reused. Download "Android_Config_Vialer" from KeyHub and save it as
+        |example/android/app/google-services.json (it is git-ignored):
+        |
+        |  https://keyhub.wearespindle.com/console/vaults/record-4f1086bf-d841-4951-a8df-d394c7cbacfb-Android_Config_Vialer
+        |
+        |Alternatively use the google-services.json of your own Firebase project
+        |and change the applicationId in this file to match.
+        '''.stripMargin())
+}
+
 android {
     namespace "nl.vialer.voip.vialer_voip_flutter_example"
     compileSdk 36
@@ -40,8 +56,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "nl.vialer.voip.vialer_voip_flutter_example"
+        // Vialer's ID so its Firebase project and middleware push credentials
+        // can be reused; this means the example replaces Vialer on a device.
+        applicationId "com.voipgrid.vialer"
         minSdkVersion 26
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
