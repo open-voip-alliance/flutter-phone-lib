@@ -1,6 +1,6 @@
 name: flutter_phone_lib
 description: Use VoIP in Flutter.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/open-voip-alliance/flutter-phone-lib
 
 environment:

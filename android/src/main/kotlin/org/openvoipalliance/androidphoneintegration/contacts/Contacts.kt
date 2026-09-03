@@ -8,11 +8,10 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.PhoneLookup.DISPLAY_NAME
 import android.provider.ContactsContract.PhoneLookup.PHOTO_URI
 import androidx.core.content.ContextCompat
-import org.openvoipalliance.androidphoneintegration.di.CurrentPreferencesResolver
 import org.openvoipalliance.androidphoneintegration.helpers.identifier
 import org.openvoipalliance.voiplib.model.Call
 
-internal class Contacts(private val context: Context, private val preferences: CurrentPreferencesResolver) {
+internal class Contacts(private val context: Context) {
 
     /**
      * We don't want to query the contacts multiple times per call as we may be creating the
@@ -28,21 +27,11 @@ internal class Contacts(private val context: Context, private val preferences: C
         }
     }
 
-    private fun find(number: String): Contact? {
-        val contact = if (hasPermission) {
-            queryAndroidContactsDatabase(number)
-        } else {
-            null
-        }
-
-        return contact ?: querySupplementaryContacts(number)
+    private fun find(number: String): Contact? = if (hasPermission) {
+        queryAndroidContactsDatabase(number)
+    } else {
+        null
     }
-
-    private fun querySupplementaryContacts(phoneNumber: String): Contact? =
-        preferences()
-            .supplementaryContacts
-            .find { supplementaryContact -> supplementaryContact.number == phoneNumber }
-            ?.toContact()
 
     private fun queryAndroidContactsDatabase(phoneNumber: String): Contact? {
         val cursor = context.contentResolver.query(

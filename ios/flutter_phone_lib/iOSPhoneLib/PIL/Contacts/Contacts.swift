@@ -16,10 +16,7 @@ class Contacts {
     
     private var cachedContacts = [String: Contact?]()
     
-    private let preferences: CurrentPreferencesResolver
-    
-    init(preferences: @escaping CurrentPreferencesResolver) {
-        self.preferences = preferences
+    init() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(addressBookDidChange),
@@ -52,10 +49,6 @@ class Contacts {
         
         if contact != nil {
             cachedContacts[identifier] = contact?.toContact() ?? Contact.notFound()
-        } else {
-            if let supplementaryContact = preferences().supplementaryContacts.find(forNumber: number) {
-                cachedContacts[identifier] = supplementaryContact.toContact()
-            }
         }
         
         return cachedContacts[identifier, default: nil]
@@ -109,18 +102,6 @@ public struct Contact {
 extension VoIPLibCall {
     var identifier: String {
         return callId.description
-    }
-}
-
-extension String {
-    func normalizePhoneNumber() -> String {
-        return replacingOccurrences(of: "[^0-9\\+]", with: "", options: .regularExpression)
-    }
-}
-
-extension Set<SupplementaryContact> {
-    func find(forNumber number: String) -> SupplementaryContact? {
-        return first(where: {$0.number.normalizePhoneNumber() == number})
     }
 }
 

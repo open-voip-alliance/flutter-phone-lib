@@ -1,4 +1,8 @@
 # Changelog
+## [1.0.1] - 2026-09-03
+
+- Supplementary contacts have been removed. The `SupplementaryContact` class is gone and `Preferences` no longer takes a `supplementaryContacts` argument.
+
 ## [1.0.0] - 2026-09-03
 
 - The native libraries are now part of this plugin. Android Phone Integration Lib (0.1.147) and iOS Phone Lib (0.1.18) were vendored into the repository and are no longer external dependencies. Calling behaviour is unchanged.
