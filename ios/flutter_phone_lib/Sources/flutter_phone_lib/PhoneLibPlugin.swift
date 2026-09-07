@@ -79,6 +79,7 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                         case "sessionState": withSuccess(result) {
                             result(pil.sessionState.toDictionary())
                         }
+                        case "linphoneVersion": result(pil.linphoneVersion)
                         case "performEchoCancellationCalibration": withSuccess(result) {
                             pil.performEchoCancellationCalibration()
                         }

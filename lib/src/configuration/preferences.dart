@@ -1,7 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../contacts/supplementary_contact.dart';
-
 part 'preferences.freezed.dart';
 part 'preferences.g.dart';
 
@@ -10,7 +8,6 @@ sealed class Preferences with _$Preferences {
   const factory Preferences({
     required bool useApplicationProvidedRingtone,
     required bool showCallsInNativeRecents,
-    @Default({}) Set<SupplementaryContact> supplementaryContacts,
     @Default(false) bool enableAdvancedLogging,
   }) = _Preferences;
 

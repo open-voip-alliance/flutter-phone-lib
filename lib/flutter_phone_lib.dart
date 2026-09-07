@@ -9,7 +9,6 @@ export 'src/call_session_state.dart';
 export 'src/configuration/application_setup.dart';
 export 'src/configuration/auth.dart';
 export 'src/configuration/preferences.dart';
-export 'src/contacts/supplementary_contact.dart';
 export 'src/events/event.dart';
 export 'src/phone_lib.dart';
 export 'src/push/remote_message.dart';

@@ -99,6 +99,10 @@ class PhoneLib {
   Future<void> call(String number) =>
       channel.invokeMethod('PhoneLib.call', number);
 
+  /// The version of the underlying linphone SDK.
+  Future<String> get linphoneVersion async =>
+      await channel.invokeMethod<String>('PhoneLib.linphoneVersion') ?? '';
+
   Future<CallSessionState> get sessionState async => CallSessionState.fromJson(
     await channel
         .invokeMethod('PhoneLib.sessionState')
@@ -116,9 +120,7 @@ class PhoneLib {
   /// Throws [ArgumentError] if [digit] is not exactly one character.
   Future<void> playToneLocally(String digit) {
     if (digit.length != 1) {
-      throw ArgumentError(
-        'digit must be exactly one character, got: "$digit"',
-      );
+      throw ArgumentError('digit must be exactly one character, got: "$digit"');
     }
     return channel.invokeMethod('PhoneLib.playToneLocally', digit);
   }
