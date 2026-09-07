@@ -135,6 +135,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler, ActivityAware {
                             pil.call(number)
                         }
                         "sessionState" -> result.success(pil.sessionState.toMap())
+                        "linphoneVersion" -> result.success(pil.versionInfo.voip)
                         "performEchoCancellationCalibration" -> result.withSuccess {
                             pil.performEchoCancellationCalibration()
                         }

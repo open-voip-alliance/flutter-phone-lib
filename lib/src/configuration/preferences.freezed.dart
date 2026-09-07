@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Preferences {
 
- bool get useApplicationProvidedRingtone; bool get showCallsInNativeRecents; Set<SupplementaryContact> get supplementaryContacts; bool get enableAdvancedLogging;
+ bool get useApplicationProvidedRingtone; bool get showCallsInNativeRecents; bool get enableAdvancedLogging;
 /// Create a copy of Preferences
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PreferencesCopyWith<Preferences> get copyWith => _$PreferencesCopyWithImpl<Pref
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Preferences&&(identical(other.useApplicationProvidedRingtone, useApplicationProvidedRingtone) || other.useApplicationProvidedRingtone == useApplicationProvidedRingtone)&&(identical(other.showCallsInNativeRecents, showCallsInNativeRecents) || other.showCallsInNativeRecents == showCallsInNativeRecents)&&const DeepCollectionEquality().equals(other.supplementaryContacts, supplementaryContacts)&&(identical(other.enableAdvancedLogging, enableAdvancedLogging) || other.enableAdvancedLogging == enableAdvancedLogging));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Preferences&&(identical(other.useApplicationProvidedRingtone, useApplicationProvidedRingtone) || other.useApplicationProvidedRingtone == useApplicationProvidedRingtone)&&(identical(other.showCallsInNativeRecents, showCallsInNativeRecents) || other.showCallsInNativeRecents == showCallsInNativeRecents)&&(identical(other.enableAdvancedLogging, enableAdvancedLogging) || other.enableAdvancedLogging == enableAdvancedLogging));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,useApplicationProvidedRingtone,showCallsInNativeRecents,const DeepCollectionEquality().hash(supplementaryContacts),enableAdvancedLogging);
+int get hashCode => Object.hash(runtimeType,useApplicationProvidedRingtone,showCallsInNativeRecents,enableAdvancedLogging);
 
 @override
 String toString() {
-  return 'Preferences(useApplicationProvidedRingtone: $useApplicationProvidedRingtone, showCallsInNativeRecents: $showCallsInNativeRecents, supplementaryContacts: $supplementaryContacts, enableAdvancedLogging: $enableAdvancedLogging)';
+  return 'Preferences(useApplicationProvidedRingtone: $useApplicationProvidedRingtone, showCallsInNativeRecents: $showCallsInNativeRecents, enableAdvancedLogging: $enableAdvancedLogging)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PreferencesCopyWith<$Res>  {
   factory $PreferencesCopyWith(Preferences value, $Res Function(Preferences) _then) = _$PreferencesCopyWithImpl;
 @useResult
 $Res call({
- bool useApplicationProvidedRingtone, bool showCallsInNativeRecents, Set<SupplementaryContact> supplementaryContacts, bool enableAdvancedLogging
+ bool useApplicationProvidedRingtone, bool showCallsInNativeRecents, bool enableAdvancedLogging
 });
 
 
@@ -65,12 +65,11 @@ class _$PreferencesCopyWithImpl<$Res>
 
 /// Create a copy of Preferences
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? useApplicationProvidedRingtone = null,Object? showCallsInNativeRecents = null,Object? supplementaryContacts = null,Object? enableAdvancedLogging = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? useApplicationProvidedRingtone = null,Object? showCallsInNativeRecents = null,Object? enableAdvancedLogging = null,}) {
   return _then(_self.copyWith(
 useApplicationProvidedRingtone: null == useApplicationProvidedRingtone ? _self.useApplicationProvidedRingtone : useApplicationProvidedRingtone // ignore: cast_nullable_to_non_nullable
 as bool,showCallsInNativeRecents: null == showCallsInNativeRecents ? _self.showCallsInNativeRecents : showCallsInNativeRecents // ignore: cast_nullable_to_non_nullable
-as bool,supplementaryContacts: null == supplementaryContacts ? _self.supplementaryContacts : supplementaryContacts // ignore: cast_nullable_to_non_nullable
-as Set<SupplementaryContact>,enableAdvancedLogging: null == enableAdvancedLogging ? _self.enableAdvancedLogging : enableAdvancedLogging // ignore: cast_nullable_to_non_nullable
+as bool,enableAdvancedLogging: null == enableAdvancedLogging ? _self.enableAdvancedLogging : enableAdvancedLogging // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -153,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool useApplicationProvidedRingtone,  bool showCallsInNativeRecents,  Set<SupplementaryContact> supplementaryContacts,  bool enableAdvancedLogging)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool useApplicationProvidedRingtone,  bool showCallsInNativeRecents,  bool enableAdvancedLogging)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Preferences() when $default != null:
-return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRecents,_that.supplementaryContacts,_that.enableAdvancedLogging);case _:
+return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRecents,_that.enableAdvancedLogging);case _:
   return orElse();
 
 }
@@ -174,10 +173,10 @@ return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRece
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool useApplicationProvidedRingtone,  bool showCallsInNativeRecents,  Set<SupplementaryContact> supplementaryContacts,  bool enableAdvancedLogging)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool useApplicationProvidedRingtone,  bool showCallsInNativeRecents,  bool enableAdvancedLogging)  $default,) {final _that = this;
 switch (_that) {
 case _Preferences():
-return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRecents,_that.supplementaryContacts,_that.enableAdvancedLogging);}
+return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRecents,_that.enableAdvancedLogging);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -191,10 +190,10 @@ return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRece
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool useApplicationProvidedRingtone,  bool showCallsInNativeRecents,  Set<SupplementaryContact> supplementaryContacts,  bool enableAdvancedLogging)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool useApplicationProvidedRingtone,  bool showCallsInNativeRecents,  bool enableAdvancedLogging)?  $default,) {final _that = this;
 switch (_that) {
 case _Preferences() when $default != null:
-return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRecents,_that.supplementaryContacts,_that.enableAdvancedLogging);case _:
+return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRecents,_that.enableAdvancedLogging);case _:
   return null;
 
 }
@@ -206,18 +205,11 @@ return $default(_that.useApplicationProvidedRingtone,_that.showCallsInNativeRece
 @JsonSerializable()
 
 class _Preferences implements Preferences {
-  const _Preferences({required this.useApplicationProvidedRingtone, required this.showCallsInNativeRecents, final  Set<SupplementaryContact> supplementaryContacts = const {}, this.enableAdvancedLogging = false}): _supplementaryContacts = supplementaryContacts;
+  const _Preferences({required this.useApplicationProvidedRingtone, required this.showCallsInNativeRecents, this.enableAdvancedLogging = false});
   factory _Preferences.fromJson(Map<String, dynamic> json) => _$PreferencesFromJson(json);
 
 @override final  bool useApplicationProvidedRingtone;
 @override final  bool showCallsInNativeRecents;
- final  Set<SupplementaryContact> _supplementaryContacts;
-@override@JsonKey() Set<SupplementaryContact> get supplementaryContacts {
-  if (_supplementaryContacts is EqualUnmodifiableSetView) return _supplementaryContacts;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableSetView(_supplementaryContacts);
-}
-
 @override@JsonKey() final  bool enableAdvancedLogging;
 
 /// Create a copy of Preferences
@@ -233,16 +225,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Preferences&&(identical(other.useApplicationProvidedRingtone, useApplicationProvidedRingtone) || other.useApplicationProvidedRingtone == useApplicationProvidedRingtone)&&(identical(other.showCallsInNativeRecents, showCallsInNativeRecents) || other.showCallsInNativeRecents == showCallsInNativeRecents)&&const DeepCollectionEquality().equals(other._supplementaryContacts, _supplementaryContacts)&&(identical(other.enableAdvancedLogging, enableAdvancedLogging) || other.enableAdvancedLogging == enableAdvancedLogging));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Preferences&&(identical(other.useApplicationProvidedRingtone, useApplicationProvidedRingtone) || other.useApplicationProvidedRingtone == useApplicationProvidedRingtone)&&(identical(other.showCallsInNativeRecents, showCallsInNativeRecents) || other.showCallsInNativeRecents == showCallsInNativeRecents)&&(identical(other.enableAdvancedLogging, enableAdvancedLogging) || other.enableAdvancedLogging == enableAdvancedLogging));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,useApplicationProvidedRingtone,showCallsInNativeRecents,const DeepCollectionEquality().hash(_supplementaryContacts),enableAdvancedLogging);
+int get hashCode => Object.hash(runtimeType,useApplicationProvidedRingtone,showCallsInNativeRecents,enableAdvancedLogging);
 
 @override
 String toString() {
-  return 'Preferences(useApplicationProvidedRingtone: $useApplicationProvidedRingtone, showCallsInNativeRecents: $showCallsInNativeRecents, supplementaryContacts: $supplementaryContacts, enableAdvancedLogging: $enableAdvancedLogging)';
+  return 'Preferences(useApplicationProvidedRingtone: $useApplicationProvidedRingtone, showCallsInNativeRecents: $showCallsInNativeRecents, enableAdvancedLogging: $enableAdvancedLogging)';
 }
 
 
@@ -253,7 +245,7 @@ abstract mixin class _$PreferencesCopyWith<$Res> implements $PreferencesCopyWith
   factory _$PreferencesCopyWith(_Preferences value, $Res Function(_Preferences) _then) = __$PreferencesCopyWithImpl;
 @override @useResult
 $Res call({
- bool useApplicationProvidedRingtone, bool showCallsInNativeRecents, Set<SupplementaryContact> supplementaryContacts, bool enableAdvancedLogging
+ bool useApplicationProvidedRingtone, bool showCallsInNativeRecents, bool enableAdvancedLogging
 });
 
 
@@ -270,12 +262,11 @@ class __$PreferencesCopyWithImpl<$Res>
 
 /// Create a copy of Preferences
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? useApplicationProvidedRingtone = null,Object? showCallsInNativeRecents = null,Object? supplementaryContacts = null,Object? enableAdvancedLogging = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? useApplicationProvidedRingtone = null,Object? showCallsInNativeRecents = null,Object? enableAdvancedLogging = null,}) {
   return _then(_Preferences(
 useApplicationProvidedRingtone: null == useApplicationProvidedRingtone ? _self.useApplicationProvidedRingtone : useApplicationProvidedRingtone // ignore: cast_nullable_to_non_nullable
 as bool,showCallsInNativeRecents: null == showCallsInNativeRecents ? _self.showCallsInNativeRecents : showCallsInNativeRecents // ignore: cast_nullable_to_non_nullable
-as bool,supplementaryContacts: null == supplementaryContacts ? _self._supplementaryContacts : supplementaryContacts // ignore: cast_nullable_to_non_nullable
-as Set<SupplementaryContact>,enableAdvancedLogging: null == enableAdvancedLogging ? _self.enableAdvancedLogging : enableAdvancedLogging // ignore: cast_nullable_to_non_nullable
+as bool,enableAdvancedLogging: null == enableAdvancedLogging ? _self.enableAdvancedLogging : enableAdvancedLogging // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

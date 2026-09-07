@@ -39,3 +39,9 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# Local debug credentials, see .env.example.
+/.env
+
+# Firebase config, see android/app/build.gradle.
+/android/app/google-services.json
