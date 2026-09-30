@@ -163,6 +163,12 @@ class PIL internal constructor(internal val app: ApplicationSetup) {
         )
 
     /**
+     * Remove the SIP registration from the server, [callback] is invoked once the server has
+     * answered or it has timed out. Call this before [stop] when logging out.
+     */
+    fun unregister(callback: () -> Unit) = voipLib.unregisterAndWait(callback)
+
+    /**
      * Stop the PIL, this will remove all authentication credentials from memory and destroy the
      * underlying voip lib. This will not destroy the PIL.
      *

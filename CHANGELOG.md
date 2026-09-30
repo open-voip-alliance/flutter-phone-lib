@@ -1,4 +1,12 @@
 # Changelog
+## [1.0.3] - 2026-09-30
+
+- Added `PhoneLib.unregister()`, which removes the SIP registration from the server and completes once the server has confirmed it (or after about 5 seconds). `stop()` and `close()` don't wait for the server, so the registration could stay active until it expired. Call `unregister()` before them when logging out.
+
+## [1.0.2] - 2026-09-30 [REVERTED]
+
+- Reverted in 1.0.3. `stop()` and `close()` waited for the SIP unregister before clearing the credentials. They're back to the 1.0.1 behaviour, use `PhoneLib.unregister()` instead.
+
 ## [1.0.1] - 2026-09-03
 
 - Supplementary contacts have been removed. The `SupplementaryContact` class is gone and `Preferences` no longer takes a `supplementaryContacts` argument.

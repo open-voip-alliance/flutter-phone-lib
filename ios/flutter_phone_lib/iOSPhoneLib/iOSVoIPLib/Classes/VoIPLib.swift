@@ -62,6 +62,11 @@ class VoIPLib {
     func unregister() {
         linphone.unregister()
     }
+
+    /// Unregisters and calls `completion` once the server has answered or it has timed out.
+    func unregisterAndWait(completion: @escaping () -> Void) {
+        linphone.unregisterAndWait(completion: completion)
+    }
     
     /// Call a phone number
     ///

@@ -1,5 +1,7 @@
 package org.openvoipalliance.voiplib.repository.registration
 
+import android.os.Handler
+import android.os.Looper
 import org.linphone.core.*
 import org.openvoipalliance.androidphoneintegration.PIL
 import org.openvoipalliance.androidphoneintegration.configuration.Auth
@@ -28,6 +30,14 @@ internal class LinphoneSipRegisterRepository(
      * know we need to re-register if it has changed.
      */
     private var lastRegisteredCredentials: Auth? = null
+
+    private var unregisteringAccount: Account? = null
+
+    private var unregisterCompletion: (() -> Unit)? = null
+
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private val unregisterTimeout = Runnable { finishUnregister("timed out", ERROR) }
 
     @Throws(CoreException::class)
     fun register(callback: RegistrationCallback) {
@@ -119,6 +129,39 @@ internal class LinphoneSipRegisterRepository(
         log("Unregister complete")
     }
 
+    fun unregisterAndWait(onComplete: () -> Unit) {
+        unregisterCompletion?.let { previous ->
+            unregisterCompletion = { previous(); onComplete() }
+            return
+        }
+
+        val core = linphoneCoreInstanceManager.safeLinphoneCore
+        val account = core?.defaultAccount
+
+        if (core == null || account == null) {
+            log("Nothing to unregister.")
+            onComplete()
+            return
+        }
+
+        unregisteringAccount = account
+        unregisterCompletion = onComplete
+        mainHandler.postDelayed(unregisterTimeout, UNREGISTER_TIMEOUT_MS)
+
+        log("Unregistering account.")
+        account.params = account.params.clone().apply { isRegisterEnabled = false }
+    }
+
+    private fun finishUnregister(outcome: String, level: LogLevel = INFO) {
+        val onComplete = unregisterCompletion ?: return
+        unregisterCompletion = null
+        unregisteringAccount = null
+        mainHandler.removeCallbacks(unregisterTimeout)
+
+        log("Unregister $outcome", level)
+        onComplete()
+    }
+
     private inner class RegistrationListener : SimpleCoreListener {
 
         /**
@@ -145,6 +188,15 @@ internal class LinphoneSipRegisterRepository(
             message: String,
         ) {
             log("State change: ${state?.name} - $message")
+
+            if (account == unregisteringAccount) {
+                when (state) {
+                    RegistrationState.Cleared -> finishUnregister("cleared")
+                    RegistrationState.Failed -> finishUnregister("failed: $message", ERROR)
+                    else -> {}
+                }
+                return
+            }
 
             val callback = this@LinphoneSipRegisterRepository.callback ?: run {
                 log("Callback not set so registration state change has not done anything.")
@@ -277,5 +329,11 @@ internal class LinphoneSipRegisterRepository(
          * The time that we will wait before executing the method again to clean-up.
          */
         const val CLEAN_UP_DELAY = 1000L
+
+        /**
+         * The amount of time to wait for the server to answer an un-REGISTER, e.g. when there is
+         * no network.
+         */
+        const val UNREGISTER_TIMEOUT_MS = 5000L
     }
 }

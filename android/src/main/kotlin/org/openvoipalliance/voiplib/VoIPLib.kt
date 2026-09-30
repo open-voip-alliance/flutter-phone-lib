@@ -59,6 +59,11 @@ class VoIPLib {
     fun unregister() = sipRegisterRepository.unregister()
 
     /**
+     * Unregisters and invokes [onComplete] once the server has answered or it has timed out.
+     */
+    fun unregisterAndWait(onComplete: () -> Unit) = sipRegisterRepository.unregisterAndWait(onComplete)
+
+    /**
      * This method audio calls a phone number
      * @param number the number dialed to
      * @return returns true when call succeeds, false when the number is an empty string or the

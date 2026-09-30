@@ -121,6 +121,7 @@ class PhoneLib : FlutterPlugin, MethodCallHandler, ActivityAware {
                             persist(auth = pil.auth, preferences = pil.preferences)
                             pil.start()
                         }
+                        "unregister" -> pil.unregister { result.success(null) }
                         "stop" -> result.withSuccess {
                             context.sharedPreferences.edit().clear().apply()
                             pil.stop()
