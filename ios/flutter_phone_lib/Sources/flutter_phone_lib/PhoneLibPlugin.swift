@@ -69,6 +69,9 @@ public class PhoneLibPlugin: NSObject, FlutterPlugin {
                             pil.auth = authOf(arguments[1] as! Dictionary<String, Any?>)
                             pil.start(forceInitialize: false, forceReregister: true)
                         }
+                        case "unregister": pil.unregister {
+                            result(nil)
+                        }
                         case "stop": withSuccess(result) {
                             pil.stop()
                         }

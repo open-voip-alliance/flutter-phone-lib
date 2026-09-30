@@ -81,6 +81,13 @@ class PhoneLib {
   Future<void> start(Preferences preferences, Auth auth) => channel
       .invokeMethod('PhoneLib.start', [preferences.toJson(), auth.toJson()]);
 
+  /// Removes the SIP registration from the server. Completes once the server
+  /// has confirmed or after a short timeout, e.g. when there is no network.
+  ///
+  /// [stop] and [close] don't wait for the server, so call this first when
+  /// logging out to make sure the registration is removed.
+  Future<void> unregister() => channel.invokeMethod('PhoneLib.unregister');
+
   Future<void> stop() => channel.invokeMethod('PhoneLib.stop');
 
   /// Closes this [PhoneLib] instance for good. As opposed to [stop], [start]

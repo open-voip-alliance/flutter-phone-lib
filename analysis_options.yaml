@@ -21,3 +21,6 @@ analyzer:
     - lib/**.chopper.dart
     - lib/**.g.dart
     - example/**
+    - build/**
+    - android/**
+    - ios/**
