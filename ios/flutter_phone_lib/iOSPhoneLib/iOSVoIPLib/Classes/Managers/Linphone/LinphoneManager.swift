@@ -31,6 +31,18 @@ class LinphoneManager: LinphoneLoggingServiceDelegate {
      * know we need to re-register if it has changed.
      */
     private var lastRegisteredCredentials: Auth? = nil
+
+    /**
+     * The amount of time to wait for the server to answer an un-REGISTER, e.g. when there is no
+     * network.
+     */
+    private let unregisterTimeoutSecs: Double = 5
+
+    private var unregisteringAccount: Account? = nil
+
+    private var unregisterCompletion: (() -> Void)? = nil
+
+    private var unregisterTimeout: DispatchWorkItem? = nil
     
     var pil: PIL {
         return PIL.shared!
@@ -191,6 +203,57 @@ class LinphoneManager: LinphoneLoggingServiceDelegate {
         linphoneCore.clearAccounts()
         linphoneCore.clearAllAuthInfo()
         log("Unregister complete")
+    }
+
+    func unregisterAndWait(completion: @escaping () -> Void) {
+        if let previous = unregisterCompletion {
+            unregisterCompletion = { previous(); completion() }
+            return
+        }
+
+        guard let core = linphoneCore, let account = core.defaultAccount, let params = account.params?.clone() else {
+            log("Nothing to unregister.")
+            completion()
+            return
+        }
+
+        unregisteringAccount = account
+        unregisterCompletion = completion
+
+        let timeout = DispatchWorkItem { [weak self] in
+            self?.finishUnregister(outcome: "timed out", isError: true)
+        }
+        unregisterTimeout = timeout
+        DispatchQueue.main.asyncAfter(deadline: .now() + unregisterTimeoutSecs, execute: timeout)
+
+        log("Unregistering account.")
+        params.registerEnabled = false
+        account.params = params
+    }
+
+    /// Returns true when the state change belonged to a pending unregister, so it must not be
+    /// treated as a registration update.
+    func handleUnregisterStateChange(account: Account, state: LinphoneRegistrationState, message: String) -> Bool {
+        guard account === unregisteringAccount else { return false }
+
+        switch state {
+        case .Cleared: finishUnregister(outcome: "cleared")
+        case .Failed: finishUnregister(outcome: "failed: \(message)", isError: true)
+        default: break
+        }
+
+        return true
+    }
+
+    private func finishUnregister(outcome: String, isError: Bool = false) {
+        guard let completion = unregisterCompletion else { return }
+        unregisterCompletion = nil
+        unregisteringAccount = nil
+        unregisterTimeout?.cancel()
+        unregisterTimeout = nil
+
+        log("Unregister \(outcome)", level: isError ? .error : .info)
+        completion()
     }
 
     func terminateAllCalls() {

@@ -112,6 +112,12 @@ public class PIL {
         start(forceInitialize: false, forceReregister: false, completion: completion)
     }
     
+    /// Remove the SIP registration from the server, `completion` is called once the server has answered or it has timed out.
+    /// Call this before `stop()` when logging out.
+    public func unregister(completion: @escaping () -> Void) {
+        voipLib.unregisterAndWait(completion: completion)
+    }
+
     /// Stop the PIL, this will remove all authentication credentials from memory and destroy the underlying voip lib. This will not destroy the PIL.
     ///
     /// This should be called when a user logs-out (or similar action).

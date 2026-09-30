@@ -42,6 +42,10 @@ internal class LinphoneRegistrationListener : CoreDelegate {
 
     func onAccountRegistrationStateChanged(core: Core, account: Account, state: LinphoneRegistrationState, message: String) {
         log("Received registration state change: \(state.rawValue), message: \(message)")
+
+        if manager.handleUnregisterStateChange(account: account, state: state, message: message) {
+            return
+        }
         
         let callbacks = manager.registrationCallbacks
         
