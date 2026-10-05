@@ -1,4 +1,8 @@
 # Changelog
+## [1.0.4] - 2026-10-05
+
+- Fixed a bug on iOS where the speaker button briefly showed as off after unholding a call that was on speaker. The audio state now keeps reporting the speaker while the call is on hold.
+
 ## [1.0.3] - 2026-09-30
 
 - Added `PhoneLib.unregister()`, which removes the SIP registration from the server and completes once the server has confirmed it (or after about 5 seconds). `stop()` and `close()` don't wait for the server, so the registration could stay active until it expired. Call `unregister()` before them when logging out.

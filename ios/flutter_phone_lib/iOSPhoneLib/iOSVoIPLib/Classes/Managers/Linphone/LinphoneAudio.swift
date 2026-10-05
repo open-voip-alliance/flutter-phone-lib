@@ -68,8 +68,18 @@ internal class LinphoneAudio {
         return core.outputAudioDevice
     }
     
+    /// Linphone reports no output device while a call's audio stream is stopped (e.g. on hold),
+    /// so we keep the last real route rather than falsely reporting the earpiece.
+    private var lastKnownRoute: AudioRoute = .phone
+
     var currentRoute: AudioRoute {
-        return core.outputAudioDevice?.asRoute ?? .phone
+        if let route = core.outputAudioDevice?.asRoute {
+            lastKnownRoute = route
+        } else if core.callsNb == 0 {
+            lastKnownRoute = .phone
+        }
+
+        return lastKnownRoute
     }
     
     var audioDevicesAsString: String {
